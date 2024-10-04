@@ -54,23 +54,26 @@
 							{%endif%}
 						</li>
 						{% else %}
+						<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Upload Data
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<li><a class="dropdown-item" href="{% url 'two_year_upload' %}">Upload 2-Year College Data</a></li>
+							<li><a class="dropdown-item" href="{% url 'four_year_upload' %}">Upload 4-Year University Data</a></li>
+						</ul>
+					</li>
+						
 						<li class="nav-item">
-							{% url 'upload-two-years' as upload %} {% if request.path == upload %}
-							<a class="nav-link active" href="{{ upload }}">Upload Data</a>
-							{%else%}
-							<a class="nav-link" href="{{ upload }}">Upload Data</a>
-							{% endif %}
-						</li>
-						<li class="nav-item">
-							{% url 'agreement' as agreement %} 
+							{% url 'new_agreement' as agreement %} 
               {% if request.path == agreement %}
-							  <a class="nav-link active" href="{{ agreement }}">Create agreement</a>
+							  <a class="nav-link active" href="{{ agreement }}">s agreement</a>
 							{%else%}
 							  <a class="nav-link" href="{{ agreement }}">Create agreement</a>
 							{% endif %}
 						</li>
 						<li class="nav-item">
-							<a class="nav-link" href="{% url 'logout' %}?">Logout</a>
+							<a class="nav-link" href="{% url 'institution_logout' %}?">Logout</a>
 						</li>
 						{% endif %} {% comment %}
 						<li class="nav-item dropdown">

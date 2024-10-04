@@ -47,19 +47,18 @@ class AgreementCourseDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AgreementCourseSerializer
 
 @login_required
-def TwoYearUpload(request):
-    return render(request,'ntn_app/2year_upload.html')
+def two_year_upload(request):
+    return render(request,'ntn_app/two_year_upload.html')
 
-def FourYearUpload(request):
-    return render(request,'ntn_app/4year_upload.html')
-
+def four_year_upload(request):
+    return render(request,'ntn_app/four_year_upload.html')
 
 def add_course(request):
     return render(request, 'ntn_app/add_course.html')
 
 def logout_view(request):
     logout(request)
-    return redirect(reverse('login'))
+    return redirect(reverse('home'))
 
 def agreements(request):
     return render(request,'ntn_app/agreement_detail.html')
@@ -110,11 +109,11 @@ def inst_register_view(request):
 
     login(request, new_user)
     
-    return redirect(reverse('upload-two-years'))
+    return redirect(reverse('institution_landing_page'))
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect(reverse('upload-two-years'))
+        return redirect(reverse('institution_landing_page'))
 
     context = {}
 
@@ -137,7 +136,7 @@ def login_view(request):
                             password=form.cleaned_data['password'])
 
     login(request, new_user)
-    return redirect(reverse('upload-two-years'))
+    return redirect(reverse('institution_landing_page'))
 
 
 class ExcelUploadView(APIView):

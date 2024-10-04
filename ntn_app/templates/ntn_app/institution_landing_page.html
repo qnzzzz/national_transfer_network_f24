@@ -33,8 +33,8 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                           <a class="dropdown-item">All Agreements</a>
-                          <a class="dropdown-item">New Agreements</a>
-                        </div>
+                          <a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a>
+                        </div> 
                     </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -42,7 +42,7 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                           <a class="dropdown-item">School Homepage</a>
-                          <a class="dropdown-item">Logout</a>
+                          <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
                         </div>
                     </li>
                 </ul>
