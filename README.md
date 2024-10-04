@@ -14,16 +14,11 @@
    • MS cmd.exe: venv\Scripts\activate.bat
    • Linux csh: source venv/bin/activate.csh
    (See https://docs.python.org/3/library/venv.html for other shells)
-4. Install Django
-   • Upgrade pip to the most current version:
-   python3 -m pip install --upgrade pip
-   • Then install Django
-   python3 -m pip install django
-5. python3 -m pip install djangorestframework
-   python3 -m pip install weasyprint
-6. python3 manage.py migrate
+4. Install required dependencies:
+   pip install -r requirements.txt
+5. python3 manage.py makemigrations
+   python3 manage.py migrate
    python3 manage.py runserver
-   python -m pip install pandas
 
 Follow these steps for weasyprint: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
 
