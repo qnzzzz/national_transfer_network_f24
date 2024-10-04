@@ -14,10 +14,15 @@
    • MS cmd.exe: venv\Scripts\activate.bat
    • Linux csh: source venv/bin/activate.csh
    (See https://docs.python.org/3/library/venv.html for other shells)
-4. Install required dependencies:
+4. Install required dependencies: 
+   
    pip install -r requirements.txt
-5. python3 manage.py makemigrations
+5. migrate the database and run server:
+   
+   python3 manage.py makemigrations 
+   
    python3 manage.py migrate
+
    python3 manage.py runserver
 
 Follow these steps for weasyprint: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
