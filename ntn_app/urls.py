@@ -27,8 +27,8 @@ urlpatterns = [
     path('api/agreements/pdf/<int:pk>/', AgreementPDFAPIView.as_view(), name='agreement_pdf_api'),
     path('agreement-courses/', AgreementCourseListCreate.as_view(), name='agreement-course-list-create'),
     path('agreement-courses/<int:pk>/', AgreementCourseDetail.as_view(), name='agreement-course-detail'),
-    path('student_landing_page/', views.student_landing, name='student_landing_page'),
-    path('institution_landing_page/', views.institution_landing, name='institution_landing_page'),
+    path('student-landing-page/', views.student_landing, name='student_landing_page'),
+    path('institution-landing-page/', views.institution_landing, name='institution_landing_page'),
     # path('agreement/<int:pk>/', views.agreement_detail, name='agreement_detail'),
     # path('agreement/<int:pk>/pdf/', views.agreement_pdf, name='agreement_pdf'),
 ]
