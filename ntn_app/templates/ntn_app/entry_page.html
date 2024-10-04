@@ -19,31 +19,59 @@
 </head>
 
 <body>
-   <div class="overlay">
-    <section class="vh-100">
-        <div class="container py-5 h-100">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-            <div class="card shadow-2-strong" style="border-radius: 1rem;">
-                <div class="card-body p-5 text-center">
-    
-                <h3 class="mb-2">
-                    <a href="/" class="logo-name">
-                        <img src="{% static 'ntn_app/images/logo.png' %}" width="50px"> 
-                        Welcome to NTN
-                    </a>
-                </h3>    
-                <p class="mb-4">Tell us who you are to get started</p>    
-                <a class="btn btn-primary btn-lg btn-block" href="https://www.nationaltransfernetwork.org/student-home" type="submit">Student</a>
-                <a class="btn btn-primary btn-lg btn-block" href="https://www.nationaltransfernetwork.org/"type="submit">Institution</a>
-    
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
+                    <li class="nav-item">
+                        <img src="{% static 'ntn_app/images/logo.png' %}" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" style="color: rgb(40, 40, 40);">National Tranfer Networking</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
+                    <li class="nav-item">
+                        <a class="nav-link">About NTN</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+      
+    <div class="overlay" style="position: absolute; top: 60px; left: 0; width: 100%; height: calc(120vh - 60px);">
+    <!-- <div class="overlay"> -->
+        <section class="vh-100">
+            <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-2-strong" style="border-radius: 1rem;">
+                    <div class="card-body p-5 text-center">
+        
+                    <h3 class="mb-2">
+                        <a href="/" class="logo-name">
+                            <img src="{% static 'ntn_app/images/logo.png' %}" width="50px"> 
+                            Welcome to NTN
+                        </a>
+                    </h3>    
+                    <p class="mb-4">Tell us who you are to get started</p>    
+                    <a class="btn btn-primary btn-lg btn-block" href="https://www.nationaltransfernetwork.org/student-home" type="submit">Student</a>
+                    <a class="btn btn-primary btn-lg btn-block" href="https://www.nationaltransfernetwork.org/"type="submit">Institution</a>
+        
+                    </div>
+                </div>
                 </div>
             </div>
             </div>
-        </div>
-        </div>
-    </section>
-   </div>
+        </section>
+    </div>
 
 </body>
 
