@@ -67,7 +67,7 @@
 						<li class="nav-item">
 							{% url 'new_agreement' as agreement %} 
               {% if request.path == agreement %}
-							  <a class="nav-link active" href="{{ agreement }}">s agreement</a>
+							  <a class="nav-link active" href="{{ agreement }}">Agreement</a>
 							{%else%}
 							  <a class="nav-link" href="{{ agreement }}">Create agreement</a>
 							{% endif %}
