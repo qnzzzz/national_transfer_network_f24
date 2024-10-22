@@ -1,66 +1,81 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 # Create your models here.
-class University(models.Model):
-    UNIVERSITY_TYPES = [
-        ('FOUR_YEAR', 'Four Year University'),
-        ('TWO_YEAR', 'Two Year University'),
-    ]
+class TwoYearCollege(models.Model):
     name = models.CharField(max_length=255)
-    location = models.CharField(max_length=300, null=True, blank=True, default='UNKNOWN')
-    university_type = models.CharField(max_length=10, choices=UNIVERSITY_TYPES)
+    state = models.CharField(max_length=100)
+    website = models.URLField(max_length=255)
+    contact_name = models.CharField(max_length=255)
+    contact_title = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+    phone = models.CharField(max_length=20)
+    hashed_password = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+    
+class FourYearUniversity(models.Model):
+    name = models.CharField(max_length=255)
+    state = models.CharField(max_length=100)
+    website = models.URLField(max_length=255)
+    contact_name = models.CharField(max_length=255)
+    contact_title = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+    phone = models.CharField(max_length=20)
+    hashed_password = models.CharField(max_length=255)
+    created_on = models.DateTimeField(auto_now_add=True)
+    modified_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+
+# Agreement relationship
+class Agreement(models.Model):
+    university = models.ForeignKey(FourYearUniversity, on_delete=models.CASCADE)
+    college = models.ForeignKey(TwoYearCollege, on_delete=models.CASCADE)
+    effective_term = models.DateField()
+
+    def __str__(self):
+        return f"Agreement between {self.university} and {self.college}"
 
 class Course(models.Model):
-    course_ID = models.AutoField(primary_key=True)
-    course_name = models.CharField(max_length=255)
-    effective_term = models.CharField(max_length=10)
+    # ContentType and Object ID for the generic relation
+    school_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    school_object_id = models.PositiveIntegerField()
+    school = GenericForeignKey('school_content_type', 'school_object_id')
+    
+    subject_code = models.CharField(max_length=10)
+    digit_code = models.CharField(max_length=10)
     credits = models.IntegerField()
-    university = models.ForeignKey(University, on_delete=models.CASCADE)
-    # four_year_university = models.ForeignKey(University, related_name='university', on_delete=models.CASCADE, blank=True)
-    # two_year_university = models.ForeignKey(University, related_name='community_college', on_delete=models.CASCADE, blank=True)
-    # equivalent_course = models.ManyToManyField('self', blank=True)
-    equivalent_course = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.subject_code} {self.digit_code}"
+    
+# Course conversion relationship
+class AgreementCourse(models.Model):
+    agreement = models.ForeignKey(Agreement, on_delete=models.CASCADE)
+    course_1 = models.ForeignKey(Course, related_name='agreement_course_1', on_delete=models.CASCADE)
+    course_2 = models.ForeignKey(Course, related_name='agreement_course_2', on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.course_1} ↔ {self.course_2} in {self.agreement}"
+
+class Student(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    hashed_password = models.CharField(max_length=255)
+    major = models.CharField(max_length=255)
+    institution = models.CharField(max_length=255)
+    email = models.EmailField(max_length=255)
+    preferred_city = models.CharField(max_length=255)
+    preferred_major = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
-class AgreementCourse(models.Model):
-    course_name = models.CharField(max_length=255)
-    credits = models.IntegerField()
-    uni_course_name = models.CharField(max_length=255)
-    uni_credits = models.IntegerField()
-
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name_of_institution = models.CharField(max_length=255, blank=False)
-    state = models.CharField(max_length=100, blank=False)
-    website = models.URLField(max_length=200, blank=False)
-    title = models.CharField(max_length=100, blank=False)
-    phone = models.CharField(max_length=20, blank=False)
-
     def __str__(self):
-        return self.user.username
+        return f"{self.first_name} {self.last_name}"
 
-from django.db import models
-
-class ArticulationAgreement(models.Model):
-    home_institution_name = models.CharField(max_length=255)
-    partner_institution_name = models.CharField(max_length=255)
-    program_from_institution_one = models.CharField(max_length=255)
-    program_at_institution_two = models.CharField(max_length=255)
-    associate_degree_program = models.CharField(max_length=255)
-    institution_offering_associate_degree = models.CharField(max_length=255)
-    bachelor_degree_program = models.CharField(max_length=255)
-    institution_offering_bachelor_degree = models.CharField(max_length=255)
-    degree_program = models.CharField(max_length=255)
-    field_of_study = models.CharField(max_length=255)
-    credit_hours = models.IntegerField()
-    university_name = models.CharField(max_length=255)
-    gpa_requirement = models.FloatField()
-    final_degree_program = models.CharField(max_length=255)
-    final_institution = models.CharField(max_length=255)
-    courses = models.ManyToManyField(AgreementCourse, blank=True)
-    def __str__(self):
-        return f"{self.home_institution_name} - {self.partner_institution_name}"
