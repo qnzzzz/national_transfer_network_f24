@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponseForbidden
+from django.shortcuts import redirect
 from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -17,6 +19,27 @@ from .models import Course, Profile, University
 from .serializers import CourseSerializer, UniversitySerializer, ExcelFileSerializer, UploadDataSerializer, ArticulationAgreementSerializer, AgreementCourseSerializer
 import pandas as pd
 from rest_framework import generics
+
+
+def student_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has a student profile
+        if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You must be logged in as a student to access this page.")
+    return _wrapped_view
+
+
+def institution_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has an institution profile
+        if request.user.is_authenticated and hasattr(request.user, 'institution_profile'):
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You must be logged in as an institution to access this page.")
+    return _wrapped_view
+
 
 def entry_page_view(request):
     return render(request, 'ntn_app/entry_page.html')
