@@ -1,53 +1,46 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.auth.models import User
 
 # Create your models here.
-class TwoYearCollege(models.Model):
-    name = models.CharField(max_length=255)
-    state = models.CharField(max_length=100)
-    website = models.URLField(max_length=255)
-    contact_name = models.CharField(max_length=255)
-    contact_title = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
+
+INSTITUTION_TYPE = [
+    ('college', 'Two Year College'),
+    ('university', 'Four Year University'),
+]
+
+# Represents an institution profile
+class InstitutionProfile(models.Model):
+    # use django built-in User model to store user credentials
+    # user has a one-to-one relationship with InstitutionProfile
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='institution_profile')
+    institution_type = models.CharField(max_length=20, choices=INSTITUTION_TYPE) # two-year college or four-year university
+    institution_name = models.CharField(max_length=100)
+    state = models.CharField(max_length=50)
+    website = models.URLField()
+    contact_name = models.CharField(max_length=50)
+    contact_title = models.CharField(max_length=50)
+    email = models.EmailField()
     phone = models.CharField(max_length=20)
-    hashed_password = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
-    
-class FourYearUniversity(models.Model):
-    name = models.CharField(max_length=255)
-    state = models.CharField(max_length=100)
-    website = models.URLField(max_length=255)
-    contact_name = models.CharField(max_length=255)
-    contact_title = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
-    phone = models.CharField(max_length=20)
-    hashed_password = models.CharField(max_length=255)
-    created_on = models.DateTimeField(auto_now_add=True)
-    modified_on = models.DateTimeField(auto_now=True)
+        return f"{self.institution_name} ({self.get_institution_type_display()})"
 
-    def __str__(self):
-        return self.name
-
-# Agreement relationship
+# Represents an agreement between two institutions
 class Agreement(models.Model):
-    university = models.ForeignKey(FourYearUniversity, on_delete=models.CASCADE)
-    college = models.ForeignKey(TwoYearCollege, on_delete=models.CASCADE)
+    university = models.ForeignKey(InstitutionProfile, limit_choices_to={'institution_type': 'university'}, on_delete=models.CASCADE)
+    college = models.ForeignKey(InstitutionProfile, limit_choices_to={'institution_type': 'college'}, on_delete=models.CASCADE)
     effective_term = models.DateField()
 
     def __str__(self):
         return f"Agreement between {self.university} and {self.college}"
 
+# Represents a course 
 class Course(models.Model):
-    # ContentType and Object ID for the generic relation
-    school_content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    school_object_id = models.PositiveIntegerField()
-    school = GenericForeignKey('school_content_type', 'school_object_id')
-    
+    school = models.ForeignKey(InstitutionProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
     digit_code = models.CharField(max_length=10)
     credits = models.IntegerField()
@@ -55,7 +48,7 @@ class Course(models.Model):
     def __str__(self):
         return f"{self.subject_code} {self.digit_code}"
     
-# Course conversion relationship
+# Represents a course equivalency between two institutions
 class AgreementCourse(models.Model):
     agreement = models.ForeignKey(Agreement, on_delete=models.CASCADE)
     course_1 = models.ForeignKey(Course, related_name='agreement_course_1', on_delete=models.CASCADE)
@@ -63,19 +56,16 @@ class AgreementCourse(models.Model):
 
     def __str__(self):
         return f"{self.course_1} ↔ {self.course_2} in {self.agreement}"
-
-class Student(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    hashed_password = models.CharField(max_length=255)
-    major = models.CharField(max_length=255)
-    institution = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
+    
+# Represents a student profile
+class StudentProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
+    major = models.CharField(max_length=100)
+    institution = models.CharField(max_length=100)
     preferred_city = models.CharField(max_length=255)
     preferred_major = models.CharField(max_length=255)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-
+        return f"{self.user.first_name} {self.user.last_name} - {self.institution}"
