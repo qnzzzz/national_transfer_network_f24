@@ -87,18 +87,14 @@ class AgreementCourse(models.Model):
 # Represents a student profile
 class StudentProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     prefered_name = models.CharField(max_length=50, blank=True, null=True)
+    gender = models.CharField(max_length=20, choices=GENDER_TYPE)
+    profile_img = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     major = models.CharField(max_length=100, blank=True, null=True)
     gpa = models.FloatField(blank=True, null=True)
     state = models.CharField(max_length=50, blank=True, null=True)
     institution = models.ForeignKey(InstitutionProfile, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=20, choices=GENDER_TYPE)
-    preferred_city = models.CharField(max_length=255, blank=True, null=True)
-    preferred_major = models.CharField(max_length=255, blank=True, null=True)
-    profile_img = models.ImageField(upload_to='profile_images/', blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
