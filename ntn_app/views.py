@@ -31,13 +31,22 @@ def student_login_required(view_func):
     return _wrapped_view
 
 
-def institution_login_required(view_func):
+def university_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         # Check if the user is authenticated and has an institution profile
-        if request.user.is_authenticated and hasattr(request.user, 'institution_profile'):
+        if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
             return view_func(request, *args, **kwargs)
         else:
-            return HttpResponseForbidden("You must be logged in as an institution to access this page.")
+            return HttpResponseForbidden("You must be logged in as an university to access this page.")
+    return _wrapped_view
+
+def college_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has an institution profile
+        if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You must be logged in as a college to access this page.")
     return _wrapped_view
 
 

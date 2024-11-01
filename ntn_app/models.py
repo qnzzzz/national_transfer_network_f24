@@ -5,10 +5,10 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-INSTITUTION_TYPE = [
-    ('college', 'Two Year College'),
-    ('university', 'Four Year University'),
-]
+# INSTITUTION_TYPE = [
+#     ('college', 'Two Year College'),
+#     ('university', 'Four Year University'),
+# ]
 
 INSTITUTION_USER_ROLE = [
     ('admin', 'Administrator'),
@@ -23,19 +23,75 @@ GENDER_TYPE = [
 
 
 # Represents an institution profile
-class InstitutionProfile(models.Model):
-    institution_type = models.CharField(max_length=20, choices=INSTITUTION_TYPE) # two-year college or four-year university
-    institution_name = models.CharField(max_length=100)
+class UniversityProfile(models.Model):
+    university_name = models.CharField(max_length=100)
     state = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
     website = models.URLField()
     contact_name = models.CharField(max_length=50, blank=True, null=True)
     contact_title = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    phone = models.CharField(max_length=20, blank=True, null=Tru)
+    phone = models.CharField(max_length=20, blank=True, null=True)
     logo_image = models.ImageField(upload_to='institution_logos/', blank=True, null=True)
     banner_image = models.ImageField(upload_to='institution_banners/', blank=True, null=True)
-    description = models.TextField(blank=True, null=True)
+    UGs = models.IntegerField(blank=True, null=True)
+    number_of_transfers_per_year = models.IntegerField(blank=True, null=True)
+    housing_availability = models.BooleanField(default=False)
+    marriage_or_kids_support = models.TextField(blank=True, null=True)
+    vets_support = models.TextField(blank=True, null=True)
+    aids_or_scholarships_for_transfers = models.TextField(blank=True, null=True)
+    special_transfer_program = models.TextField(blank=True, null=True)
+    contigent_admission = models.TextField(blank=True, null=True)
+    online_allowed = models.BooleanField(default=False)
+    degree_pathways_for_AAS_student = models.TextField(blank=True, null=True)
+    grad_pathway = models.TextField(blank=True, null=True)
+    honor_to_honor_pathway = models.TextField(blank=True, null=True)
+    institutional_strength_and_highlight = models.TextField(blank=True, null=True)
+    graduation_rate = models.FloatField(blank=True, null=True)
+    rentation_rate = models.FloatField(blank=True, null=True)
+    # description = models.TextField(blank=True, null=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    modified_on = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.institution_name} ({self.get_institution_type_display()})"
+    
+class CollegeProfile(models.Model):
+    college_name = models.CharField(max_length=100)
+    state = models.CharField(max_length=50)
+    city = models.CharField(max_length=50)
+    website = models.URLField()
+    contact_name = models.CharField(max_length=50, blank=True, null=True)
+    contact_title = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    logo_image = models.ImageField(upload_to='institution_logos/', blank=True, null=True)
+    banner_image = models.ImageField(upload_to='institution_banners/', blank=True, null=True)
+    total_enrollment = models.IntegerField(blank=True, null=True)
+    full_time_students = models.IntegerField(blank=True, null=True)
+    part_time_students = models.IntegerField(blank=True, null=True)
+    HS_dual_enrollment = models.BooleanField(default=False)
+    on_site_HS_available = models.BooleanField(default=False)
+    number_of_transfers_to_univerisities = models.IntegerField(blank=True, null=True)
+    honors_program = models.BooleanField(default=False)
+    enrolled_honors_students = models.IntegerField(blank=True, null=True)
+    top1_transfer_partner = models.CharField(max_length=100, blank=True, null=True)
+    top2_transfer_partner = models.CharField(max_length=100, blank=True, null=True)
+    top3_transfer_partner = models.CharField(max_length=100, blank=True, null=True)
+    required_courses_for_transfer = models.TextField(blank=True, null=True)
+    head_of_transfer_advising = models.CharField(max_length=50, blank=True, null=True)
+    statewide_mandated_pathways = models.TextField(blank=True, null=True)
+    own_bachelor_degree = models.TextField(blank=True, null=True)
+    three_plus_one_program = models.TextField(blank=True, null=True)
+    assured_enrollment = models.TextField(blank=True, null=True)
+    AAS_pathways = models.TextField(blank=True, null=True)
+    dual_enrollment_with_university = models.TextField(blank=True, null=True)
+    direct_grad_pathways = models.TextField(blank=True, null=True)
+    honor_to_honor_pathways = models.TextField(blank=True, null=True)
+    college_strength = models.TextField(blank=True, null=True)
+    housing_for_international_students = models.BooleanField(default=False)
+    sports_teams = models.TextField(blank=True, null=True)
+    # description = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
 
@@ -43,18 +99,32 @@ class InstitutionProfile(models.Model):
         return f"{self.institution_name} ({self.get_institution_type_display()})"
 
 # Represents a user belonging to an institution
-class InstitutionUser(models.Model):
+class UniversityUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    institution = models.ForeignKey(InstitutionProfile, on_delete=models.CASCADE)
+    university = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=INSTITUTION_USER_ROLE)
     created_on = models.DateTimeField(auto_now_add=True)
 
     # Ensure that a user can only belong to an institution once
     class Meta:
-        unique_together = ('user', 'institution') 
+        unique_together = ('user', 'university') 
 
     def __str__(self):
-        return f"{self.user.username} at {self.institution}"
+        return f"{self.user.username} at {self.university}"
+    
+
+class CollegeUser(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    college = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
+    role = models.CharField(max_length=20, choices=INSTITUTION_USER_ROLE)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    # Ensure that a user can only belong to an institution once
+    class Meta:
+        unique_together = ('user', 'college') 
+
+    def __str__(self):
+        return f"{self.user.username} at {self.college}"
 
 # Represents an agreement between two institutions
 class Agreement(models.Model):
