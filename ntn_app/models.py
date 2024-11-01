@@ -1,7 +1,6 @@
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.auth.models import User
+from multiselectfield import MultiSelectField # pip install django-multiselectfield
 
 # Create your models here.
 
@@ -324,32 +323,32 @@ class StudentProfile(models.Model):
     # required info for registration
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student_profile')
     middle_name = models.CharField(max_length=50, blank=True, null=True)
-    prefered_name = models.CharField(max_length=50, blank=True, null=True)
+    preferred_name = models.CharField(max_length=50, blank=True, null=True)
     gender = models.CharField(max_length=20, choices=GENDER_TYPE)
-    institution = models.ForeignKey(InstitutionProfile, on_delete=models.CASCADE)
+    institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
    
     # student demographic information
     profile_img = models.ImageField(upload_to='profile_images/', blank=True, null=True)
-    military_status = models.CharField(choices=MILITARY_STATUS_CHOICES, default='NONE', blank=True, null=True)
-    marital_status = models.CharField(choices=MARITAL_STATUS_CHOICES, blank=True, null=True)
+    military_status = models.CharField(max_length=20, choices=MILITARY_STATUS_CHOICES, blank=True, null=True)
+    marital_status = models.CharField(max_length=20, choices=MARITAL_STATUS_CHOICES, blank=True, null=True)
     dependent_children_num = models.IntegerField(blank=True, null=True)
     race = models.CharField(max_length=50, blank=True, null=True)
     city = models.CharField(max_length=50, blank=True, null=True)
-    state = models.CharField(choices=STATE_CHOICES, blank=True, null=True)
+    state = models.CharField(max_length=2, choices=STATE_CHOICES, blank=True, null=True)
     zipcode = models.CharField(max_length=10, blank=True, null=True)
-    citizenship_status = models.CharField(choices=CITIZENSHIP_CHOICES, blank=True, null=True)
+    citizenship_status = models.CharField(max_length=20, choices=CITIZENSHIP_CHOICES, blank=True, null=True)
     is_enrolled_in_college = models.BooleanField(default=False, blank=True, null=True)
     major = models.CharField(max_length=100, blank=True, null=True)
-    gpa = models.FloatField(blank=True, null=True)
+    gpa = models.CharField(max_length=10, blank=True, null=True)
     college_credits_num = models.IntegerField(blank=True, null=True)
     target_transfer_date = models.DateField(blank=True, null=True)
     
     # student preferences
-    location_preference = models.CharField(choices=LOCATION_PREFERENCE_CHOICES, blank=True, null=True)
-    size_preference = models.CharField(choices=SIZE_PREFERENCE_CHOICES, blank=True, null=True)
-    degree_preference = models.JSONField(choices=DEGREE_CHOICES, blank=True, null=True)
+    location_preference = models.CharField(max_length=20, choices=LOCATION_PREFERENCE_CHOICES, blank=True, null=True)
+    size_preference = models.CharField(max_length=20, choices=SIZE_PREFERENCE_CHOICES, blank=True, null=True)
+    degree_preference = MultiSelectField(choices=DEGREE_CHOICES, blank=True)
     graduate_pathway_preference = models.BooleanField(default=False, blank=True, null=True)
     career_objective = models.TextField(blank=True, null=True)
     is_fafsa_completed = models.BooleanField(default=False, blank=True, null=True)
