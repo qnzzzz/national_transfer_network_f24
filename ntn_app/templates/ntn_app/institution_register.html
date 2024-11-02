@@ -2,6 +2,14 @@
 {% load static %}
 
 {% block body %}
+
+<div class="container-fluid">
+  <a class="navbar-brand" href="">
+    {% comment %} NTN logo {% endcomment %}
+      <img height="50"> 
+  </a>
+</div>
+
 <section style=" background-color:#D5EDF6;">
   <div class="container main-container d-flex align-items-center justify-content-center" style="height: 90vh;">
     <div class="row d-flex second-container justify-content-center">
@@ -10,20 +18,23 @@
           <div class="card-body">
             <div class="row justify-content-center">
               <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
-                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Institution Registration</p>
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Register Now</p>
 
                 <form class="mx-1 mx-md-4" method="POST" action="{% url 'institution_register' %}">
                   {% csrf_token %}
                   {% for field in form.visible_fields %}
                     <div class="d-flex flex-row align-items-center mb-3">
                       <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                        {{ field.label_tag }}  <!-- Display the label -->
-                        {{ field }}  <!-- Render the field itself -->
-                        {% if field.errors %}
+                        <div class="col-12 text-start">
+                          {{ field.label_tag }}
+                          {{ field }}  
+                          {% if field.errors %}
                           <div class="text-danger">
                             {{ field.errors }}
                           </div>
                         {% endif %}
+                        </div> 
+                        
                       </div>
                     </div>
                   {% endfor %}
