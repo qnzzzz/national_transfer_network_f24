@@ -65,6 +65,7 @@ def institution_login(request):
                 if institution_type == 'university':
                     if UniversityUser.objects.filter(user=user).exists():
                         login(request, user)
+                        print('logged in')
                         return redirect('institution_landing_page')
                     else:
                         form.add_error(None, 'This user is not associated with a university.')
@@ -83,30 +84,31 @@ def institution_login(request):
 
 def institution_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
-        # Check if the user is authenticated and has either a university or college profile
-        if request.user.is_authenticated and (
-            hasattr(request.user, 'university_profile') or hasattr(request.user, 'college_profile')
-        ):
-            return view_func(request, *args, **kwargs)
-        else:
-            return redirect('institution_login')
+        # Check if the user is authenticated and if they have either a university or college profile
+        if request.user.is_authenticated:
+            has_university_profile = UniversityUser.objects.filter(user=request.user).exists()
+            has_college_profile = CollegeUser.objects.filter(user=request.user).exists()
+            if has_university_profile or has_college_profile:
+                return view_func(request, *args, **kwargs)
+        
+        # Redirect to login if no valid profile is found
+        return redirect('institution_login')
             
     return _wrapped_view
 
 def university_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
-        # Check if the user is authenticated and has an institution profile
-        if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
+        # Check if the user is authenticated and has a university profile
+        if request.user.is_authenticated and UniversityUser.objects.filter(user=request.user).exists():
             return view_func(request, *args, **kwargs)
         else:
             return redirect('institution_login')
     return _wrapped_view
 
-
 def college_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
-        # Check if the user is authenticated and has an institution profile
-        if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
+        # Check if the user is authenticated and has a college profile
+        if request.user.is_authenticated and CollegeUser.objects.filter(user=request.user).exists():
             return view_func(request, *args, **kwargs)
         else:
             return redirect('institution_login')

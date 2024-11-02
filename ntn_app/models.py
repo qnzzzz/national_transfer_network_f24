@@ -218,7 +218,7 @@ class UniversityProfile(models.Model):
     modified_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.university_name} ({self.get_institution_type_display()})"
+        return self.university_name
     
 class CollegeProfile(models.Model):
     college_name = models.CharField(max_length=100)
@@ -260,11 +260,11 @@ class CollegeProfile(models.Model):
     modified_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.institution_name} ({self.get_institution_type_display()})"
+        return self.college_name
 
 # Represents a user belonging to an institution
 class UniversityUser(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     university = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=INSTITUTION_USER_ROLE)
     created_on = models.DateTimeField(auto_now_add=True)
@@ -280,7 +280,7 @@ class UniversityUser(models.Model):
     
 
 class CollegeUser(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     college = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     role = models.CharField(max_length=20, choices=INSTITUTION_USER_ROLE)
     created_on = models.DateTimeField(auto_now_add=True)
