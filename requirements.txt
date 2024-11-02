@@ -2,4 +2,5 @@ django
 djangorestframework
 weasyprint
 pandas
+django-multiselectfield
 

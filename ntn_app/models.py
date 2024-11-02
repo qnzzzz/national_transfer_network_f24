@@ -218,7 +218,7 @@ class UniversityProfile(models.Model):
     modified_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.institution_name} ({self.get_institution_type_display()})"
+        return f"{self.university_name} ({self.get_institution_type_display()})"
     
 class CollegeProfile(models.Model):
     college_name = models.CharField(max_length=100)
@@ -308,7 +308,7 @@ class UniversityCourse(models.Model):
     institution = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
     digit_code = models.CharField(max_length=10)
-    credits = models.IntegerField(blank=True, null=True)
+    credits = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.subject_code} {self.digit_code}"
@@ -317,17 +317,17 @@ class CollegeCourse(models.Model):
     institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
     digit_code = models.CharField(max_length=10)
-    credits = models.IntegerField(blank=True, null=True)
+    credits = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.subject_code} {self.digit_code}"
     
 # Represents a course equivalency between two institutions
 class AgreementCourse(models.Model):
-    agreement = models.ForeignKey(Agreement, on_delete=models.CASCADE)
-    college_course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE)
-    university_course = models.ForeignKey(UniversityCourse, on_delete=models.CASCADE)
-    credits = models.IntegerField(blank=True, null=True)
+    agreement = models.ForeignKey(Agreement, on_delete=models.CASCADE, null=True)
+    college_course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE, null=True)
+    university_course = models.ForeignKey(UniversityCourse, on_delete=models.CASCADE, null=True)
+    credits = models.FloatField(blank=True, null=True)
     
     def __str__(self):
         return f"{self.college_course} ↔ {self.university_course} in {self.agreement}"
