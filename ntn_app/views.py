@@ -22,6 +22,7 @@ from django.http import HttpResponse
 # import pandas as pd
 # from rest_framework import generics
 
+
 def institution_register(request):
     if request.method == 'POST':
         form = InstitutionRegistrationForm(request.POST)
@@ -79,6 +80,27 @@ def institution_login(request):
         form = InstitutionLoginForm()
     
     return render(request, 'ntn_app/institution_login.html', {'form': form})
+
+
+def university_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has an institution profile
+        if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You must be logged in as an university to access this page.")
+    return _wrapped_view
+
+
+def college_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has an institution profile
+        if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
+            return view_func(request, *args, **kwargs)
+        else:
+            return HttpResponseForbidden("You must be logged in as a college to access this page.")
+    return _wrapped_view
+
 
 def institution_logout(request):
     logout(request)
