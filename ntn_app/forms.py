@@ -7,6 +7,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from .models import UniversityProfile, CollegeProfile, UniversityUser, CollegeUser
+from .models import UniversityProfile
 
 INSTITUTION_TYPE_CHOICES = [
     ('university', 'University'),
@@ -182,6 +183,51 @@ class LoginForm(forms.Form):
 
         # We must return the cleaned data we got from our parent.
         return cleaned_data
+
+
+# University's basic info form
+class Uni_BasicInfoForm(forms.ModelForm):
+    class Meta:
+        model = UniversityProfile
+        fields = ['university_name', 'state', 'city', 'website', 'logo_image', 'banner_image']
+
+# University's contact info form
+class Uni_ContactInfoForm(forms.ModelForm):
+    class Meta:
+        model = UniversityProfile
+        fields = ['contact_name', 'contact_title', 'email', 'phone']
+
+# university's academic info form
+class Uni_EnrollmentInfoForm(forms.ModelForm):
+    class Meta:
+        model = UniversityProfile
+        fields = ['UGs', 'number_of_transfers_per_year']
+
+# university's student support services form
+class Uni_StudentSupportServicesForm(forms.ModelForm):
+    class Meta:
+        model = UniversityProfile
+        fields = [
+            'housing_availability', 'marriage_or_kids_support', 'vets_support',
+            'aids_or_scholarships_for_transfers', 'special_transfer_support'
+        ]
+
+# university's transfer and degree pathways form
+class Uni_TransferAndDegreePathwaysForm(forms.ModelForm):
+    class Meta:
+        model = UniversityProfile
+        fields = [
+            'contingent_admission', 'online_allowed', 'degree_pathways_for_AAS_student',
+            'grad_pathway', 'honor_to_honor_pathway'
+        ]
+
+# university's highlights form
+class Uni_UniversityHighlightsForm(forms.ModelForm):
+    class Meta:
+        model = UniversityProfile
+        fields = [
+            'institutional_strength_and_highlight', 'graduation_rate', 'retention_rate'
+        ]
 
 
 

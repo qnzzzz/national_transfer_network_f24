@@ -1,8 +1,12 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
+from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile
 from .forms import InstitutionRegistrationForm, InstitutionLoginForm
-from .models import UniversityUser, CollegeUser
+from .forms import (
+    Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, 
+    Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
+)
 # from rest_framework import viewsets
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
@@ -131,6 +135,61 @@ def entry_page_view(request):
 
 def institution_landing_page_view(request):
     return render(request, 'ntn_app/institution_landing_page.html')
+
+
+def edit_university_profile(request, university_profile_id):
+    university_user = get_object_or_404(UniversityUser, user=request.user)
+    
+    # check if the user has permission to edit the profile
+    profile = get_object_or_404(UniversityProfile, id=university_profile_id)
+
+    can_edit = university_user.university.id == university_profile_id
+
+    # if university_user.university.id != university_profile_id:
+    #     # if the user is not the owner of the profile, redirect to the profile view page
+    #     # return redirect('university_profile_view', university_profile_id=university_profile_id)
+    #     return redirect(reverse('university_profile_view', args=[university_profile_id]))
+
+    if request.method == 'POST' and can_edit:
+        basic_info_form = Uni_BasicInfoForm(request.POST, request.FILES, instance=profile)
+        contact_info_form = Uni_ContactInfoForm(request.POST, instance=profile)
+        enrollment_info_form = Uni_EnrollmentInfoForm(request.POST, instance=profile)
+        support_services_form = Uni_StudentSupportServicesForm(request.POST, instance=profile)
+        degree_pathways_form = Uni_TransferAndDegreePathwaysForm(request.POST, instance=profile)
+        highlights_form = Uni_UniversityHighlightsForm(request.POST, instance=profile)
+
+        # check if all forms are valid
+        if (basic_info_form.is_valid() and contact_info_form.is_valid() and
+            enrollment_info_form.is_valid() and support_services_form.is_valid() and
+            degree_pathways_form.is_valid() and highlights_form.is_valid()):
+            
+            basic_info_form.save()
+            contact_info_form.save()
+            enrollment_info_form.save()
+            support_services_form.save()
+            degree_pathways_form.save()
+            highlights_form.save()
+            return redirect('university_profile_view', university_profile_id=university_profile_id)
+
+    else:
+        # data is not submitted, create forms with the current profile data
+        basic_info_form = Uni_BasicInfoForm(instance=profile)
+        contact_info_form = Uni_ContactInfoForm(instance=profile)
+        enrollment_info_form = Uni_EnrollmentInfoForm(instance=profile)
+        support_services_form = Uni_StudentSupportServicesForm(instance=profile)
+        degree_pathways_form = Uni_TransferAndDegreePathwaysForm(instance=profile)
+        highlights_form = Uni_UniversityHighlightsForm(instance=profile)
+
+    return render(request, 'ntn_app/university_profile_page.html', {
+        'profile': profile,
+        'basic_info_form': basic_info_form,
+        'contact_info_form': contact_info_form,
+        'enrollment_info_form': enrollment_info_form,
+        'support_services_form': support_services_form,
+        'degree_pathways_form': degree_pathways_form,
+        'highlights_form': highlights_form,
+        'can_edit': can_edit # check if the user can edit the profile
+    })
 
 
 # def student_landing(request):
