@@ -1,7 +1,21 @@
+# Ignore all SQLite database files
 *.sqlite3
+
+# Ignore compiled Python files
 *.pyc
-ntn_app/migrations
-**/__pycache__
-national_transfer_ntw/__pycache__/***
-venv
+
+# Ignore __pycache__ directories
+**/__pycache__/
+
+# Ignore migrations
+ntn_app/migrations/
+
+# Ignore virtual environment directory
+venv/
+
+# Ignore system files
 .DS_Store
+
+# Ignore Excel and text files
+*.xlsx
+*.txt

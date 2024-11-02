@@ -10,12 +10,13 @@ router = DefaultRouter()
 # router.register(r'courses', CourseViewSet)
 
 urlpatterns = [
-    # path('', views.entry_page_view, name="home"),
+    path('', views.entry_page_view, name="home"),
+    
     # # institution api
-    # path('institution-landing-page/', views.institution_landing, name='institution_landing_page'),
+    path('institution-landing-page/', views.institution_landing_page_view, name='institution_landing_page'),
     path('institution-register', views.institution_register, name="institution_register"),
-    # path('institution-login', views.login_view, name="institution_login"),
-    # path("institiution-logout", views.logout_view, name="institution_logout"),
+    path('institution-login', views.institution_login, name="institution_login"),
+    path("institiution-logout", views.institution_logout, name="institution_logout"),
     # path("student-logout", views.logout_view, name="student_logout"),
     # path('new-agreement/', views.agreements, name='new_agreement'),
     # path('two-year-upload/', views.two_year_upload, name='two_year_upload'),

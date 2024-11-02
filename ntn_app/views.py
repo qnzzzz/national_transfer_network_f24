@@ -34,20 +34,20 @@ def institution_register(request):
             # Save the institution and link to user
             form.save(user)
             login(request, user)
-            return redirect('home')  # Redirect to a suitable page after registration
+            return redirect('institution_landing_page')  # Redirect to a suitable page after registration
     else:
         form = InstitutionRegistrationForm()
     
     return render(request, 'ntn_app/institution_register.html', {'form': form})
 
-def student_login_required(view_func):
-    def _wrapped_view(request, *args, **kwargs):
-        # Check if the user is authenticated and has a student profile
-        if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
-            return view_func(request, *args, **kwargs)
-        else:
-            return HttpResponseForbidden("You must be logged in as a student to access this page.")
-    return _wrapped_view
+# def student_login_required(view_func):
+#     def _wrapped_view(request, *args, **kwargs):
+#         # Check if the user is authenticated and has a student profile
+#         if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
+#             return view_func(request, *args, **kwargs)
+#         else:
+#             return HttpResponseForbidden("You must be logged in as a student to access this page.")
+#     return _wrapped_view
 
 def institution_login(request):
     if request.method == 'POST':
@@ -64,13 +64,13 @@ def institution_login(request):
                 if institution_type == 'university':
                     if UniversityUser.objects.filter(user=user).exists():
                         login(request, user)
-                        return redirect('university_dashboard')
+                        return redirect('institution_landing_page')
                     else:
                         form.add_error(None, 'This user is not associated with a university.')
                 elif institution_type == 'college':
                     if CollegeUser.objects.filter(user=user).exists():
                         login(request, user)
-                        return redirect('college_dashboard')
+                        return redirect('institution_landing_page')
                     else:
                         form.add_error(None, 'This user is not associated with a college.')
             else:
@@ -80,6 +80,9 @@ def institution_login(request):
     
     return render(request, 'ntn_app/institution_login.html', {'form': form})
 
+def institution_logout(request):
+    logout(request)
+    return redirect('home')
 
 # def university_login_required(view_func):
 #     def _wrapped_view(request, *args, **kwargs):
@@ -101,8 +104,12 @@ def institution_login(request):
 #     return _wrapped_view
 
 
-# def entry_page_view(request):
-#     return render(request, 'ntn_app/entry_page.html')
+def entry_page_view(request):
+    return render(request, 'ntn_app/entry_page.html')
+
+def institution_landing_page_view(request):
+    return render(request, 'ntn_app/institution_landing_page.html')
+
 
 # def student_landing(request):
 #     return render(request, 'ntn_app/student_landing_page.html')

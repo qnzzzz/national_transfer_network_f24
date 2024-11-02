@@ -25,26 +25,45 @@
             </div>
             
             <form method="POST" action="{% url 'institution_login' %}">
-              {% csrf_token %}
-              <div class="row gy-3 gy-md-4 overflow-hidden">
-                <div class="col-12">
-                  <label for="username" class="form-label">Email <span class="text-danger">*</span></label>
-                  {% comment %} <input type="email" class="form-control" name="email" id="email" placeholder="name@.com" required> {% endcomment %}
-                  {{ form.username }}
-                </div>
-                <div class="col-12">
-                  <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
-                  {% comment %} <input type="password" class="form-control" name="password" id="password" value="" required> {% endcomment %}
-                  {{ form.password }}
-                </div>
-                
-                <div class="col-12">
-                  <div class="d-grid">
-                    <button class="btn bsb-btn-xl btn-primary" type="submit">Log In</button>
+            {% csrf_token %}
+            <div class="row gy-3 gy-md-4 overflow-hidden">
+              <div class="col-12">
+                <label for="institution_type" class="form-label">Institution Type <span class="text-danger">*</span></label>
+                {{ form.institution_type }}
+                {% if form.institution_type.errors %}
+                  <div class="text-danger">
+                    {{ form.institution_type.errors }}
                   </div>
+                {% endif %}
+              </div>
+
+              <div class="col-12">
+                <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                  <div class="text-danger">
+                    {{ form.email.errors }}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-12">
+                <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+                {{ form.password }}
+                {% if form.password.errors %}
+                  <div class="text-danger">
+                    {{ form.password.errors }}
+                  </div>
+                {% endif %}
+              </div>
+              
+              <div class="col-12">
+                <div class="d-grid">
+                  <button class="btn bsb-btn-xl btn-primary" type="submit">Log In</button>
                 </div>
               </div>
-            </form>
+            </div>
+          </form>
 
 
           </div>

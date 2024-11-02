@@ -76,20 +76,14 @@ class InstitutionRegistrationForm(forms.Form):
     # Institution details
     institution_name = forms.CharField(max_length=100, required=True, label="Institution Name")
     institution_type = forms.ChoiceField(choices=INSTITUTION_TYPE_CHOICES, required=True, label="Institution Type")
-    state = forms.ChoiceField(choices=STATE_CHOICES, required=True, label="State")
-    city = forms.CharField(max_length=50, required=False)
-    website = forms.URLField(required=False, label="Website")
     
     # Contact person details
-    contact_name = forms.CharField(max_length=50, required=True, label="Contact Name")
-    contact_title = forms.CharField(max_length=50, required=False, label="Contact Title")
-    email = forms.EmailField(required=True, label="Contact Email")
-    phone = forms.CharField(max_length=20, required=False, label="Phone Number")
+    email = forms.EmailField(required=True, label="Email")
     
     # User account details
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
     confirm_password = forms.CharField(widget=forms.PasswordInput, label="Confirm Password")
-    role = forms.ChoiceField(choices=ROLE_CHOICES, required=True, label="Role")
+    role = forms.ChoiceField(choices=ROLE_CHOICES, required=True, label="User Role")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -103,13 +97,7 @@ class InstitutionRegistrationForm(forms.Form):
     def save(self, user):
         institution_type = self.cleaned_data['institution_type']
         institution_name = self.cleaned_data['institution_name']
-        state = self.cleaned_data['state']
-        city = self.cleaned_data['city']
-        website = self.cleaned_data['website']
-        contact_name = self.cleaned_data['contact_name']
-        contact_title = self.cleaned_data['contact_title']
         email = self.cleaned_data['email']
-        phone = self.cleaned_data['phone']
         role = self.cleaned_data['role']
 
         # Create or get institution profile
@@ -117,32 +105,22 @@ class InstitutionRegistrationForm(forms.Form):
             institution, created = UniversityProfile.objects.get_or_create(
                 university_name=institution_name,
                 defaults={
-                    'state': state,
-                    'city': city,
-                    'website': website,
-                    'contact_name': contact_name,
-                    'contact_title': contact_title,
                     'email': email,
-                    'phone': phone
                 }
             )
+                
             # Link user with University
             UniversityUser.objects.get_or_create(
                 user=user,
                 university=institution,
                 defaults={'role': role}
             )
+            
         elif institution_type == 'college':
             institution, created = CollegeProfile.objects.get_or_create(
                 college_name=institution_name,
                 defaults={
-                    'state': state,
-                    'city': city,
-                    'website': website,
-                    'contact_name': contact_name,
-                    'contact_title': contact_title,
                     'email': email,
-                    'phone': phone
                 }
             )
             # Link user with College
