@@ -81,6 +81,17 @@ def institution_login(request):
     
     return render(request, 'ntn_app/institution_login.html', {'form': form})
 
+def institution_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has either a university or college profile
+        if request.user.is_authenticated and (
+            hasattr(request.user, 'university_profile') or hasattr(request.user, 'college_profile')
+        ):
+            return view_func(request, *args, **kwargs)
+        else:
+            return redirect('institution_login')
+            
+    return _wrapped_view
 
 def university_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -88,7 +99,7 @@ def university_login_required(view_func):
         if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
             return view_func(request, *args, **kwargs)
         else:
-            return HttpResponseForbidden("You must be logged in as an university to access this page.")
+            return redirect('institution_login')
     return _wrapped_view
 
 
@@ -98,10 +109,10 @@ def college_login_required(view_func):
         if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
             return view_func(request, *args, **kwargs)
         else:
-            return HttpResponseForbidden("You must be logged in as a college to access this page.")
+            return redirect('institution_login')
     return _wrapped_view
 
-
+@institution_login_required
 def institution_logout(request):
     logout(request)
     return redirect('home')
@@ -129,6 +140,7 @@ def institution_logout(request):
 def entry_page_view(request):
     return render(request, 'ntn_app/entry_page.html')
 
+@institution_login_required
 def institution_landing_page_view(request):
     return render(request, 'ntn_app/institution_landing_page.html')
 
