@@ -189,9 +189,9 @@ DEGREE_CHOICES = [
 # Represents an institution profile
 class UniversityProfile(models.Model):
     university_name = models.CharField(max_length=100)
-    state = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    website = models.URLField()
+    state = models.CharField(max_length=50, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
     contact_name = models.CharField(max_length=50, blank=True, null=True)
     contact_title = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
@@ -222,9 +222,9 @@ class UniversityProfile(models.Model):
     
 class CollegeProfile(models.Model):
     college_name = models.CharField(max_length=100)
-    state = models.CharField(max_length=50)
-    city = models.CharField(max_length=50)
-    website = models.URLField()
+    state = models.CharField(max_length=50, blank=True, null=True)
+    city = models.CharField(max_length=50, blank=True, null=True)
+    website = models.URLField(blank=True, null=True)
     contact_name = models.CharField(max_length=50, blank=True, null=True)
     contact_title = models.CharField(max_length=50, blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
@@ -298,7 +298,7 @@ class CollegeUser(models.Model):
 class Agreement(models.Model):
     university = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     college = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
-    effective_term = models.DateField()
+    effective_term = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return f"Agreement between {self.university} and {self.college}"
@@ -308,7 +308,7 @@ class UniversityCourse(models.Model):
     institution = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
     digit_code = models.CharField(max_length=10)
-    credits = models.IntegerField()
+    credits = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.subject_code} {self.digit_code}"
@@ -317,7 +317,7 @@ class CollegeCourse(models.Model):
     institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
     digit_code = models.CharField(max_length=10)
-    credits = models.IntegerField()
+    credits = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.subject_code} {self.digit_code}"
@@ -327,7 +327,8 @@ class AgreementCourse(models.Model):
     agreement = models.ForeignKey(Agreement, on_delete=models.CASCADE)
     college_course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE)
     university_course = models.ForeignKey(UniversityCourse, on_delete=models.CASCADE)
-
+    credits = models.IntegerField(blank=True, null=True)
+    
     def __str__(self):
         return f"{self.college_course} ↔ {self.university_course} in {self.agreement}"
     
