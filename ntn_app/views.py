@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
+from .forms import InstitutionRegistrationForm, InstitutionLoginForm
+from .models import UniversityUser, CollegeUser
 # from rest_framework import viewsets
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
@@ -20,6 +22,23 @@ from django.http import HttpResponse
 # import pandas as pd
 # from rest_framework import generics
 
+def institution_register(request):
+    if request.method == 'POST':
+        form = InstitutionRegistrationForm(request.POST)
+        if form.is_valid():
+            # Create a new user
+            user = User.objects.create_user(
+                username=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
+            )
+            # Save the institution and link to user
+            form.save(user)
+            login(request, user)
+            return redirect('home')  # Redirect to a suitable page after registration
+    else:
+        form = InstitutionRegistrationForm()
+    
+    return render(request, 'ntn_app/institution_register.html', {'form': form})
 
 def student_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -30,25 +49,56 @@ def student_login_required(view_func):
             return HttpResponseForbidden("You must be logged in as a student to access this page.")
     return _wrapped_view
 
+def institution_login(request):
+    if request.method == 'POST':
+        form = InstitutionLoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            institution_type = form.cleaned_data['institution_type']
+            
+            # Authenticate user
+            user = authenticate(request, username=email, password=password)
+            if user is not None:
+                # Check if user belongs to the specified institution type
+                if institution_type == 'university':
+                    if UniversityUser.objects.filter(user=user).exists():
+                        login(request, user)
+                        return redirect('university_dashboard')
+                    else:
+                        form.add_error(None, 'This user is not associated with a university.')
+                elif institution_type == 'college':
+                    if CollegeUser.objects.filter(user=user).exists():
+                        login(request, user)
+                        return redirect('college_dashboard')
+                    else:
+                        form.add_error(None, 'This user is not associated with a college.')
+            else:
+                form.add_error(None, 'Invalid email or password')
+    else:
+        form = InstitutionLoginForm()
+    
+    return render(request, 'ntn_app/institution_login.html', {'form': form})
 
-def university_login_required(view_func):
-    def _wrapped_view(request, *args, **kwargs):
-        # Check if the user is authenticated and has an institution profile
-        if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
-            return view_func(request, *args, **kwargs)
-        else:
-            return HttpResponseForbidden("You must be logged in as an university to access this page.")
-    return _wrapped_view
+
+# def university_login_required(view_func):
+#     def _wrapped_view(request, *args, **kwargs):
+#         # Check if the user is authenticated and has an institution profile
+#         if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
+#             return view_func(request, *args, **kwargs)
+#         else:
+#             return HttpResponseForbidden("You must be logged in as an university to access this page.")
+#     return _wrapped_view
 
 
-def college_login_required(view_func):
-    def _wrapped_view(request, *args, **kwargs):
-        # Check if the user is authenticated and has an institution profile
-        if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
-            return view_func(request, *args, **kwargs)
-        else:
-            return HttpResponseForbidden("You must be logged in as a college to access this page.")
-    return _wrapped_view
+# def college_login_required(view_func):
+#     def _wrapped_view(request, *args, **kwargs):
+#         # Check if the user is authenticated and has an institution profile
+#         if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
+#             return view_func(request, *args, **kwargs)
+#         else:
+#             return HttpResponseForbidden("You must be logged in as a college to access this page.")
+#     return _wrapped_view
 
 
 # def entry_page_view(request):

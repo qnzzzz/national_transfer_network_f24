@@ -13,7 +13,7 @@ urlpatterns = [
     # path('', views.entry_page_view, name="home"),
     # # institution api
     # path('institution-landing-page/', views.institution_landing, name='institution_landing_page'),
-    # path('institution-register', views.inst_register_view, name="institution_register"),
+    path('institution-register', views.institution_register, name="institution_register"),
     # path('institution-login', views.login_view, name="institution_login"),
     # path("institiution-logout", views.logout_view, name="institution_logout"),
     # path("student-logout", views.logout_view, name="student_logout"),
