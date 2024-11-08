@@ -20,6 +20,8 @@ from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfi
 from .forms import InstitutionRegistrationForm, InstitutionLoginForm, AgreementForm, Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
 from .models import Agreement, UniversityProfile, CollegeProfile, UniversityCourse, CollegeCourse, AgreementCourse
 
+from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoForm, 
+                    Col_TransferInfoForm, Col_Special4YearOfferingForm, Col_SupportiveInfoForm)
 # from rest_framework import viewsets
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
@@ -207,20 +209,21 @@ def student_login(request):
 
 @university_login_required
 def edit_university_profile(request, university_profile_id):
-    university_user = get_object_or_404(UniversityUser, user=request.user)
-    
-    # check if the user has permission to edit the profile
+
+    # Get the user profile for the current user
+    university_user = UniversityUser.objects.filter(user=request.user).first()
+
+    # Check if the user has permission to edit the profile
     profile = get_object_or_404(UniversityProfile, id=university_profile_id)
 
-    can_edit = university_user.university.id == university_profile_id
-
-    # if university_user.university.id != university_profile_id:
-    #     # if the user is not the owner of the profile, redirect to the profile view page
-    #     # return redirect('university_profile_view', university_profile_id=university_profile_id)
-    #     return redirect(reverse('university_profile_view', args=[university_profile_id]))
+    # Set `can_edit` based on the user's role and ownership of the profile
+    if university_user and university_user.university.id == university_profile_id:
+        can_edit = True
+    else:
+        can_edit = False
 
     if request.method == 'POST' and can_edit:
-        basic_info_form = Uni_BasicInfoForm(request.POST, request.FILES, instance=profile)
+        basic_info_form = Uni_BasicInfoForm(request.POST, instance=profile)
         contact_info_form = Uni_ContactInfoForm(request.POST, instance=profile)
         enrollment_info_form = Uni_EnrollmentInfoForm(request.POST, instance=profile)
         support_services_form = Uni_StudentSupportServicesForm(request.POST, instance=profile)
@@ -422,6 +425,59 @@ def new_agreement(request):
 
     return render(request, 'ntn_app/new_agreement.html', {'form': form})
 
+
+def edit_college_profile(request, college_profile_id):
+
+    # Get the user profile for the current user
+    college_user = CollegeUser.objects.filter(user=request.user).first()
+
+    # Check if the user has permission to edit the profile
+    profile = get_object_or_404(CollegeProfile, id=college_profile_id)
+
+    # Set `can_edit` based on the user's role and ownership of the profile
+    if college_user and college_user.college.id == college_profile_id:
+        can_edit = True
+    else:
+        can_edit = False
+
+    if request.method == 'POST' and can_edit:
+        basic_info_form = Col_BasicInfoForm(request.POST, instance=profile)
+        contact_info_form = Col_ContactInfoForm(request.POST, instance=profile)
+        enrollment_info_form = Col_EnrollmentInfoForm(request.POST, instance=profile)
+        transfer_info_form = Col_TransferInfoForm(request.POST, instance=profile)
+        special_4year_info_form =Col_Special4YearOfferingForm(request.POST, instance=profile)
+        supportive_info_form = Col_SupportiveInfoForm(request.POST, instance=profile)
+
+        if (basic_info_form.is_valid() and contact_info_form.is_valid() and
+            enrollment_info_form.is_valid() and transfer_info_form.is_valid() and
+            special_4year_info_form.is_valid() and supportive_info_form.is_valid()):
+            
+            basic_info_form.save()
+            contact_info_form.save()
+            enrollment_info_form.save()
+            transfer_info_form.save()
+            special_4year_info_form.save()
+            supportive_info_form.save()
+            return redirect('college_profile_view', college_profile_id=college_profile_id)
+    
+    else:
+        basic_info_form = Col_BasicInfoForm(instance=profile)
+        contact_info_form = Col_ContactInfoForm(instance=profile)
+        enrollment_info_form = Col_EnrollmentInfoForm(instance=profile)
+        transfer_info_form = Col_TransferInfoForm(instance=profile)
+        special_4year_info_form =Col_Special4YearOfferingForm(instance=profile)
+        supportive_info_form = Col_SupportiveInfoForm(instance=profile)
+
+    return render(request, 'ntn_app/college_profile_page.html', {
+        'profile': profile,
+        'basic_info_form': basic_info_form,
+        'contact_info_form': contact_info_form,
+        'enrollment_info_form': enrollment_info_form,
+        'transfer_info_form': transfer_info_form,
+        'special_4year_info_form': special_4year_info_form,
+        'supportive_info_form': supportive_info_form,
+        'can_edit': can_edit
+    })
 
 # def student_landing(request):
 #     return render(request, 'ntn_app/student_landing_page.html')

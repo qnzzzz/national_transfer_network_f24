@@ -239,7 +239,7 @@ class CollegeProfile(models.Model):
     part_time_students = models.IntegerField(blank=True, null=True)
     HS_dual_enrollment = models.BooleanField(default=False)
     on_site_HS_available = models.BooleanField(default=False, blank=True)
-    number_of_transfers_to_univerisities = models.IntegerField(blank=True, null=True)
+    number_of_transfers_to_universities = models.IntegerField(blank=True, null=True)
     honors_program = models.BooleanField(default=False, blank=True)
     enrolled_honors_students = models.IntegerField(blank=True, null=True)
     top1_transfer_partner = models.CharField(max_length=100, blank=True, null=True)
