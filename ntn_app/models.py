@@ -298,6 +298,12 @@ class CollegeUser(models.Model):
 class Agreement(models.Model):
     university = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     college = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
+    university_program = models.CharField(max_length=100, blank=True, null=True)
+    college_program = models.CharField(max_length=100, blank=True, null=True)
+    university_degree = models.CharField(max_length=100, blank=True, null=True) 
+    college_degree = models.CharField(max_length=100, blank=True, null=True)
+    credits_required = models.FloatField(blank=True, null=True)
+    gpa_required = models.CharField(max_length=10, blank=True, null=True)
     effective_term = models.DateField(blank=True, null=True)
 
     def __str__(self):
