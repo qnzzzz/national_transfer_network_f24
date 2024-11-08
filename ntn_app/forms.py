@@ -6,8 +6,8 @@ from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import UniversityProfile, CollegeProfile, UniversityUser, CollegeUser
-from .models import UniversityProfile
+from .models import UniversityProfile, CollegeProfile, UniversityUser, CollegeUser, StudentProfile
+from .models import STATE_CHOICES, GENDER_TYPE, MILITARY_STATUS_CHOICES, MARITAL_STATUS_CHOICES, CITIZENSHIP_CHOICES, LOCATION_PREFERENCE_CHOICES, SIZE_PREFERENCE_CHOICES, DEGREE_CHOICES
 
 INSTITUTION_TYPE_CHOICES = [
     ('university', 'University'),
@@ -230,6 +230,104 @@ class Uni_UniversityHighlightsForm(forms.ModelForm):
         ]
 
 
+class StudentLoginForm(forms.Form):
+    username = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    password = forms.CharField(
+        max_length=100,
+        required=True,
+        widget=forms.PasswordInput(attrs={'class': 'form-control'})
+    )
+    
+    
+class StudentRegistrationForm(forms.ModelForm):
+    password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                'class': "form-control",
+                'placeholder': 'Password'
+            }
+        )
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(
+            attrs={
+                'class': "form-control",
+                'placeholder': 'Confirm Password'
+            }
+        )
+    )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'username']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'First Name'}),
+            'last_name': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Last Name'}),
+            'email': forms.EmailInput(attrs={'class': "form-control", 'placeholder': 'Email'}),
+            'username': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Username'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+
+        if password != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+
+        return cleaned_data
+
+
+
+
+class StudentProfileForm(forms.ModelForm):
+    state = forms.ChoiceField(choices=STATE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    gender = forms.ChoiceField(choices=GENDER_TYPE, required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+    military_status = forms.ChoiceField(choices=MILITARY_STATUS_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    marital_status = forms.ChoiceField(choices=MARITAL_STATUS_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    citizenship_status = forms.ChoiceField(choices=CITIZENSHIP_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    location_preference = forms.ChoiceField(choices=LOCATION_PREFERENCE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    size_preference = forms.ChoiceField(choices=SIZE_PREFERENCE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    degree_preference = forms.MultipleChoiceField(choices=DEGREE_CHOICES, required=False, widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
+
+    class Meta:
+        model = StudentProfile
+        fields = [
+            'middle_name', 'preferred_name', 'gender', 'institution', 'profile_img', 
+            'military_status', 'marital_status', 'dependent_children_num', 'race', 'city', 'state', 'zipcode', 
+            'citizenship_status', 'is_enrolled_in_college', 'major', 'gpa', 'college_credits_num', 'target_transfer_date', 
+            'location_preference', 'size_preference', 'degree_preference', 'graduate_pathway_preference', 'career_objective', 
+            'is_fafsa_completed', 'expected_family_contribution', 'estimated_affordable_amount'
+        ]
+ 
+class ExploreUniversitiesForm(forms.Form):
+    institution_type = forms.ChoiceField(
+        choices=INSTITUTION_TYPE_CHOICES,
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'institution_type'})
+    )
+    institution = forms.CharField(
+        required=True,
+        widget=forms.Select(attrs={'class': 'form-control', 'id': 'institution'})
+    ) 
+# class ExploreUniversitiesForm(forms.Form):
+#     institution_type = forms.ChoiceField(choices=INSTITUTION_TYPE_CHOICES, required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+#     institution = forms.ChoiceField(required=True, widget=forms.Select(attrs={'class': 'form-control'}))
+
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['institution'].choices = []
+
+#         if 'institution_type' in self.data:
+#             institution_type = self.data.get('institution_type')
+#             if institution_type == 'two_year_college':
+#                 self.fields['institution'].choices = [(college.id, college.college_name) for college in CollegeProfile.objects.all()]
+#             elif institution_type == 'four_year_university':
+#                 self.fields['institution'].choices = [(university.id, university.university_name) for university in UniversityProfile.objects.all()]
 
 # class ArticulationAgreementForm(forms.ModelForm):
 #     class Meta:

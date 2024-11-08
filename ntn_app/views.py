@@ -1,12 +1,17 @@
+import logging
 from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, get_object_or_404
-from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile
-from .forms import InstitutionRegistrationForm, InstitutionLoginForm
+from django.http import JsonResponse
+from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile, StudentProfile
+from .forms import InstitutionRegistrationForm, InstitutionLoginForm, StudentRegistrationForm, StudentProfileForm
 from .forms import (
     Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, 
-    Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
+    Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm, ExploreUniversitiesForm
 )
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .forms import StudentLoginForm
 # from rest_framework import viewsets
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
@@ -45,13 +50,15 @@ def institution_register(request):
     
     return render(request, 'ntn_app/institution_register.html', {'form': form})
 
+
+
 # def student_login_required(view_func):
 #     def _wrapped_view(request, *args, **kwargs):
 #         # Check if the user is authenticated and has a student profile
 #         if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
 #             return view_func(request, *args, **kwargs)
-#         else:
-#             return HttpResponseForbidden("You must be logged in as a student to access this page.")
+#         # Redirect to login if no valid profile is found
+#         return redirect('institution_login')
 #     return _wrapped_view
 
 def institution_login(request):
@@ -150,6 +157,65 @@ def entry_page_view(request):
 def institution_landing_page_view(request):
     return render(request, 'ntn_app/institution_landing_page.html')
 
+@login_required
+def student_landing(request):
+    return render(request, 'ntn_app/student_landing_page.html')
+
+
+@login_required
+def student_profile(request):
+    student_profile = request.user.student_profile
+    if request.method == 'POST':
+        form = StudentProfileForm(request.POST, request.FILES, instance=student_profile)
+        if form.is_valid():
+            user = request.user
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.save()
+            form.save()
+            return redirect('student_profile')
+    else:
+        initial_data = {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+        }
+        form = StudentProfileForm(instance=student_profile)
+    return render(request, 'ntn_app/student_profile.html', {'form': form, 'initial_data': initial_data})
+
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
+# def student_login(request):
+#     if request.method == 'POST':
+#         form = StudentLoginForm(request.POST)
+#         if form.is_valid():
+#             username = form.cleaned_data['username']
+#             password = form.cleaned_data['password']
+#             user = authenticate(request, username=username, password=password)
+#             if user is not None:
+#                 login(request, user)
+#                 return redirect('student_dashboard')  # Redirect to student dashboard after login
+#             else:
+#                 messages.error(request, 'Invalid username or password')
+#     else:
+#         form = StudentLoginForm()
+#     return render(request, 'student_login.html', {'form': form})
+
+def student_login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('student_landing_page')
+        else:
+            messages.error(request, 'Invalid username or password')
+    return render(request, 'ntn_app/student_login.html')
+
 
 def edit_university_profile(request, university_profile_id):
     university_user = get_object_or_404(UniversityUser, user=request.user)
@@ -204,8 +270,101 @@ def edit_university_profile(request, university_profile_id):
         'highlights_form': highlights_form,
         'can_edit': can_edit # check if the user can edit the profile
     })
+    
+def student_register(request):
+    if request.user.is_authenticated:
+        logout(request)
+        
+    context = {}
+
+    if request.method == "GET":
+        context['form'] = StudentRegistrationForm()
+        return render(request, 'ntn_app/student_register.html', context)
+
+    form = StudentRegistrationForm(request.POST)
+    context['form'] = form
+
+    if not form.is_valid():
+        return render(request, 'ntn_app/student_register.html', context)
+
+    new_user = User.objects.create_user(
+        username=form.cleaned_data['username'],
+        password=form.cleaned_data['password'],
+        email=form.cleaned_data['email'],
+        first_name=form.cleaned_data['first_name'],
+        last_name=form.cleaned_data['last_name']
+    )
+    new_user.save()
+
+    new_student_profile = StudentProfile(
+        user=new_user
+    )
+    new_student_profile.save()
+
+    messages.success(request, 'Registration successful. Please log in.')
+    return redirect('student_login')
 
 
+def add_course(request):
+    return render(request, 'ntn_app/add_course.html')
+
+logger = logging.getLogger(__name__)
+
+@login_required
+def explore_universities(request):
+    if request.method == 'POST':
+        form = ExploreUniversitiesForm(request.POST)
+        if form.is_valid():
+            institution_id = form.cleaned_data['institution']
+            institution_type = form.cleaned_data['institution_type']
+            
+            if institution_type == 'four_year_university':
+                return redirect('edit_profile', university_profile_id=institution_id)
+            elif institution_type == 'two_year_college':
+                # Handle the case for two-year colleges if needed
+                pass
+        else:
+            print(form.errors)  # Print form errors for debugging
+    else:
+        form = ExploreUniversitiesForm()
+    
+    return render(request, 'ntn_app/explore_universities.html', {'form': form})
+# def explore_universities(request):
+#     if request.method == 'POST':
+#         form = ExploreUniversitiesForm(request.POST)
+#         if form.is_valid():
+#             institution_name = form.cleaned_data['institution']
+#             institution_type = form.cleaned_data['institution_type']
+#             institution_id = get_university_id(institution_name)
+            
+            
+#             if institution_type == 'four_year_university':
+#                 return redirect('/')
+#             elif institution_type == 'two_year_college':
+#                 college = get_object_or_404(CollegeProfile, college_name=institution_name)
+#                 # Handle the case for two_year_college if needed
+#                 pass
+#     else:
+#         form = ExploreUniversitiesForm()
+#     return render(request, 'ntn_app/explore_universities.html', {'form': form})
+
+def get_university_id(university_name):
+    try:
+        university = UniversityProfile.objects.get(university_name=university_name)
+        return university.id
+    except UniversityProfile.DoesNotExist:
+        return None
+ 
+def get_institutions(request):
+    institution_type = request.GET.get('institution_type')
+    if institution_type == 'four_year_university':
+        institutions = UniversityProfile.objects.all().values('id', 'university_name')
+    elif institution_type == 'two_year_college':
+        institutions = CollegeProfile.objects.all().values('id', 'college_name')
+    else:
+        institutions = []
+    
+    return JsonResponse(list(institutions), safe=False)
 # def student_landing(request):
 #     return render(request, 'ntn_app/student_landing_page.html')
 
