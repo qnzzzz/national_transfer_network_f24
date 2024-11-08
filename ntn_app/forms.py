@@ -6,8 +6,7 @@ from django.contrib.auth import authenticate
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from .models import UniversityProfile, CollegeProfile, UniversityUser, CollegeUser
-from .models import UniversityProfile
+from .models import UniversityProfile, CollegeProfile, UniversityUser, CollegeUser, Agreement
 
 INSTITUTION_TYPE_CHOICES = [
     ('university', 'University'),
@@ -28,6 +27,7 @@ STATE_CHOICES = [
     ('CA', 'California'),
     ('CO', 'Colorado'),
     ('CT', 'Connecticut'),
+    ('DC', 'Washington, D.C.'),
     ('DE', 'Delaware'),
     ('FL', 'Florida'),
     ('GA', 'Georgia'),
@@ -59,6 +59,7 @@ STATE_CHOICES = [
     ('OK', 'Oklahoma'),
     ('OR', 'Oregon'),
     ('PA', 'Pennsylvania'),
+    ('PR', 'Puerto Rico'),
     ('RI', 'Rhode Island'),
     ('SC', 'South Carolina'),
     ('SD', 'South Dakota'),
@@ -149,42 +150,48 @@ class InstitutionLoginForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
-class LoginForm(forms.Form):
-    username = forms.CharField(
-        max_length=20,
-        required=True,
-        widget=forms.TextInput(
-                attrs={'class': "form-control"}
-        )
-    )
-    password = forms.CharField(
-        max_length=200,
-        required=True,
-        widget=forms.PasswordInput(
-            attrs={
-            'class': 'form-control'
-            }
-        )
-    )
+# class LoginForm(forms.Form):
+#     username = forms.CharField(
+#         max_length=20,
+#         required=True,
+#         widget=forms.TextInput(
+#                 attrs={'class': "form-control"}
+#         )
+#     )
+#     password = forms.CharField(
+#         max_length=200,
+#         required=True,
+#         widget=forms.PasswordInput(
+#             attrs={
+#             'class': 'form-control'
+#             }
+#         )
+#     )
 
-    # Customizes form validation for properties that apply to more
-    # than one field.  Overrides the forms.Form.clean function.
-    def clean(self):
-        # Calls our parent (forms.Form) .clean function, gets a dictionary
-        # of cleaned data as a result
-        cleaned_data = super().clean()
+#     # Customizes form validation for properties that apply to more
+#     # than one field.  Overrides the forms.Form.clean function.
+#     def clean(self):
+#         # Calls our parent (forms.Form) .clean function, gets a dictionary
+#         # of cleaned data as a result
+#         cleaned_data = super().clean()
 
-        # Confirms that the two password fields match
-        username = cleaned_data.get('username')
-        password = cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if not user:
-            raise forms.ValidationError("Invalid username/password")
+#         # Confirms that the two password fields match
+#         username = cleaned_data.get('username')
+#         password = cleaned_data.get('password')
+#         user = authenticate(username=username, password=password)
+#         if not user:
+#             raise forms.ValidationError("Invalid username/password")
 
-        # We must return the cleaned data we got from our parent.
-        return cleaned_data
+#         # We must return the cleaned data we got from our parent.
+#         return cleaned_data
 
-
+class AgreementForm(forms.ModelForm):
+    class Meta:
+        model = Agreement
+        fields = [
+            'university', 'college', 'university_program', 'college_program', 'credits', 'gpa_required', 'effective_term'
+        ]
+        
 # University's basic info form
 class Uni_BasicInfoForm(forms.ModelForm):
     class Meta:
@@ -231,13 +238,3 @@ class Uni_UniversityHighlightsForm(forms.ModelForm):
 
 
 
-# class ArticulationAgreementForm(forms.ModelForm):
-#     class Meta:
-#         model = ArticulationAgreement
-#         fields = [
-#             'home_institution_name', 'partner_institution_name', 'program_from_institution_one',
-#             'program_at_institution_two', 'associate_degree_program', 'institution_offering_associate_degree',
-#             'bachelor_degree_program', 'institution_offering_bachelor_degree', 'degree_program',
-#             'field_of_study', 'credit_hours', 'university_name', 'gpa_requirement',
-#             'final_degree_program', 'final_institution','courses'
-#         ]

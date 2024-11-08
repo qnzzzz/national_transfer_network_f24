@@ -43,6 +43,7 @@ STATE_CHOICES = [
     ('CA', 'California'),
     ('CO', 'Colorado'),
     ('CT', 'Connecticut'),
+    ('DC', 'Washington, D.C.'),
     ('DE', 'Delaware'),
     ('FL', 'Florida'),
     ('GA', 'Georgia'),
@@ -74,6 +75,7 @@ STATE_CHOICES = [
     ('OK', 'Oklahoma'),
     ('OR', 'Oregon'),
     ('PA', 'Pennsylvania'),
+    ('PR', 'Puerto Rico'),
     ('RI', 'Rhode Island'),
     ('SC', 'South Carolina'),
     ('SD', 'South Dakota'),
@@ -300,9 +302,7 @@ class Agreement(models.Model):
     college = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     university_program = models.CharField(max_length=100, blank=True, null=True)
     college_program = models.CharField(max_length=100, blank=True, null=True)
-    university_degree = models.CharField(max_length=100, blank=True, null=True) 
-    college_degree = models.CharField(max_length=100, blank=True, null=True)
-    credits_required = models.FloatField(blank=True, null=True)
+    credits = models.FloatField(blank=True, null=True)
     gpa_required = models.CharField(max_length=10, blank=True, null=True)
     effective_term = models.DateField(blank=True, null=True)
 

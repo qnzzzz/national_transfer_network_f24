@@ -1,26 +1,19 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponseForbidden
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.urls import reverse
 from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile
-from .forms import InstitutionRegistrationForm, InstitutionLoginForm
-from .forms import (
-    Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, 
-    Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
-)
+from .forms import InstitutionRegistrationForm, InstitutionLoginForm, AgreementForm, Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
+from .models import Agreement, UniversityProfile, CollegeProfile, UniversityCourse, CollegeCourse, AgreementCourse
+
 # from rest_framework import viewsets
 # from rest_framework.views import APIView
 # from rest_framework.response import Response
 # from rest_framework.parsers import MultiPartParser, FormParser
 # from rest_framework import status
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
-from django.urls import reverse
-from django.template.loader import render_to_string
-from django.http import HttpResponse
 # from weasyprint import HTML
 # from .models import AgreementCourse, ArticulationAgreement
 # from django.contrib.auth.decorators import login_required
-# from ntn_app.forms import LoginForm, RegistrationForm
 # from .models import Course, Profile, University
 # from .serializers import CourseSerializer, UniversitySerializer, ExcelFileSerializer, UploadDataSerializer, ArticulationAgreementSerializer, AgreementCourseSerializer
 # import pandas as pd
@@ -86,6 +79,7 @@ def institution_login(request):
     
     return render(request, 'ntn_app/institution_login.html', {'form': form})
 
+
 def institution_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         # Check if the user is authenticated and if they have either a university or college profile
@@ -100,6 +94,7 @@ def institution_login_required(view_func):
             
     return _wrapped_view
 
+
 def university_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         # Check if the user is authenticated and has a university profile
@@ -108,6 +103,7 @@ def university_login_required(view_func):
         else:
             return redirect('institution_login')
     return _wrapped_view
+
 
 def college_login_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -118,39 +114,23 @@ def college_login_required(view_func):
             return redirect('institution_login')
     return _wrapped_view
 
+
 @institution_login_required
 def institution_logout(request):
     logout(request)
     return redirect('home')
 
-# def university_login_required(view_func):
-#     def _wrapped_view(request, *args, **kwargs):
-#         # Check if the user is authenticated and has an institution profile
-#         if request.user.is_authenticated and hasattr(request.user, 'university_profile'):
-#             return view_func(request, *args, **kwargs)
-#         else:
-#             return HttpResponseForbidden("You must be logged in as an university to access this page.")
-#     return _wrapped_view
-
-
-# def college_login_required(view_func):
-#     def _wrapped_view(request, *args, **kwargs):
-#         # Check if the user is authenticated and has an institution profile
-#         if request.user.is_authenticated and hasattr(request.user, 'college_profile'):
-#             return view_func(request, *args, **kwargs)
-#         else:
-#             return HttpResponseForbidden("You must be logged in as a college to access this page.")
-#     return _wrapped_view
-
 
 def entry_page_view(request):
     return render(request, 'ntn_app/entry_page.html')
+
 
 @institution_login_required
 def institution_landing_page_view(request):
     return render(request, 'ntn_app/institution_landing_page.html')
 
 
+@university_login_required
 def edit_university_profile(request, university_profile_id):
     university_user = get_object_or_404(UniversityUser, user=request.user)
     
@@ -206,6 +186,73 @@ def edit_university_profile(request, university_profile_id):
     })
 
 
+# @institution_login_required
+def new_agreement(request):
+    if request.method == 'POST':
+        # Remove any fields with '_duplicate' in the name
+        filtered_data = {key: value for key, value in request.POST.items() if '_duplicate' not in key}
+
+        # Extract university and college names from filtered_data
+        university_name = filtered_data.get('university')
+        college_name = filtered_data.get('college')
+
+        # Get or create university and college instances
+        university, created_university = UniversityProfile.objects.get_or_create(university_name=university_name)
+        college, created_college = CollegeProfile.objects.get_or_create(college_name=college_name)
+
+        # Update filtered_data to include the foreign key IDs for university and college
+        filtered_data['university'] = university.id
+        filtered_data['college'] = college.id
+
+        # Create the Agreement form with filtered data
+        form = AgreementForm(filtered_data)
+        if form.is_valid():
+            # Save new agreement
+            agreement = form.save()
+
+            # Process course data for the AgreementCourse relationships
+            course_index = 0
+            while f"courses[{course_index}][cc_subject]" in request.POST:
+                college_course_subject_code = request.POST.get(f"courses[{course_index}][cc_subject]")
+                college_course_digit_code = request.POST.get(f"courses[{course_index}][cc_digit]")
+                college_course_credits = request.POST.get(f"courses[{course_index}][cc_credits]")
+                university_course_subject_code = request.POST.get(f"courses[{course_index}][uc_subject]")
+                university_course_digit_code = request.POST.get(f"courses[{course_index}][uc_digit]")
+                university_course_credits = request.POST.get(f"courses[{course_index}][uc_credits]")
+
+                # Get or create the CollegeCourse
+                college_course, _ = CollegeCourse.objects.get_or_create(
+                    institution=college,
+                    subject_code=college_course_subject_code,
+                    digit_code=college_course_digit_code,
+                    defaults={'credits': college_course_credits}
+                )
+
+                # Get or create the UniversityCourse
+                university_course, _ = UniversityCourse.objects.get_or_create(
+                    institution=university,
+                    subject_code=university_course_subject_code,
+                    digit_code=university_course_digit_code,
+                    defaults={'credits': university_course_credits}
+                )
+
+                # Create the AgreementCourse
+                AgreementCourse.objects.create(
+                    agreement=agreement,
+                    college_course=college_course,
+                    university_course=university_course,
+                    credits=university_course_credits  # Use university credits for the agreement
+                )
+
+                course_index += 1
+
+            return redirect('home')
+    else:
+        form = AgreementForm()
+
+    return render(request, 'ntn_app/new_agreement.html', {'form': form})
+
+
 # def student_landing(request):
 #     return render(request, 'ntn_app/student_landing_page.html')
 
@@ -245,8 +292,6 @@ def edit_university_profile(request, university_profile_id):
 #     logout(request)
 #     return redirect(reverse('home'))
 
-# def agreements(request):
-#     return render(request,'ntn_app/agreement_detail.html')
 
 
 # def inst_register_view(request):
