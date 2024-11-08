@@ -350,7 +350,7 @@ class StudentProfile(models.Model):
     preferred_name = models.CharField(max_length=50, blank=True, null=True)
     gender = models.CharField(max_length=20, choices=GENDER_TYPE)
     # institution = models.CharField(max_length=50, blank=True, null=True)
-    institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
+    institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
    
