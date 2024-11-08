@@ -1,0 +1,49 @@
+{% extends "ntn_app/student_institutions.html" %}
+{% load static %}
+
+{% block body %}
+
+<!-- Login 3 - Bootstrap Brain Component -->
+<section class="p-3 p-md-4 p-xl-5">
+    <div class="container login-info">
+      <div class="row">
+        <div class="col-12 col-md-6 bsb-tpl-bg-platinum">
+          <div class="d-flex flex-column justify-content-between h-100 p-3 p-md-4 p-xl-5">
+            <h3 class="m-0">Welcome!</h3>
+            <img class="img-fluid rounded mx-auto my-4" loading="lazy" src="{% static 'ntn_app/images/login.png' %}" width="500" height="80" alt="BootstrapBrain Logo">
+            <p class="mb-0">Not a member yet? <a href="{% url 'student_register'%}" class="link-secondary text-decoration-none">Register now</a></p>
+          </div>
+        </div>
+        <div class="col-12 col-md-6 bsb-tpl-bg-lotion login-banner">
+          <div class="p-3 p-md-4 p-xl-5">
+            <div class="row">
+              <div class="col-12">
+                <div class="mb-5">
+                  <h3>Log in</h3> <span class="text-danger">{{message}} </span>
+                </div>
+              </div>
+            </div>
+            
+            <form method="POST" action="{% url 'student_login' %}">
+              {% csrf_token %}
+              <div class="row gy-3 gy-md-4 overflow-hidden">
+                <div class="col-12">
+                  <label for="username" class="form-label">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" required>
+                </div>
+                <div class="col-12">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary w-100">Login</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+
+{% endblock %}

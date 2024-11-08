@@ -43,6 +43,7 @@ STATE_CHOICES = [
     ('CA', 'California'),
     ('CO', 'Colorado'),
     ('CT', 'Connecticut'),
+    ('DC', 'Washington, D.C.'),
     ('DE', 'Delaware'),
     ('FL', 'Florida'),
     ('GA', 'Georgia'),
@@ -74,6 +75,7 @@ STATE_CHOICES = [
     ('OK', 'Oklahoma'),
     ('OR', 'Oregon'),
     ('PA', 'Pennsylvania'),
+    ('PR', 'Puerto Rico'),
     ('RI', 'Rhode Island'),
     ('SC', 'South Carolina'),
     ('SD', 'South Dakota'),
@@ -219,7 +221,8 @@ class UniversityProfile(models.Model):
 
     def __str__(self):
         return self.university_name
-    
+
+  
 class CollegeProfile(models.Model):
     college_name = models.CharField(max_length=100)
     state = models.CharField(max_length=50, blank=True, null=True)
@@ -261,7 +264,7 @@ class CollegeProfile(models.Model):
 
     def __str__(self):
         return self.college_name
-
+    
 # Represents a user belonging to an institution
 class UniversityUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -298,6 +301,10 @@ class CollegeUser(models.Model):
 class Agreement(models.Model):
     university = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     college = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
+    university_program = models.CharField(max_length=100, blank=True, null=True)
+    college_program = models.CharField(max_length=100, blank=True, null=True)
+    credits = models.FloatField(blank=True, null=True)
+    gpa_required = models.CharField(max_length=10, blank=True, null=True)
     effective_term = models.DateField(blank=True, null=True)
 
     def __str__(self):
@@ -331,7 +338,10 @@ class AgreementCourse(models.Model):
     
     def __str__(self):
         return f"{self.college_course} ↔ {self.university_course} in {self.agreement}"
-    
+ 
+
+
+   
 # Represents a student profile
 class StudentProfile(models.Model):
     # required info for registration
@@ -339,6 +349,7 @@ class StudentProfile(models.Model):
     middle_name = models.CharField(max_length=50, blank=True, null=True)
     preferred_name = models.CharField(max_length=50, blank=True, null=True)
     gender = models.CharField(max_length=20, choices=GENDER_TYPE)
+    # institution = models.CharField(max_length=50, blank=True, null=True)
     institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
