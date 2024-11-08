@@ -185,11 +185,14 @@ class LoginForm(forms.Form):
         return cleaned_data
 
 
+
+# University Profile Forms
+
 # University's basic info form
 class Uni_BasicInfoForm(forms.ModelForm):
     class Meta:
         model = UniversityProfile
-        fields = ['university_name', 'state', 'city', 'website', 'logo_image', 'banner_image']
+        fields = ['university_name', 'state', 'city', 'website']
 
 # University's contact info form
 class Uni_ContactInfoForm(forms.ModelForm):
@@ -230,6 +233,46 @@ class Uni_UniversityHighlightsForm(forms.ModelForm):
         ]
 
 
+# College Profile Forms
+
+# College's basic info form
+class Col_BasicInfoForm(forms.ModelForm):
+    class Meta:
+        model = CollegeProfile
+        fields = ['college_name', 'state', 'city', 'website']
+
+# College's contact info form
+class Col_ContactInfoForm(forms.ModelForm):
+    class Meta:
+        model = CollegeProfile
+        fields = ['contact_name', 'contact_title', 'email', 'phone']
+
+# College's enrollment form
+class Col_EnrollmentInfoForm(forms.ModelForm):
+    class Meta:
+        model = CollegeProfile
+        fields = ['total_enrollment', 'full_time_students', 'part_time_students', 'HS_dual_enrollment', 
+                  'on_site_HS_available', 'honors_program', 'enrolled_honors_students']
+
+# College's transfer info form
+class Col_TransferInfoForm(forms.ModelForm):
+    class Meta:
+        model = CollegeProfile
+        fields = ['number_of_transfers_to_universities', 'top1_transfer_partner', 'top2_transfer_partner', 
+                  'top3_transfer_partner', 'required_courses_for_transfer', 'head_of_transfer_advising']
+        
+# College's special 4-year offering form
+class Col_Special4YearOfferingForm(forms.ModelForm):
+    class Meta:
+        model = CollegeProfile
+        fields = ['statewide_mandated_pathways', 'own_bachelor_degree', 'three_plus_one_program', 'assured_enrollment',
+                  'AAS_pathways', 'dual_enrollment_with_university', 'direct_grad_pathways', 'honor_to_honor_pathways']
+        
+# College's supportive Info form
+class Col_SupportiveInfoForm(forms.ModelForm):
+    class Meta:
+        model = CollegeProfile
+        fields = ['housing_for_international_students', 'sports_teams', 'college_strength']
 
 # class ArticulationAgreementForm(forms.ModelForm):
 #     class Meta:
