@@ -419,11 +419,42 @@ def new_agreement(request):
 
                 course_index += 1
 
-            return redirect('home')
+            return redirect('institution_landing_page')
     else:
         form = AgreementForm()
 
     return render(request, 'ntn_app/new_agreement.html', {'form': form})
+
+
+@institution_login_required
+def all_my_agreements(request):
+    user = request.user
+    
+    agreements = []
+    institution_name = None
+    if UniversityUser.objects.filter(user=user).exists():
+        university_profile = UniversityUser.objects.get(user=user).university
+        institution_name = university_profile.university_name
+        agreements = Agreement.objects.filter(university=university_profile.id)
+        
+    elif CollegeUser.objects.filter(user=user).exists():
+        college_profile = CollegeUser.objects.get(user=user).college
+        institution_name = college_profile.college_name
+        agreements = Agreement.objects.filter(college=college_profile.id)
+        
+    return render(request, 'ntn_app/all_my_agreements.html', {'agreements': agreements, 'institution': institution_name})
+
+
+def delete_agreement(request, agreement_id):
+    agreement = get_object_or_404(Agreement, id=agreement_id)
+    agreement.delete()
+    return redirect('all_my_agreements')
+
+
+def all_others_agreement(request, institution_profile_id):  
+    agreements=[]
+    
+    return render(request, 'ntn_app/all_agreements.html', {'agreements': agreements})
 
 
 def edit_college_profile(request, college_profile_id):

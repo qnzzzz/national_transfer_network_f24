@@ -12,7 +12,7 @@ router = DefaultRouter()
 urlpatterns = [
     path('', views.entry_page_view, name="home"),
     
-    # # institution api
+    # institution api
     path('institution-landing-page/', views.institution_landing_page_view, name='institution_landing_page'),
     path('institution-register', views.institution_register, name="institution_register"),
     path('institution-login', views.institution_login, name="institution_login"),
@@ -22,8 +22,12 @@ urlpatterns = [
     path('college-profile/<int:college_profile_id>', views.edit_college_profile, name='college_profile_view'),
     path('college-profile/edit/<int:college_profile_id>', views.edit_college_profile, name='college_edit_profile'),
     path('university-profile/edit/<int:university_profile_id>', views.edit_university_profile, name='edit_profile'),
+    path('new-agreement/', views.new_agreement, name='new_agreement'),
+    path('all-my-agreements', views.all_my_agreements, name='all_my_agreements'),
+    path('agreement-others-agreements/<int:institution_profile_id>', views.all_others_agreement, name='all_others_agreements'),
+    path('delete_agreement/<int:agreement_id>', views.delete_agreement, name='delete_agreement'),
 
-
+    # student api
     path('student-landing-page/', views.student_landing, name='student_landing_page'),
     path('student-register/', views.student_register, name="student_register"),
     path('student-login/', views.student_login, name="student_login"),
@@ -32,8 +36,8 @@ urlpatterns = [
     path("student-logout", views.logout_view, name="student_logout"),
     path('explore-universities/', views.explore_universities, name='explore_universities'),
     path('get-institutions/', views.get_institutions, name='get_institutions'),
-    # path("student-logout", views.logout_view, name="student_logout"),
-    path('new-agreement/', views.new_agreement, name='new_agreement'),
+
+    
     # path('two-year-upload/', views.two_year_upload, name='two_year_upload'),
     # path('four-year-upload/', views.four_year_upload, name='four_year_upload'),
     # # path('agreement/<int:pk>/', views.agreement_detail, name='agreement_detail'),

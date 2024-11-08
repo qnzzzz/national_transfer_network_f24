@@ -307,6 +307,15 @@ class Agreement(models.Model):
     gpa_required = models.CharField(max_length=10, blank=True, null=True)
     effective_term = models.DateField(blank=True, null=True)
 
+    # An agreement is unique between two programs
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['university', 'college', 'university_program', 'college_program'],
+                name='unique_agreement'
+            )
+        ]
+   
     def __str__(self):
         return f"Agreement between {self.university} and {self.college}"
 
