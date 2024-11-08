@@ -19,6 +19,16 @@ urlpatterns = [
     path("institiution-logout", views.institution_logout, name="institution_logout"),
     path('university-profile/<int:university_profile_id>', views.edit_university_profile, name='university_profile_view'),
     path('university-profile/edit/<int:university_profile_id>', views.edit_university_profile, name='edit_profile'),
+
+
+    path('student-landing-page/', views.student_landing, name='student_landing_page'),
+    path('student-register/', views.student_register, name="student_register"),
+    path('student-login/', views.student_login, name="student_login"),
+    path('add-course', views.add_course, name="add_course"),
+    path('student-profile/', views.student_profile, name='student_profile'), 
+    path("student-logout", views.logout_view, name="student_logout"),
+    path('explore-universities/', views.explore_universities, name='explore_universities'),
+    path('get-institutions/', views.get_institutions, name='get_institutions'),
     # path("student-logout", views.logout_view, name="student_logout"),
     # path('new-agreement/', views.agreements, name='new_agreement'),
     # path('two-year-upload/', views.two_year_upload, name='two_year_upload'),
