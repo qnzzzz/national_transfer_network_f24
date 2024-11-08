@@ -23,8 +23,8 @@ urlpatterns = [
     path('college-profile/edit/<int:college_profile_id>', views.edit_college_profile, name='college_edit_profile'),
     path('university-profile/edit/<int:university_profile_id>', views.edit_university_profile, name='edit_profile'),
     path('new-agreement/', views.new_agreement, name='new_agreement'),
-    path('all-my-agreements', views.all_my_agreements, name='all_my_agreements'),
-    path('agreement-others-agreements/<int:institution_profile_id>', views.all_others_agreement, name='all_others_agreements'),
+    path('manage-agreements', views.manage_agreements, name='manage_agreements'),
+    path('all-agreements/<str:institution_type>/<int:profile_id>/', views.all_agreements, name='all_agreements'),
     path('delete_agreement/<int:agreement_id>', views.delete_agreement, name='delete_agreement'),
 
     # student api

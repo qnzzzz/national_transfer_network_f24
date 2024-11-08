@@ -1,0 +1,40 @@
+{% extends "ntn_app/base.html" %} {% load static %} {% block body %}
+
+<link href="{% static '/ntn_app/css/agreement.css' %}" rel="stylesheet" />
+
+<div class="container">
+  <h1>View All Agreements</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>University</th>
+        <th>College</th>
+        <th>University Program</th>
+        <th>College Program</th>
+        <th>Credits</th>
+        <th>GPA Required</th>
+        <th>Effective Term</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for agreement in agreements %}
+      <tr>
+        <td>{{ agreement.university }}</td>
+        <td>{{ agreement.college }}</td>
+        <td>{{ agreement.university_program }}</td>
+        <td>{{ agreement.college_program }}</td>
+        <td>{{ agreement.credits }}</td>
+        <td>{{ agreement.gpa_required }}</td>
+        <td>{{ agreement.effective_term }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7">No agreements found for {{ institution }}. <a href="{% url 'new_agreement' %}">Upload New Agreement</a></td>
+      </tr>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

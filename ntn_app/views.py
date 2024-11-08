@@ -427,7 +427,7 @@ def new_agreement(request):
 
 
 @institution_login_required
-def all_my_agreements(request):
+def manage_agreements(request):
     user = request.user
     
     agreements = []
@@ -442,7 +442,7 @@ def all_my_agreements(request):
         institution_name = college_profile.college_name
         agreements = Agreement.objects.filter(college=college_profile.id)
         
-    return render(request, 'ntn_app/all_my_agreements.html', {'agreements': agreements, 'institution': institution_name})
+    return render(request, 'ntn_app/manage_agreements.html', {'agreements': agreements, 'institution': institution_name})
 
 
 def delete_agreement(request, agreement_id):
@@ -451,8 +451,14 @@ def delete_agreement(request, agreement_id):
     return redirect('all_my_agreements')
 
 
-def all_others_agreement(request, institution_profile_id):  
+def all_agreements(request, institution_type, profile_id):
     agreements=[]
+    if institution_type == 'university':
+        university = get_object_or_404(UniversityProfile, id=profile_id)
+        agreements = Agreement.objects.filter(university=university.id)
+    elif institution_type == 'college':
+        college = get_object_or_404(CollegeProfile, id=profile_id)
+        agreements = Agreement.objects.filter(college=college.id)
     
     return render(request, 'ntn_app/all_agreements.html', {'agreements': agreements})
 

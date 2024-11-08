@@ -1,78 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>University Profile</title>
     <script>
-        function toggleEditMode() {
-            const viewMode = document.getElementById("profile-view-mode");
-            const editMode = document.getElementById("profile-edit-mode");
-            const editButton = document.getElementById("edit-button");
+      function toggleEditMode() {
+        const viewMode = document.getElementById("profile-view-mode");
+        const editMode = document.getElementById("profile-edit-mode");
+        const editButton = document.getElementById("edit-button");
 
-            if (viewMode.style.display === "none") {
-                viewMode.style.display = "block";
-                editMode.style.display = "none";
-                editButton.textContent = "Edit";
-            } else {
-                viewMode.style.display = "none";
-                editMode.style.display = "block";
-                editButton.textContent = "Cancel";
-            }
+        if (viewMode.style.display === "none") {
+          viewMode.style.display = "block";
+          editMode.style.display = "none";
+          editButton.textContent = "Edit";
+        } else {
+          viewMode.style.display = "none";
+          editMode.style.display = "block";
+          editButton.textContent = "Cancel";
         }
+      }
     </script>
-</head>
-<body>
+  </head>
+  <body>
+    <h1>University Profile</h1>
 
-<h1>University Profile</h1>
+    <div id="profile-view-mode">
+      <h2>Basic University Information</h2>
+      <p><strong>University Name:</strong> {{ profile.university_name }}</p>
+      <p><strong>State:</strong> {{ profile.state }}</p>
+      <p><strong>City:</strong> {{ profile.city }}</p>
+      <p>
+        <strong>Website:</strong>
+        <a href="{{ profile.website }}">{{ profile.website }}</a>
+      </p>
 
-<div id="profile-view-mode">
-    <h2>Basic University Information</h2>
-    <p><strong>University Name:</strong> {{ profile.university_name }}</p>
-    <p><strong>State:</strong> {{ profile.state }}</p>
-    <p><strong>City:</strong> {{ profile.city }}</p>
-    <p><strong>Website:</strong> <a href="{{ profile.website }}">{{ profile.website }}</a></p>
+      <h2>Contact Information</h2>
+      <p><strong>Contact Name:</strong> {{ profile.contact_name }}</p>
+      <p><strong>Contact Title:</strong> {{ profile.contact_title }}</p>
+      <p><strong>Email:</strong> {{ profile.email }}</p>
+      <p><strong>Phone:</strong> {{ profile.phone }}</p>
 
-    <h2>Contact Information</h2>
-    <p><strong>Contact Name:</strong> {{ profile.contact_name }}</p>
-    <p><strong>Contact Title:</strong> {{ profile.contact_title }}</p>
-    <p><strong>Email:</strong> {{ profile.email }}</p>
-    <p><strong>Phone:</strong> {{ profile.phone }}</p>
+      <h2>Enrollment Information</h2>
+      <p><strong>Undergraduate Enrollment:</strong> {{ profile.UGs }}</p>
+      <p>
+        <strong>Annual Transfer Enrollment:</strong> {{
+        profile.number_of_transfers_per_year }}
+      </p>
 
-    <h2>Enrollment Information</h2>
-    <p><strong>Undergraduate Enrollment:</strong> {{ profile.UGs }}</p>
-    <p><strong>Annual Transfer Enrollment:</strong> {{ profile.number_of_transfers_per_year }}</p>
+      <h2>Student Support Services</h2>
+      <p>
+        <strong>Housing Availability:</strong> {{ profile.housing_availability
+        }}
+      </p>
+      <p>
+        <strong>Support for Married Students/Kids:</strong> {{
+        profile.marriage_or_kids_support }}
+      </p>
+      <p><strong>Support for Veterans:</strong> {{ profile.vets_support }}</p>
+      <p>
+        <strong>Financial Aid for Transfers:</strong> {{
+        profile.aids_or_scholarships_for_transfers }}
+      </p>
+      <p>
+        <strong>Special Transfer Support:</strong> {{
+        profile.special_transfer_support }}
+      </p>
 
-    <h2>Student Support Services</h2>
-    <p><strong>Housing Availability:</strong> {{ profile.housing_availability }}</p>
-    <p><strong>Support for Married Students/Kids:</strong> {{ profile.marriage_or_kids_support }}</p>
-    <p><strong>Support for Veterans:</strong> {{ profile.vets_support }}</p>
-    <p><strong>Financial Aid for Transfers:</strong> {{ profile.aids_or_scholarships_for_transfers }}</p>
-    <p><strong>Special Transfer Support:</strong> {{ profile.special_transfer_support }}</p>
+      <h2>Transfer & Degree Pathways</h2>
+      <p>
+        <strong>Contingent Admission:</strong> {{ profile.contingent_admission
+        }}
+      </p>
+      <p>
+        <strong>Online Degree Availability:</strong> {{ profile.online_allowed
+        }}
+      </p>
+      <p>
+        <strong>Degree Pathways for AAS:</strong> {{
+        profile.degree_pathways_for_AAS_student }}
+      </p>
+      <p><strong>Graduate Pathway:</strong> {{ profile.grad_pathway }}</p>
+      <p>
+        <strong>Honors-to-Honors Pathway:</strong> {{
+        profile.honor_to_honor_pathway }}
+      </p>
 
-    <h2>Transfer & Degree Pathways</h2>
-    <p><strong>Contingent Admission:</strong> {{ profile.contingent_admission }}</p>
-    <p><strong>Online Degree Availability:</strong> {{ profile.online_allowed }}</p>
-    <p><strong>Degree Pathways for AAS:</strong> {{ profile.degree_pathways_for_AAS_student }}</p>
-    <p><strong>Graduate Pathway:</strong> {{ profile.grad_pathway }}</p>
-    <p><strong>Honors-to-Honors Pathway:</strong> {{ profile.honor_to_honor_pathway }}</p>
+      <h2>University Highlights and Performance Metrics</h2>
+      <p>
+        <strong>Strengths and Highlights:</strong> {{
+        profile.institutional_strength_and_highlight }}
+      </p>
+      <p><strong>Graduation Rate:</strong> {{ profile.graduation_rate }}</p>
+      <p><strong>Retention Rate:</strong> {{ profile.retention_rate }}</p>
 
-    <h2>University Highlights and Performance Metrics</h2>
-    <p><strong>Strengths and Highlights:</strong> {{ profile.institutional_strength_and_highlight }}</p>
-    <p><strong>Graduation Rate:</strong> {{ profile.graduation_rate }}</p>
-    <p><strong>Retention Rate:</strong> {{ profile.retention_rate }}</p>
+      <h2>Agreements Information</h2>
+        {% if can_edit %}
+            <a href="{% url 'manage_agreements' %}">Manage Agreements.</a>
+        {% else %}
+            <a href="{% url 'all_agreements' 'university' profile.id %}">View all agreements this school have.</a>
+        {% endif %}
+      </p>
 
-    {% if can_edit %}
-        <button id="edit-button" onclick="toggleEditMode()">Edit</button>
-    {% endif %}
-</div>
+      {% if can_edit %}
+      <button id="edit-button" onclick="toggleEditMode()">Edit</button>
+      {% endif %}
+    </div>
 
-<div id="profile-edit-mode" style="display: none;">
-    <form method="post" action="{% url 'university_edit_profile' profile.id %}" enctype="multipart/form-data">
+    <div id="profile-edit-mode" style="display: none">
+      <form
+        method="post"
+        action="{% url 'university_edit_profile' profile.id %}"
+        enctype="multipart/form-data"
+      >
         {% csrf_token %}
-        
+
         <h2>Basic University Information</h2>
         {{ basic_info_form.as_p }}
-        
+
         <h2>Contact Information</h2>
         {{ contact_info_form.as_p }}
 
@@ -89,8 +133,7 @@
         {{ highlights_form.as_p }}
 
         <button type="submit">Submit</button>
-    </form>
-</div>
-
-</body>
+      </form>
+    </div>
+  </body>
 </html>
