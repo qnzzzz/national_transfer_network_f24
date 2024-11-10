@@ -36,7 +36,7 @@ urlpatterns = [
     path("student-logout", views.logout_view, name="student_logout"),
     path('explore-universities/', views.explore_universities, name='explore_universities'),
     path('get-institutions/', views.get_institutions, name='get_institutions'),
-
+    path('handle_college_selection/', views.handle_college_selection, name='handle_college_selection'),
     
     # path('two-year-upload/', views.two_year_upload, name='two_year_upload'),
     # path('four-year-upload/', views.four_year_upload, name='four_year_upload'),
