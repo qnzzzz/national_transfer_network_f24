@@ -3,4 +3,8 @@ djangorestframework
 weasyprint
 pandas
 django-multiselectfield
-
+numpy
+PyPDF2
+tensorflow
+openpyxl
+requests
