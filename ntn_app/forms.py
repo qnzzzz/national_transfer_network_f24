@@ -319,16 +319,16 @@ class StudentProfileForm(forms.ModelForm):
             'is_fafsa_completed', 'expected_family_contribution', 'estimated_affordable_amount'
         ]
  
-class ExploreUniversitiesForm(forms.Form):
-    institution_type = forms.ChoiceField(
-        choices=INSTITUTION_TYPE_CHOICES,
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control', 'id': 'institution_type'})
-    )
-    institution = forms.CharField(
-        required=True,
-        widget=forms.Select(attrs={'class': 'form-control', 'id': 'institution'})
-    ) 
+# class ExploreUniversitiesForm(forms.Form):
+#     institution_type = forms.ChoiceField(
+#         choices=INSTITUTION_TYPE_CHOICES,
+#         required=True,
+#         widget=forms.Select(attrs={'class': 'form-control', 'id': 'institution_type'})
+#     )
+#     institution = forms.CharField(
+#         required=True,
+#         widget=forms.Select(attrs={'class': 'form-control', 'id': 'institution'})
+#     ) 
 # class ExploreUniversitiesForm(forms.Form):
 #     institution_type = forms.ChoiceField(choices=INSTITUTION_TYPE_CHOICES, required=True, widget=forms.Select(attrs={'class': 'form-control'}))
 #     institution = forms.ChoiceField(required=True, widget=forms.Select(attrs={'class': 'form-control'}))

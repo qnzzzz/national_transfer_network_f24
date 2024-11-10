@@ -7,7 +7,7 @@ from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfi
 from .forms import InstitutionRegistrationForm, InstitutionLoginForm, StudentRegistrationForm, StudentProfileForm
 from .forms import (
     Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, 
-    Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm, ExploreUniversitiesForm
+    Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -206,6 +206,8 @@ def student_login(request):
             messages.error(request, 'Invalid username or password')
     return render(request, 'ntn_app/student_login.html')
 
+def explore_universities(request):
+    return render(request, 'ntn_app/explore_universities.html')# Render the explore universities page
 
 @university_login_required
 def edit_university_profile(request, university_profile_id):
@@ -302,34 +304,29 @@ def add_course(request):
 
 logger = logging.getLogger(__name__)
 
-@login_required
-def explore_universities(request):
+def handle_college_selection(request):
     if request.method == 'POST':
-        form = ExploreUniversitiesForm(request.POST)
-        if form.is_valid():
-            institution_id = form.cleaned_data['institution']
-            institution_type = form.cleaned_data['institution_type']
+            institution_id = request.POST.get('institution')
+            institution_type = request.POST.get('institution_type')
             
-            if institution_type == 'four_year_university':
-                return redirect('edit_profile', university_profile_id=institution_id)
-            elif institution_type == 'two_year_college':
-                # Handle the case for two-year colleges if needed
-                pass
-        else:
-            print(form.errors)  # Print form errors for debugging
-    else:
-        form = ExploreUniversitiesForm()
-    
-    return render(request, 'ntn_app/explore_universities.html', {'form': form})
-# def explore_universities(request):
-#     if request.method == 'POST':
-#         form = ExploreUniversitiesForm(request.POST)
-#         if form.is_valid():
-#             institution_name = form.cleaned_data['institution']
-#             institution_type = form.cleaned_data['institution_type']
-#             institution_id = get_university_id(institution_name)
+            if institution_type == 'two_year_college':
+                return redirect('college_profile_view', college_profile_id=institution_id)
+            elif institution_type == 'four_year_university':
+                return redirect('university_profile_view', university_profile_id=institution_id)
+
+    return render(request, 'ntn_app/explore_universities.html')
             
             
+#             if institution_type == 'four_year_university':
+#                 return redirect('/')
+#             elif institution_type == 'two_year_college':
+#                 college = get_object_or_404(CollegeProfile, college_name=institution_name)
+#                 # Handle the case for two_year_college if needed
+#                 pass
+#     else:
+#         form = ExploreUniversitiesForm()
+#     return render(request, 'ntn_app/explore_universities.html', {'form': form})
+
 #             if institution_type == 'four_year_university':
 #                 return redirect('/')
 #             elif institution_type == 'two_year_college':
