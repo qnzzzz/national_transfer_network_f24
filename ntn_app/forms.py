@@ -394,3 +394,15 @@ class Col_SupportiveInfoForm(forms.ModelForm):
 #             'field_of_study', 'credit_hours', 'university_name', 'gpa_requirement',
 #             'final_degree_program', 'final_institution','courses'
 #         ]
+
+
+class UploadFileForm(forms.Form):
+    file = forms.FileField()
+    
+class CourseEntryForm(forms.Form):
+    school_name = forms.CharField(max_length=100, required=False)  # Optional based on user choice
+    university_location = forms.CharField(max_length=100, required=False)
+    department = forms.CharField(max_length=100, required=False)
+    term = forms.CharField(max_length=100, required=False)
+    course_name_or_id = forms.CharField(max_length=100, required=False)
+    file = forms.FileField(required=False)  # Make file upload optional

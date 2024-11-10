@@ -11,14 +11,21 @@ from .forms import (
 )
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import StudentLoginForm
+from .forms import StudentLoginForm, UploadFileForm
+from .transcript_scan.ocr_extract import process_pdf
+import datetime
+from django.contrib import messages
+import openpyxl
+import os
+from django.conf import settings
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse
 from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile
 from .forms import InstitutionRegistrationForm, InstitutionLoginForm, AgreementForm, Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
-from .models import Agreement, UniversityProfile, CollegeProfile, UniversityCourse, CollegeCourse, AgreementCourse
+from .models import Agreement, UniversityProfile, CollegeProfile, UniversityCourse, CollegeCourse, AgreementCourse,StudentProfile, StudentCourse
 
 from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoForm, 
                     Col_TransferInfoForm, Col_Special4YearOfferingForm, Col_SupportiveInfoForm)
@@ -300,7 +307,162 @@ def student_register(request):
 
 
 def add_course(request):
-    return render(request, 'ntn_app/add_course.html')
+    form = UploadFileForm(request.POST or None, request.FILES or None)
+    years = range(2000, datetime.datetime.now().year + 1)
+
+    # Clear session data for a fresh state on the initial GET request (but not after form submission)
+    if request.method == 'GET' and not request.session.get('results'):
+        request.session.pop('results', None)
+        request.session.pop('selected_course_codes', None)
+        request.session.pop('university', None)
+        request.session.pop('pass_column_extractions', None)
+        request.session.pop('added_courses', None)
+
+    # Retrieve or set default for university information
+    university = request.session.get(
+        'university',
+        'Your school is not in our database. If you believe this is an error, please select it manually.'
+    )
+
+    if request.method == 'POST':
+        # Handle university selection
+        selected_university = request.POST.get('school_name')
+        if selected_university:
+            request.session['university'] = selected_university
+            university = selected_university
+
+        # Handle file upload only if the file is in the POST request and form is valid
+        if 'file' in request.FILES and form.is_valid():
+            file_handle = request.FILES['file']
+            results, university = process_pdf(file_handle)
+            
+            pass_column_extractions = []
+
+            # Iterate through each line to check for "pass" and extract grades
+            for line in results:
+                words = line.split()
+                if "pass" in [word.lower() for word in words]:
+                    pass_column_index = [word.lower() for word in words].index("pass")
+                    if len(words) > pass_column_index:
+                        pass_column_extractions.append(words[pass_column_index])
+                    else:
+                        pass_column_extractions.append("")
+
+            # Update session data only after processing the file successfully
+            request.session['results'] = results
+            request.session['university'] = university
+            request.session['pass_column_extractions'] = pass_column_extractions
+            request.session.modified = True
+            messages.success(request, "File processed successfully.")
+        
+        # Handle course code extraction if course_code_column is posted
+        elif 'course_code_column' in request.POST:
+            column_index = int(request.POST.get('course_code_column')) - 1
+            results = request.session.get('results', [])
+            if results:
+                selected_course_codes = [
+                    result.split()[column_index] for result in results if len(result.split()) > column_index
+                ]
+                request.session['selected_course_codes'] = selected_course_codes
+                messages.success(request, "Course codes extracted successfully.")
+            else:
+                messages.error(request, "No data to process.")
+
+        # Handle dynamically added courses
+        course_codes = request.POST.getlist('course_codes[]')
+        grades = request.POST.getlist('grades[]')
+        terms = request.POST.getlist('terms[]')
+        taken_years = request.POST.getlist('years[]')
+        
+        student = request.user.student_profile
+
+        if course_codes and grades and terms and taken_years:
+            added_courses = []
+            for course_code, grade, term, year in zip(course_codes, grades, terms, taken_years):
+
+                # Check if a StudentCourse record already exists
+                if not StudentCourse.objects.filter(
+                    student=student,
+                    course_code=course_code,
+                    taken_year=year,
+                    taken_term=term
+                ).exists():
+                    # If it does not exist, create a new StudentCourse record
+                    new_course = StudentCourse.objects.create(
+                        student=student,
+                        course_code=course_code,
+                        grade=grade,
+                        taken_year=year,
+                        taken_term=term
+                    )
+                    added_courses.append(new_course)
+                else:
+                    messages.info(request, f"The course {course_code} for {term} {year} is already recorded.")
+
+            if added_courses:
+                messages.success(request, "Courses added successfully!")
+            else:
+                messages.info(request, "No new courses were added.")
+
+            # Update session data for added courses for display
+            request.session['added_courses'] = [(course.course_code, course.grade, course.taken_year, course.taken_term) for course in added_courses]
+            
+            return redirect('student_profile')
+
+    # Retrieve session data for template context
+    results = request.session.get('results', [])
+    selected_course_codes = request.session.get('selected_course_codes', [])
+    pass_column_extractions = request.session.get('pass_column_extractions', [])
+    added_courses = request.session.get('added_courses', [])
+    course_grade_pairs = list(zip(selected_course_codes, pass_column_extractions))
+
+    context = {
+        'form': form,
+        'results': results,
+        'selected_course_codes': selected_course_codes,
+        'course_grade_pairs': course_grade_pairs,
+        'university': university,
+        'years': list(years),
+        'added_courses': added_courses,
+    }
+
+    return render(request, 'ntn_app/add_course.html', context)
+
+def report_university(request):
+    EXCEL_FILE_PATH = os.path.join(settings.BASE_DIR, 'ntn_app', 'static', 'ntn_app', 'reported_universities.xlsx')
+    print(EXCEL_FILE_PATH)
+
+    if request.method == 'POST':
+        university_name = request.POST.get('university_name')
+        
+        if university_name:
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(EXCEL_FILE_PATH), exist_ok=True)
+
+            # Check if the Excel file exists; if not, create it with headers
+            if not os.path.exists(EXCEL_FILE_PATH):
+                workbook = openpyxl.Workbook()
+                sheet = workbook.active
+                sheet.title = "Reported Universities"
+                # Add headers
+                sheet.append(["University Name", "Reported At"])
+                workbook.save(EXCEL_FILE_PATH)
+            
+            # Now load the workbook and select the active sheet
+            workbook = openpyxl.load_workbook(EXCEL_FILE_PATH)
+            sheet = workbook.active
+            
+            # Append the new university and current timestamp
+            sheet.append([university_name, timezone.now().strftime('%Y-%m-%d %H:%M:%S')])
+            workbook.save(EXCEL_FILE_PATH)
+            
+            # Confirmation message
+            messages.success(request, f'Thank you! The university "{university_name}" has been reported.')
+        else:
+            messages.error(request, "Failed to report the university. Please try again.")
+        
+        return redirect('add_course')
+    return redirect('add_course')
 
 logger = logging.getLogger(__name__)
 
