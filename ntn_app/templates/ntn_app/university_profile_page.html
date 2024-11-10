@@ -3,28 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <title>University Profile</title>
-    <script>
-      function toggleEditMode() {
-        const viewMode = document.getElementById("profile-view-mode");
-        const editMode = document.getElementById("profile-edit-mode");
-        const editButton = document.getElementById("edit-button");
-
-        if (viewMode.style.display === "none") {
-          viewMode.style.display = "block";
-          editMode.style.display = "none";
-          editButton.textContent = "Edit";
-        } else {
-          viewMode.style.display = "none";
-          editMode.style.display = "block";
-          editButton.textContent = "Cancel";
-        }
-      }
-    </script>
   </head>
   <body>
     <h1>University Profile</h1>
 
-    <div id="profile-view-mode">
+    <div id="profile-view-mode" {% if is_edit_mode %}style="display: none;"{% endif %}>
       <h2>Basic University Information</h2>
       <p><strong>University Name:</strong> {{ profile.university_name }}</p>
       <p><strong>State:</strong> {{ profile.state }}</p>
@@ -92,16 +75,12 @@
       </p>
 
       {% if can_edit %}
-      <button id="edit-button" onclick="toggleEditMode()">Edit</button>
+        <a href="?edit=true" id="edit-button">Edit</a>
       {% endif %}
     </div>
 
-    <div id="profile-edit-mode" style="display: none">
-      <form
-        method="post"
-        action="{% url 'university_edit_profile' profile.id %}"
-        enctype="multipart/form-data"
-      >
+    <div id="profile-edit-mode" {% if not is_edit_mode %}style="display: none;"{% endif %}>
+      <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data">
         {% csrf_token %}
 
         <h2>Basic University Information</h2>
