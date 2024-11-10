@@ -4,123 +4,188 @@
 
 {% block body %}
 <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/add_course.css' %}">
-        <div class="description">
-            <p class="title">Course Transfer</p>
-            <p class="paragraph">Do you want to see which 4-year universities will accept your courses? Just enter your course details and find your perfect match!</p>
-        </div>
-        <div class="form-container">
-            <div class="add-course">
-                <form class="bootstrap-form">
+<div class="container mt-4">
 
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label label">School Name</label>
-                      <select class="form-select" aria-label="Default select example">
-                        <option selected>Select an institution</option>
-                        <option value="1">West Virginia University</option>
-                        <option value="2">Florida University</option>
-                        <option value="2">Ivy Tech</option>
-                        <option value="3">Miami Dade College</option>
-                      </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="inputPassword" class="form-label label">Preferred university location</label>
-                        <div class>
-                          <input type="text" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label label">Department</label>
-                      <select class="form-select" aria-label="Default select example">
-                        <option selected>Select a department</option>
-                        <option value="1">ENGL</option>
-                        <option value="2">COMM</option>
-                        <option value="2">MATH</option>
-                        <option value="2">SOC</option>
-                      </select>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label label">Term</label>
-                        <select class="form-select" aria-label="Default select example">
-                          <option selected>Select a term</option>
-                          <option value="1">Summer 2024</option>
-                          <option value="2">Fall 2025</option>
-                          <option value="2">Winter 2024</option>
-                          <option value="2">Spring 2025</option>
-                          <option value="2">Summer 2025</option>
-
-
-                        </select>
-                      </div>
-
-
-                      <div class="mb-3">
-                        <label for="inputPassword" class="form-label label">Course Name or ID</label>
-                        <div class>
-                          <input type="text" class="form-control">
-                        </div>
-                      </div>
-
-                    <button type="submit" class="btn btn-secondary">Add</button>
-                  
-                </form>
-            </div>
-            <div class="added-courses">
-              <form class="bootstrap-form">
-                <div class="mb-3">
-                  <label class="form-label label">Courses</label>
-                </div>
-                  <div>
-                    <table class="table">
-                      <tr class="table-header">
-                        <th>Term</th>
-                        <th>Department</th>
-                        <th>ID</th>
-                        <th>Country</th>
-                        <th></th>
-                      </tr>
-                      <tr class="table-data">
-                        <td>Spring 23'</td>
-                        <td>ENGL</td>
-                        <td>205</td>
-                        <td>3</td>
-                        <td><img src="{% static 'ntn_app/images/trashcan.jpg' %}"
-                           alt="GFG Logo" width="25" 
-                           height="25"> 
-                        </td> 
-                      </tr>
-                      <tr class="table-data">
-                        <td>Winter 22'</td>
-                        <td>COMM</td>
-                        <td>115</td>
-                        <td>1</td>
-                        <td><img src="{% static 'ntn_app/images/trashcan.jpg' %}"
-                          alt="GFG Logo" width="25" 
-                          height="25"> 
-                       </td> 
-                      </tr>
-                      
-                      <tr class="table-data">
-                        <td>Fall 23'</td>
-                        <td>HIST</td>
-                        <td>102</td>
-                        <td>2</td>
-                        <td><img src="{% static 'ntn_app/images/trashcan.jpg' %}"
-                          alt="GFG Logo" width="25" 
-                          height="25"> 
-                       </td> 
-                      </tr>
-                    </table>
-                  </div>
-                  {% comment %} <div class="my-courses">
-                    <div class="transf subj_1">ENGL</div>
-                    <div class="transf course_1">2O5</div>
-                    <div class="transf crdts_1">3</div> {% endcomment %}
-                  </div>
-                
-              </form>
-            </div>
+  <div class="row">
+    <div class="col-12 mb-3">
+      <a href="{% url 'student_profile' %}" class="btn btn-secondary">Back to My Profile</a>
     </div>
+  </div>
+
+    <div class="description">
+        <h1 class="title">Course Transfer</h1>
+        <p class="paragraph">Do you want to see which 4-year universities will accept your courses? Just enter your course details and find your perfect match!</p>
+    </div>
+
+    <div class="form-container mt-3">
+        <!-- Upload Transcript Form -->
+        <form method="post" enctype="multipart/form-data" class="bootstrap-form">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_file">Upload your Transcript File:</label>
+                <input type="file" name="file" id="id_file" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Upload and Process</button>
+        </form>    
+
+        <!-- University Selection Form -->
+        <form method="post" action="" class="mt-3">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="school_name" class="form-label">School Name:</label>
+                <select class="form-select" name="school_name" id="school_name">
+                    <option value="">{{ university }}</option>
+                    <option value="West Virginia University" {% if university == "West Virginia University" %}selected{% endif %}>West Virginia University</option>
+                    <option value="University of California" {% if university == "University of California" %}selected{% endif %}>University of California</option>
+                    <option value="New York University" {% if university == "New York University" %}selected{% endif %}>New York University</option>
+                    <!-- Add more options as needed -->
+                </select>
+                {% if not university or university == "Your school is not in our database. If you believe this is an error, please select it manually." %}
+                <small class="text-muted paragraph">Your school is not in our database. If you believe this is an error, please select it manually.</small>
+                <!-- Report Button -->
+                <button type="button" class="btn btn-link ms-2" id="report-university-btn">Report University</button>
+                {% endif %}                
+            </div>
+        </form>
+    </div>
+
+    {% if results %}
+    <div class="mt-3">
+        <h3>Processed Results:</h3>
+        <ul>
+            {% for result in results %}
+            <li>{{ result }}</li>
+            {% endfor %}
+        </ul>
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="course_code_column" class="form-label">Select the column number for course codes:</label>
+                <select name="course_code_column" class="form-select">
+                    {% for _ in results.0.split %}
+                    <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-secondary mt-2">Extract Course Codes</button>
+            </div>
+        </form>
+    </div>
+    {% endif %}
+
+    {% if selected_course_codes %}
+    <div class="course-codes-section mt-3">
+        <h3>Extracted Course Codes:</h3>
+        <form method="post" action="">
+            {% csrf_token %}
+            <table id="course-table" class="table">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Grade</th>
+                        <th>Year</th>
+                        <th>Term</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for code, grade in course_grade_pairs %}
+                    <tr>
+                        <td><input type="text" class="form-control" name="course_codes[]" value="{{ code }}"></td>
+                        <td><input type="text" class="form-control" name="grades[]" value="{{ grade }}"></td>
+                        <td>
+                            <select name="years[]" class="form-select">
+                                {% for year in years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>                        
+                        <td>
+                            <select name="terms[]" class="form-select">
+                                <option value="Spring">Spring</option>
+                                <option value="Summer">Summer</option>
+                                <option value="Fall">Fall</option>
+                                <option value="Winter">Winter</option>
+                            </select>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-secondary" onclick="addRow()">Add New Course</button>
+            <button type="submit" class="btn btn-primary mt-3">Add Course to My Profile</button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- Report University Modal -->
+    <div id="reportModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Report Missing University</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'report_university' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="university_name">University Name</label>
+                            <input type="text" name="university_name" id="university_name" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-3">Submit Report</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Table and Modal -->
+    <script>
+        // Function to add a new row to the table
+        function addRow() {
+            const tableBody = document.getElementById('course-table').getElementsByTagName('tbody')[0];
+            const newRow = tableBody.insertRow();
+
+            newRow.innerHTML = `
+                <tr>
+                    <td><input type="text" class="form-control" name="course_codes[]" value=""></td>
+                    <td><input type="text" class="form-control" name="grades[]" value=""></td>
+                    <td>
+                        <select name="years[]" class="form-select">
+                        {% for year in years %}
+                        <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="terms[]" class="form-select">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+                    </td>
+                </tr>`;
+        }
+
+        // Function to delete a row from the table
+        function deleteRow(button) {
+            const row = button.closest('tr');
+            row.remove();
+        }
+
+        // JavaScript to trigger the Report University Modal
+        document.getElementById('report-university-btn').addEventListener('click', function () {
+            var modal = new bootstrap.Modal(document.getElementById('reportModal'));
+            modal.show();
+        });
+    </script>
 {% endblock %}

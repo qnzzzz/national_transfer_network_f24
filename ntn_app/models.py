@@ -394,14 +394,24 @@ class StudentProfile(models.Model):
     
 # Represents the courses a student has taken
 class StudentCourse(models.Model):
+    TERM_CHOICES = [
+        ('spring', 'Spring'),
+        ('summer', 'Summer'),
+        ('fall', 'Fall'),
+        ('winter', 'Winter'),
+    ]
+
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
-    course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE)
+    course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE, null=True, blank=True)
+    course_code = models.CharField(max_length=20, null=True)
     grade = models.CharField(max_length=5)
-    created_on = models.DateTimeField(auto_now_add=True)
-    modified_on = models.DateTimeField(auto_now=True)
+    taken_year = models.IntegerField(null=True) 
+    taken_term = models.CharField(max_length=10, choices=TERM_CHOICES, null=True)
+    created_on = models.DateTimeField(auto_now_add=True, null=True)
+    modified_on = models.DateTimeField(auto_now=True, null=True)
     
     class Meta:
         unique_together = ('student', 'course')
     
     def __str__(self):
-        return f"{self.student} - {self.course}"
+        return f"{self.student} - {self.course} ({self.taken_year}, {self.taken_term})"
