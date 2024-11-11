@@ -38,11 +38,14 @@
                 <!-- Left-aligned items -->
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
                   {% comment %} <li class="nav-item ms-3">
-                    <a class="nav-link" href="{% url 'explore_universities' %}">Explore Universities</a> <!-- Explore Universities to the right -->
+                    <a class="nav-link" href="{% url 'explore_universities' %}">Explore Institutions</a> <!-- Explore Institutions to the right -->
                 </li> {% endcomment %}
                 <li class="nav-item ms-3">
                   <a class="nav-link" aria-current="page" href="{% url 'student_profile' %}">Profile</a>
               </li>
+              <li class="nav-item ms-3">
+                <a class="nav-link" href="{% url 'explore_universities' %}">Explore Institutions</a> <!-- Explore Institutions to the right -->
+            </li>
                 </ul>
     
                 <!-- Right-aligned items -->

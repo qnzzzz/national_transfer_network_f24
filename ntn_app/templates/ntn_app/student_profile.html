@@ -34,7 +34,7 @@
           <!-- Left-aligned items -->
           <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
               <li class="nav-item ms-3">
-                  <a class="nav-link" href="{% url 'explore_universities' %}">Explore Universities</a> <!-- Explore Universities to the right -->
+                  <a class="nav-link" href="{% url 'explore_universities' %}">Explore Institutions</a> <!-- Explore Institutions to the right -->
               </li>
               <li class="nav-item ms-3">
                   <a class="nav-link" href="{% url 'student_landing_page' %}">Student Home</a> <!-- Student Home to the left -->
@@ -241,10 +241,10 @@
           {{ form.estimated_affordable_amount|add_class:"form-control" }}
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Save</button>
+      <button type="submit" class="btn btn-primary mb-4">Save</button>
     </form>
-  </div>
 
+  </div>
   <!-- Bootstrap JS -->
   <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

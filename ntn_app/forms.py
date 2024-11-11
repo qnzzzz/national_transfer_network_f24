@@ -305,7 +305,7 @@ class StudentProfileForm(forms.ModelForm):
     citizenship_status = forms.ChoiceField(choices=CITIZENSHIP_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     location_preference = forms.ChoiceField(choices=LOCATION_PREFERENCE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     size_preference = forms.ChoiceField(choices=SIZE_PREFERENCE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
-    degree_preference = forms.MultipleChoiceField(choices=DEGREE_CHOICES, required=False, widget=forms.SelectMultiple(attrs={'class': 'form-control'}))
+    degree_preference = forms.ChoiceField(choices=DEGREE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     institution = forms.ModelChoiceField(queryset=CollegeProfile.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control'})
     )
 

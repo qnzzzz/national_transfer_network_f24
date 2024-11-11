@@ -22,12 +22,15 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container-fluid">
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
                     <li class="nav-item">
                         <img src="{% static 'ntn_app/images/logo.png' %}" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item ms-3">
                         <a class="nav-link" style="color: rgb(40, 40, 40);">National Tranfer Network</a>
+                    </li>
+                    <li class="nav-item ms-3">
+                        <a class="nav-link" href="{% url 'explore_universities' %}">Explore Institutions</a> <!-- Explore Institutions to the right -->
                     </li>
                 </ul>
 
