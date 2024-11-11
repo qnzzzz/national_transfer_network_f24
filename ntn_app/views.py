@@ -214,7 +214,7 @@ def student_login(request):
     return render(request, 'ntn_app/student_login.html')
 
 def explore_universities(request):
-    return render(request, 'ntn_app/explore_universities.html')# Render the explore universities page
+    return render(request, 'ntn_app/explore_universities.html')# Render the Explore Institutions page
 
 def university_profile(request, university_profile_id):
     profile = get_object_or_404(UniversityProfile, id=university_profile_id)
