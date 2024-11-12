@@ -154,7 +154,33 @@ def entry_page_view(request):
 
 @institution_login_required
 def institution_landing_page_view(request):
-    return render(request, 'ntn_app/institution_landing_page.html')
+
+    if UniversityUser.objects.filter(user=request.user).exists():
+        user_type = 'university'
+        profile_id = UniversityUser.objects.get(user=request.user).university.id
+    elif CollegeUser.objects.filter(user=request.user).exists():
+        user_type = 'college'
+        profile_id = CollegeUser.objects.get(user=request.user).college.id
+
+    context = {
+        'user_type': user_type,
+        'profile_id': profile_id,
+    }
+
+    #     # Determine the type of institution user belongs to
+    # if hasattr(request.user, 'university'):
+    #     # User is a university user
+    #     institution_type = 'university'
+    #     profile_id = request.user.university.id
+    # elif hasattr(request.user, 'college'):
+    #     # User is a college user
+    #     institution_type = 'college'
+    #     profile_id = request.user.college.id
+    # else:
+    #     institution_type = None
+    #     profile_id = None
+
+    return render(request, 'ntn_app/institution_landing_page.html', context)
 
 @login_required
 def student_landing(request):
@@ -341,6 +367,16 @@ def college_profile(request, college_profile_id):
         'can_edit': can_edit,
         'is_edit_mode': is_edit_mode,
     })
+
+
+def get_profile_url(user):
+    if hasattr(user, 'UniversityUser'):
+        # User is a university user, redirect to university profile
+        return reverse('university_profile', args=[user.UniversityUser.university.id])
+    elif hasattr(user, 'CollegeUser'):
+        # User is a college user, redirect to college profile
+        return reverse('college_profile', args=[user.UniversityUser.college.id])
+    return None
 
     
 def student_register(request):
@@ -691,8 +727,14 @@ def all_agreements(request, institution_type, profile_id):
     elif institution_type == 'college':
         college = get_object_or_404(CollegeProfile, id=profile_id)
         agreements = Agreement.objects.filter(college=college.id)
+
+    context = {
+        'agreements': agreements,
+        'institution_type': institution_type,
+        profile_id: profile_id
+    }
     
-    return render(request, 'ntn_app/all_agreements.html', {'agreements': agreements})
+    return render(request, 'ntn_app/all_agreements.html', context)
 
 
 
