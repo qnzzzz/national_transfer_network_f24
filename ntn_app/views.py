@@ -244,14 +244,19 @@ def student_login(request):
 def explore_institutions(request):
     user = request.user
     user_type = None
+    institution_id = None
     if user.is_authenticated:
         if UniversityUser.objects.filter(user=user).exists():
             user_type = 'university'
+            institution_id = UniversityUser.objects.get(user=user).university.id
         elif CollegeUser.objects.filter(user=user).exists():
             user_type = 'college'
+            institution_id = CollegeUser.objects.get(user=user).college.id
         elif StudentProfile.objects.filter(user=user).exists():
             user_type = 'student'
-    return render(request, 'ntn_app/explore_institutions.html', {"user_type": user_type})# Render the Explore Institutions page
+    print(user_type)
+    print(institution_id)
+    return render(request, 'ntn_app/explore_institutions.html', {"user_type": user_type, "institution_id": institution_id})# Render the Explore Institutions page
 
 def university_profile(request, university_profile_id):
     profile = get_object_or_404(UniversityProfile, id=university_profile_id)
