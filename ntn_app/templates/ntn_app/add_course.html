@@ -4,188 +4,179 @@
 
 {% block body %}
 <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/add_course.css' %}">
+
 <div class="container mt-4">
-
-  <div class="row">
-    <div class="col-12 mb-3">
-      <a href="{% url 'student_profile' %}" class="btn btn-secondary">Back to My Profile</a>
-    </div>
-  </div>
-
-    <div class="description">
-        <h1 class="title">Course Transfer</h1>
-        <p class="paragraph">Do you want to see which 4-year universities will accept your courses? Just enter your course details and find your perfect match!</p>
+    <!-- Header Section -->
+    <div class="text-center mb-4">
+        <a href="{% url 'student_profile' %}" class="btn btn-secondary mb-3">Back to My Profile</a>
+        <h1 class="title">My Courses</h1>
+        <p>Find out which 4-year universities accept your courses. Just upload your details and explore your options!</p>
     </div>
 
-    <div class="form-container mt-3">
-        <!-- Upload Transcript Form -->
-        <form method="post" enctype="multipart/form-data" class="bootstrap-form">
+    <!-- Main Form Container -->
+    <div class="form-container border rounded p-4">
+        
+        <!-- Upload Transcript Section -->
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="id_file">Upload your Transcript File:</label>
-                <input type="file" name="file" id="id_file" class="form-control">
-            </div>
-            <button type="submit" class="btn btn-primary">Upload and Process</button>
-        </form>    
-
-        <!-- University Selection Form -->
-        <form method="post" action="" class="mt-3">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="school_name" class="form-label">School Name:</label>
-                <select class="form-select" name="school_name" id="school_name">
-                    <option value="">{{ university }}</option>
-                    <option value="West Virginia University" {% if university == "West Virginia University" %}selected{% endif %}>West Virginia University</option>
-                    <option value="University of California" {% if university == "University of California" %}selected{% endif %}>University of California</option>
-                    <option value="New York University" {% if university == "New York University" %}selected{% endif %}>New York University</option>
-                    <!-- Add more options as needed -->
-                </select>
-                {% if not university or university == "Your school is not in our database. If you believe this is an error, please select it manually." %}
-                <small class="text-muted paragraph">Your school is not in our database. If you believe this is an error, please select it manually.</small>
-                <!-- Report Button -->
-                <button type="button" class="btn btn-link ms-2" id="report-university-btn">Report University</button>
-                {% endif %}                
+            <div class="form-group mb-4">
+                <label for="id_file"><strong>1. Upload Your Transcript</strong></label>
+                <input type="file" name="file" id="id_file" class="form-control mt-1">
+                <button type="submit" class="btn btn-primary mt-2">Upload and Process</button>
             </div>
         </form>
-    </div>
 
-    {% if results %}
-    <div class="mt-3">
-        <h3>Processed Results:</h3>
-        <ul>
-            {% for result in results %}
-            <li>{{ result }}</li>
-            {% endfor %}
-        </ul>
-        <form method="post" action="">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="course_code_column" class="form-label">Select the column number for course codes:</label>
-                <select name="course_code_column" class="form-select">
-                    {% for _ in results.0.split %}
-                    <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-secondary mt-2">Extract Course Codes</button>
-            </div>
-        </form>
-    </div>
-    {% endif %}
+        <!-- Processed Results Section (on a new line) -->
+        {% if results %}
+        <div class="mt-4">
+            <h5><strong>Processed Results</strong></h5>
+            <ul>
+                {% for result in results %}
+                <li>{{ result }}</li>
+                {% endfor %}
+            </ul>
 
-    {% if selected_course_codes %}
-    <div class="course-codes-section mt-3">
-        <h3>Extracted Course Codes:</h3>
-        <form method="post" action="">
-            {% csrf_token %}
-            <table id="course-table" class="table">
-                <thead>
-                    <tr>
-                        <th>Course Code</th>
-                        <th>Grade</th>
-                        <th>Year</th>
-                        <th>Term</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for code, grade in course_grade_pairs %}
-                    <tr>
-                        <td><input type="text" class="form-control" name="course_codes[]" value="{{ code }}"></td>
-                        <td><input type="text" class="form-control" name="grades[]" value="{{ grade }}"></td>
-                        <td>
-                            <select name="years[]" class="form-select">
-                                {% for year in years %}
-                                <option value="{{ year }}">{{ year }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>                        
-                        <td>
-                            <select name="terms[]" class="form-select">
-                                <option value="Spring">Spring</option>
-                                <option value="Summer">Summer</option>
-                                <option value="Fall">Fall</option>
-                                <option value="Winter">Winter</option>
-                            </select>
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            <button type="button" class="btn btn-secondary" onclick="addRow()">Add New Course</button>
-            <button type="submit" class="btn btn-primary mt-3">Add Course to My Profile</button>
-        </form>
-    </div>
-    {% endif %}
-
-    <!-- Report University Modal -->
-    <div id="reportModal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Report Missing University</h5>
-                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+            <!-- Column Selection for Course Code Extraction -->
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="course_code_column"><strong>Select Course Code Column</strong></label>
+                    <div class="input-group mt-1">
+                        <select name="course_code_column" class="form-select" style="width: auto;">
+                            {% for _ in results.0.split %}
+                            <option value="{{ forloop.counter }}">{{ forloop.counter }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-secondary ms-2">Extract Course Codes</button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form method="post" action="{% url 'report_university' %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="university_name">University Name</label>
-                            <input type="text" name="university_name" id="university_name" class="form-control" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary mt-3">Submit Report</button>
-                    </form>
-                </div>
-            </div>
+            </form>
         </div>
-    </div>
+        {% endif %}
 
-    <!-- JavaScript for Table and Modal -->
-    <script>
-        // Function to add a new row to the table
-        function addRow() {
-            const tableBody = document.getElementById('course-table').getElementsByTagName('tbody')[0];
-            const newRow = tableBody.insertRow();
-
-            newRow.innerHTML = `
-                <tr>
-                    <td><input type="text" class="form-control" name="course_codes[]" value=""></td>
-                    <td><input type="text" class="form-control" name="grades[]" value=""></td>
-                    <td>
-                        <select name="years[]" class="form-select">
-                        {% for year in years %}
-                        <option value="{{ year }}">{{ year }}</option>
+        <!-- Conditional Form Section for Course Codes, University, and College -->
+        {% if selected_course_codes %}
+        <form method="post" action="" class="mt-4">
+            {% csrf_token %}
+            
+            <!-- Extracted Course Codes Table Section -->
+            <div class="mt-4">
+                <h5><strong>Extracted Course Codes</strong></h5>
+                <table class="table table-bordered" id="course-table">
+                    <thead>
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Grade</th>
+                            <th>Year</th>
+                            <th>Term</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for code, grade in course_grade_pairs %}
+                            <tr>
+                                <td><input type="text" name="course_codes[]" class="form-control" value="{{ code }}"></td>
+                                <td><input type="text" name="grades[]" class="form-control" value="{{ grade }}"></td>
+                                <td>
+                                    <select name="years[]" class="form-select">
+                                        {% for year in years %}
+                                            <option value="{{ year }}">{{ year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="terms[]" class="form-select">
+                                        <option value="Spring">Spring</option>
+                                        <option value="Summer">Summer</option>
+                                        <option value="Fall">Fall</option>
+                                        <option value="Winter">Winter</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
+                                </td>
+                            </tr>
                         {% endfor %}
-                        </select>
-                    </td>
-                    <td>
-                        <select name="terms[]" class="form-select">
-                            <option value="Spring">Spring</option>
-                            <option value="Summer">Summer</option>
-                            <option value="Fall">Fall</option>
-                            <option value="Winter">Winter</option>
-                        </select>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button>
-                    </td>
-                </tr>`;
-        }
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-secondary" onclick="addRow()">Add New Course</button>
+            </div>
 
-        // Function to delete a row from the table
-        function deleteRow(button) {
-            const row = button.closest('tr');
-            row.remove();
-        }
+            <!-- University Selection Section -->
+            <div class="form-group mt-4">
+              <label for="university_name"><strong>2. Preferred Transfer University</strong></label>
+              <select class="form-select" name="university_name" id="university_name" onchange="toggleOtherUniversityField()">
+                  <option value="">Select University</option>
+                  {% for uni in universities %}
+                      <option value="{{ uni }}" {% if university == uni %}selected{% endif %}>{{ uni }}</option>
+                  {% endfor %}
+                  <option value="Other" {% if university == "Other" %}selected{% endif %}>Other</option>
+              </select>
+            </div>
 
-        // JavaScript to trigger the Report University Modal
-        document.getElementById('report-university-btn').addEventListener('click', function () {
-            var modal = new bootstrap.Modal(document.getElementById('reportModal'));
-            modal.show();
-        });
-    </script>
+            <!-- "Other" University Field -->
+            <div class="form-group mt-2" id="other_university_field" style="display:none;">
+              <label for="other_university">Enter Other University:</label>
+              <input type="text" name="other_university" id="other_university" class="form-control" placeholder="Enter your university name here">
+            </div>
+
+            <!-- College Detection Section -->
+            <div class="form-group mt-4">
+                <label for="college_name"><strong>3. Confirm Your College</strong></label>
+                {% if detected_college %}
+                    <input type="text" name="college_name" id="college_name" class="form-control mt-1" value="{{ detected_college }}" readonly>
+                    <small class="text-muted">Detected as "{{ detected_college }}".</small>
+                {% else %}
+                    <input type="text" name="college_name" id="college_name" class="form-control mt-1" placeholder="Enter your college name">
+                {% endif %}
+            </div>
+
+            <!-- Save Courses Button -->
+            <button type="submit" class="btn btn-primary mt-4">Save Courses</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Function to add a new row to the course table
+    function addRow() {
+      const tableBody = document.getElementById('course-table').getElementsByTagName('tbody')[0];
+      const newRow = tableBody.insertRow();
+      newRow.innerHTML = `
+          <td><input type="text" name="course_codes[]" class="form-control" placeholder="Course Code"></td>
+          <td><input type="text" name="grades[]" class="form-control" placeholder="Grade"></td>
+          <td>
+              <select name="years[]" class="form-select">
+                  {% for year in years %}
+                      <option value="{{ year }}">{{ year }}</option>
+                  {% endfor %}
+              </select>
+          </td>
+          <td>
+              <select name="terms[]" class="form-select">
+                  <option value="Spring">Spring</option>
+                  <option value="Summer">Summer</option>
+                  <option value="Fall">Fall</option>
+                  <option value="Winter">Winter</option>
+              </select>
+          </td>
+          <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>`;
+    }
+
+    // Function to delete a row from the table
+    function deleteRow(button) {
+        const row = button.closest('tr');
+        row.remove();
+    }
+
+    // Toggle visibility for "Other" university field
+    function toggleOtherUniversityField() {
+      const select = document.getElementById("university_name");
+      const otherField = document.getElementById("other_university_field");
+      otherField.style.display = (select.value === "Other") ? "block" : "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", toggleOtherUniversityField);
+</script>
 {% endblock %}

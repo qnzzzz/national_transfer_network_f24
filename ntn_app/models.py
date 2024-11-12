@@ -187,6 +187,13 @@ DEGREE_CHOICES = [
     ("unknown", "Unknown"),
 ]
 
+TERM_CHOICES = [
+    ('spring', 'Spring'),
+    ('summer', 'Summer'),
+    ('fall', 'Fall'),
+    ('winter', 'Winter'),
+]
+
 
 # Represents an institution profile
 class UniversityProfile(models.Model):
@@ -394,12 +401,6 @@ class StudentProfile(models.Model):
     
 # Represents the courses a student has taken
 class StudentCourse(models.Model):
-    TERM_CHOICES = [
-        ('spring', 'Spring'),
-        ('summer', 'Summer'),
-        ('fall', 'Fall'),
-        ('winter', 'Winter'),
-    ]
 
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
     course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE, null=True, blank=True)

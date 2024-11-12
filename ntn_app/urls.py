@@ -32,7 +32,6 @@ urlpatterns = [
     path('student-register/', views.student_register, name="student_register"),
     path('student-login/', views.student_login, name="student_login"),
     path('add-course', views.add_course, name="add_course"),
-    path('report-university', views.report_university, name='report_university'),
     path('student-profile/', views.student_profile, name='student_profile'), 
     path("student-logout", views.logout_view, name="student_logout"),
     path('explore-universities/', views.explore_universities, name='explore_universities'),
