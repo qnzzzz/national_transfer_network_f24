@@ -215,8 +215,17 @@ def student_login(request):
             messages.error(request, 'Invalid username or password')
     return render(request, 'ntn_app/student_login.html')
 
-def explore_universities(request):
-    return render(request, 'ntn_app/explore_universities.html')# Render the Explore Institutions page
+def explore_institutions(request):
+    user = request.user
+    user_type = None
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            user_type = 'university'
+        elif CollegeUser.objects.filter(user=user).exists():
+            user_type = 'college'
+        elif StudentProfile.objects.filter(user=user).exists():
+            user_type = 'student'
+    return render(request, 'ntn_app/explore_institutions.html', {"user_type": user_type})# Render the Explore Institutions page
 
 def university_profile(request, university_profile_id):
     profile = get_object_or_404(UniversityProfile, id=university_profile_id)
@@ -536,7 +545,7 @@ def handle_college_selection(request):
             elif institution_type == 'four_year_university':
                 return redirect('university_profile', university_profile_id=institution_id)
 
-    return render(request, 'ntn_app/explore_universities.html')
+    return render(request, 'ntn_app/explore_institutions.html')
             
             
 #             if institution_type == 'four_year_university':
@@ -547,7 +556,7 @@ def handle_college_selection(request):
 #                 pass
 #     else:
 #         form = ExploreUniversitiesForm()
-#     return render(request, 'ntn_app/explore_universities.html', {'form': form})
+#     return render(request, 'ntn_app/explore_institutions.html', {'form': form})
 
 #             if institution_type == 'four_year_university':
 #                 return redirect('/')
@@ -557,7 +566,7 @@ def handle_college_selection(request):
 #                 pass
 #     else:
 #         form = ExploreUniversitiesForm()
-#     return render(request, 'ntn_app/explore_universities.html', {'form': form})
+#     return render(request, 'ntn_app/explore_institutions.html', {'form': form})
 
 def get_university_id(university_name):
     try:
@@ -591,6 +600,10 @@ def new_agreement(request):
         # Get or create university and college instances
         university, created_university = UniversityProfile.objects.get_or_create(university_name=university_name)
         college, created_college = CollegeProfile.objects.get_or_create(college_name=college_name)
+        
+        # Set the is_partnered flag to True for university and college
+        university.is_partner = True
+        college.is_partner = True
 
         # Update filtered_data to include the foreign key IDs for university and college
         filtered_data['university'] = university.id

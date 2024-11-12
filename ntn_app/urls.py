@@ -34,7 +34,7 @@ urlpatterns = [
     path('add-course', views.add_course, name="add_course"),
     path('student-profile/', views.student_profile, name='student_profile'), 
     path("student-logout", views.logout_view, name="student_logout"),
-    path('explore-universities/', views.explore_universities, name='explore_universities'),
+    path('explore-institutions/', views.explore_institutions, name='explore_institutions'),
     path('get-institutions/', views.get_institutions, name='get_institutions'),
     path('handle_college_selection/', views.handle_college_selection, name='handle_college_selection'),
     
