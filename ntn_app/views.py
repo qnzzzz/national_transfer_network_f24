@@ -17,6 +17,7 @@ import datetime
 from django.contrib import messages
 import openpyxl
 import os
+from openpyxl import Workbook
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -42,6 +43,7 @@ from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoFo
 # import pandas as pd
 # from rest_framework import generics
 
+EXCEL_FILE_PATH = os.path.join(settings.BASE_DIR, 'files', 'reported_universities.xlsx')
 
 def institution_register(request):
     if request.method == 'POST':
@@ -369,32 +371,42 @@ def student_register(request):
 def add_course(request):
     form = UploadFileForm(request.POST or None, request.FILES or None)
     years = range(2000, datetime.datetime.now().year + 1)
+    
+    # Fetch all universities for the dropdown
+    university_options = UniversityProfile.objects.values_list('university_name', flat=True)
 
     # Clear session data for a fresh state on the initial GET request (but not after form submission)
-    if request.method == 'GET' and not request.session.get('results'):
+    if request.method == 'GET':
         request.session.pop('results', None)
         request.session.pop('selected_course_codes', None)
         request.session.pop('university', None)
         request.session.pop('pass_column_extractions', None)
         request.session.pop('added_courses', None)
+        request.session.pop('detected_college', None)
 
-    # Retrieve or set default for university information
-    university = request.session.get(
-        'university',
-        'Your school is not in our database. If you believe this is an error, please select it manually.'
-    )
+    # Retrieve or set default for university and detected college information
+    selected_university = request.session.get('university')
+    detected_college = None
 
     if request.method == 'POST':
         # Handle university selection
-        selected_university = request.POST.get('school_name')
-        if selected_university:
-            request.session['university'] = selected_university
-            university = selected_university
+        university_choice = request.POST.get('university_name')
+        other_university = request.POST.get('other_university')  # Capture "Other" university entry
+        
+        if university_choice == 'Other' and other_university:
+            # Save manually entered university to session if "Other" is selected
+            request.session['university'] = other_university
+            selected_university = other_university
+            log_university_to_excel(other_university)
+        elif university_choice:
+            # Save selected university to session
+            request.session['university'] = university_choice
+            selected_university = university_choice
 
         # Handle file upload only if the file is in the POST request and form is valid
         if 'file' in request.FILES and form.is_valid():
             file_handle = request.FILES['file']
-            results, university = process_pdf(file_handle)
+            results, detected_college = process_pdf(file_handle)
             
             pass_column_extractions = []
 
@@ -410,8 +422,9 @@ def add_course(request):
 
             # Update session data only after processing the file successfully
             request.session['results'] = results
-            request.session['university'] = university
+            request.session['university'] = selected_university
             request.session['pass_column_extractions'] = pass_column_extractions
+            request.session['detected_college'] = detected_college 
             request.session.modified = True
             messages.success(request, "File processed successfully.")
         
@@ -481,48 +494,35 @@ def add_course(request):
         'results': results,
         'selected_course_codes': selected_course_codes,
         'course_grade_pairs': course_grade_pairs,
-        'university': university,
+        'detected_college': detected_college,
+        'university': selected_university,
+        'universities': university_options,
         'years': list(years),
         'added_courses': added_courses,
     }
 
     return render(request, 'ntn_app/add_course.html', context)
 
-def report_university(request):
-    EXCEL_FILE_PATH = os.path.join(settings.BASE_DIR, 'ntn_app', 'static', 'ntn_app', 'reported_universities.xlsx')
+# Helper function to log unknown universities to an Excel file
+def log_university_to_excel(university_name):
     print(EXCEL_FILE_PATH)
+    # Check if the Excel file exists
+    if not os.path.exists(EXCEL_FILE_PATH):
+        # Create a new workbook and add headers if the file does not exist
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Unknown Universities"
+        sheet.append(["University Name", "Date Reported"])
+    else:
+        # Load the existing workbook
+        workbook = openpyxl.load_workbook(EXCEL_FILE_PATH)
+        sheet = workbook.active
 
-    if request.method == 'POST':
-        university_name = request.POST.get('university_name')
-        
-        if university_name:
-            # Ensure directory exists
-            os.makedirs(os.path.dirname(EXCEL_FILE_PATH), exist_ok=True)
+    # Append the university name and the current date to the Excel sheet
+    sheet.append([university_name, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
 
-            # Check if the Excel file exists; if not, create it with headers
-            if not os.path.exists(EXCEL_FILE_PATH):
-                workbook = openpyxl.Workbook()
-                sheet = workbook.active
-                sheet.title = "Reported Universities"
-                # Add headers
-                sheet.append(["University Name", "Reported At"])
-                workbook.save(EXCEL_FILE_PATH)
-            
-            # Now load the workbook and select the active sheet
-            workbook = openpyxl.load_workbook(EXCEL_FILE_PATH)
-            sheet = workbook.active
-            
-            # Append the new university and current timestamp
-            sheet.append([university_name, timezone.now().strftime('%Y-%m-%d %H:%M:%S')])
-            workbook.save(EXCEL_FILE_PATH)
-            
-            # Confirmation message
-            messages.success(request, f'Thank you! The university "{university_name}" has been reported.')
-        else:
-            messages.error(request, "Failed to report the university. Please try again.")
-        
-        return redirect('add_course')
-    return redirect('add_course')
+    # Save the workbook
+    workbook.save(EXCEL_FILE_PATH)
 
 logger = logging.getLogger(__name__)
 
