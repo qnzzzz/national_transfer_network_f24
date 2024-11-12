@@ -225,6 +225,7 @@ class UniversityProfile(models.Model):
     # description = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
+    is_partner = models.BooleanField(default=False)
 
     def __str__(self):
         return self.university_name
@@ -268,6 +269,7 @@ class CollegeProfile(models.Model):
     # description = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
+    is_partner = models.BooleanField(default=False)
 
     def __str__(self):
         return self.college_name
