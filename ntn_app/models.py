@@ -356,8 +356,6 @@ class AgreementCourse(models.Model):
     
     def __str__(self):
         return f"{self.college_course} ↔ {self.university_course} in {self.agreement}"
- 
-
 
    
 # Represents a student profile

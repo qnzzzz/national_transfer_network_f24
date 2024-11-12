@@ -27,7 +27,6 @@ from django.urls import reverse
 from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile
 from .forms import InstitutionRegistrationForm, InstitutionLoginForm, AgreementForm, Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
 from .models import Agreement, UniversityProfile, CollegeProfile, UniversityCourse, CollegeCourse, AgreementCourse,StudentProfile, StudentCourse
-
 from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoForm, 
                     Col_TransferInfoForm, Col_Special4YearOfferingForm, Col_SupportiveInfoForm)
 # from rest_framework import viewsets
@@ -44,6 +43,11 @@ from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoFo
 # from rest_framework import generics
 
 EXCEL_FILE_PATH = os.path.join(settings.BASE_DIR, 'files', 'reported_universities.xlsx')
+
+
+def home(request):
+    return render(request, 'ntn_app/home.html')
+
 
 def institution_register(request):
     if request.method == 'POST':
@@ -64,15 +68,14 @@ def institution_register(request):
     return render(request, 'ntn_app/institution_register.html', {'form': form})
 
 
-
-# def student_login_required(view_func):
-#     def _wrapped_view(request, *args, **kwargs):
-#         # Check if the user is authenticated and has a student profile
-#         if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
-#             return view_func(request, *args, **kwargs)
-#         # Redirect to login if no valid profile is found
-#         return redirect('institution_login')
-#     return _wrapped_view
+def student_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has a student profile
+        if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
+            return view_func(request, *args, **kwargs)
+        # Redirect to login if no valid profile is found
+        return redirect('student_login')
+    return _wrapped_view
 
 def institution_login(request):
     if request.method == 'POST':
@@ -147,13 +150,8 @@ def institution_logout(request):
     logout(request)
     return redirect('home')
 
-
-def entry_page_view(request):
-    return render(request, 'ntn_app/entry_page.html')
-
-
 @institution_login_required
-def institution_landing_page_view(request):
+def institution_landing_page(request):
 
     if UniversityUser.objects.filter(user=request.user).exists():
         user_type = 'university'
@@ -182,12 +180,11 @@ def institution_landing_page_view(request):
 
     return render(request, 'ntn_app/institution_landing_page.html', context)
 
-@login_required
-def student_landing(request):
+@student_login_required
+def student_landing_page(request):
     return render(request, 'ntn_app/student_landing_page.html')
 
-
-@login_required
+@student_login_required
 def student_profile(request):
     student_profile = request.user.student_profile
     if request.method == 'POST':
@@ -208,10 +205,9 @@ def student_profile(request):
     return render(request, 'ntn_app/student_profile.html', {'form': form, 'initial_data': initial_data})
 
 
-
-def logout_view(request):
+def student_logout(request):
     logout(request)
-    return redirect('/')
+    return redirect('home')
 
 # def student_login(request):
 #     if request.method == 'POST':
@@ -254,9 +250,7 @@ def explore_institutions(request):
             institution_id = CollegeUser.objects.get(user=user).college.id
         elif StudentProfile.objects.filter(user=user).exists():
             user_type = 'student'
-    print(user_type)
-    print(institution_id)
-    return render(request, 'ntn_app/explore_institutions.html', {"user_type": user_type, "institution_id": institution_id})# Render the Explore Institutions page
+    return render(request, 'ntn_app/explore_institutions.html', {"user_type": user_type, "institution_id": institution_id})
 
 def university_profile(request, university_profile_id):
     profile = get_object_or_404(UniversityProfile, id=university_profile_id)
@@ -733,7 +727,7 @@ def manage_agreements(request):
         
     return render(request, 'ntn_app/manage_agreements.html', {'agreements': agreements, 'institution': institution_name})
 
-
+@institution_login_required
 def delete_agreement(request, agreement_id):
     agreement = get_object_or_404(Agreement, id=agreement_id)
     agreement.delete()
