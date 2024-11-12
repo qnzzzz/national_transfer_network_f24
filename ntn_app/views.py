@@ -714,8 +714,14 @@ def all_agreements(request, institution_type, profile_id):
     elif institution_type == 'college':
         college = get_object_or_404(CollegeProfile, id=profile_id)
         agreements = Agreement.objects.filter(college=college.id)
+
+    context = {
+        'agreements': agreements,
+        'institution_type': institution_type,
+        profile_id: profile_id
+    }
     
-    return render(request, 'ntn_app/all_agreements.html', {'agreements': agreements})
+    return render(request, 'ntn_app/all_agreements.html', context)
 
 
 
