@@ -623,8 +623,24 @@ def get_institutions(request):
     return JsonResponse(list(institutions), safe=False)
 
 
-# @institution_login_required
+@institution_login_required
 def new_agreement(request):
+    user = request.user
+    institution_type = None
+    institution_name = None
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            institution_type = 'university'
+            institution_name = UniversityUser.objects.get(user=user).university.university_name
+        elif CollegeUser.objects.filter(user=user).exists():
+            institution_type = 'college'
+            institution_name = CollegeUser.objects.get(user=user).college.college_name
+    
+    context = {
+        'institution_type': institution_type,
+        'institution_name': institution_name,
+    }
+        
     if request.method == 'POST':
         # Remove any fields with '_duplicate' in the name
         filtered_data = {key: value for key, value in request.POST.items() if '_duplicate' not in key}
@@ -691,7 +707,7 @@ def new_agreement(request):
     else:
         form = AgreementForm()
 
-    return render(request, 'ntn_app/new_agreement.html', {'form': form})
+    return render(request, 'ntn_app/new_agreement.html', {'form': form, 'context': context})
 
 
 @institution_login_required
