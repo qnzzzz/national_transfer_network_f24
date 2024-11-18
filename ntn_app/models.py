@@ -415,4 +415,4 @@ class StudentCourse(models.Model):
         unique_together = ('student', 'course')
     
     def __str__(self):
-        return f"{self.student} - {self.course} ({self.taken_year}, {self.taken_term})"
+        return f"{self.student} - {self.course} ({self.course_code}, {self.grade}, {self.taken_year}, {self.taken_term})"

@@ -187,7 +187,36 @@ def student_landing_page(request):
 @student_login_required
 def student_profile(request):
     student_profile = request.user.student_profile
+
     if request.method == 'POST':
+        # Process course deletions and updates
+        for key, value in request.POST.items():
+            if key.startswith("delete_"):
+                # Handle course deletion
+                course_id = key.split("_")[1]
+                try:
+                    StudentCourse.objects.get(id=course_id).delete()
+                    print(f"Deleted course with ID: {course_id}")
+                except StudentCourse.DoesNotExist:
+                    print(f"Course with ID {course_id} does not exist.")
+            
+            elif key.startswith("course_code_"):
+                # Handle course updates
+                course_id = key.split("_")[2]
+                if f"delete_{course_id}" in request.POST:
+                    continue  # Skip updates for deleted courses
+                try:
+                    course = StudentCourse.objects.get(id=course_id)
+                    course.course_code = request.POST.get(f"course_code_{course_id}")
+                    course.grade = request.POST.get(f"grade_{course_id}")
+                    course.taken_year = request.POST.get(f"year_{course_id}")
+                    course.taken_term = request.POST.get(f"term_{course_id}")
+                    course.save()
+                    print(f"Updated course with ID: {course_id}")
+                except StudentCourse.DoesNotExist:
+                    print(f"Course with ID {course_id} does not exist.")
+
+        # Handle profile form submission
         form = StudentProfileForm(request.POST, request.FILES, instance=student_profile)
         if form.is_valid():
             user = request.user
@@ -196,13 +225,27 @@ def student_profile(request):
             user.save()
             form.save()
             return redirect('student_profile')
+
     else:
+        # Handle GET request: prepare initial data and load form
         initial_data = {
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
         }
         form = StudentProfileForm(instance=student_profile)
-    return render(request, 'ntn_app/student_profile.html', {'form': form, 'initial_data': initial_data})
+
+    # Fetch student courses
+    student_courses = StudentCourse.objects.filter(student=student_profile).order_by('taken_year', 'taken_term')
+
+    return render(
+        request,
+        'ntn_app/student_profile.html',
+        {
+            'form': form,
+            'initial_data': initial_data,
+            'student_courses': student_courses,
+        }
+    )
 
 
 def student_logout(request):
@@ -411,7 +454,7 @@ def student_register(request):
     messages.success(request, 'Registration successful. Please log in.')
     return redirect('student_login')
 
-
+@login_required
 def add_course(request):
     form = UploadFileForm(request.POST or None, request.FILES or None)
     years = range(2000, datetime.datetime.now().year + 1)
@@ -490,12 +533,22 @@ def add_course(request):
         grades = request.POST.getlist('grades[]')
         terms = request.POST.getlist('terms[]')
         taken_years = request.POST.getlist('years[]')
-        
+        print(course_codes, grades, terms, taken_years)
+ 
         student = request.user.student_profile
 
-        if course_codes and grades and terms and taken_years:
+        if course_codes or grades or terms or taken_years:
+            print("Adding courses... to the database")
             added_courses = []
             for course_code, grade, term, year in zip(course_codes, grades, terms, taken_years):
+                # Provide default values if any field is None or empty
+                if not course_code or not grade or not term or not year:
+                    messages.warning(request, "Incomplete course record skipped.")
+                    continue
+
+                grade = grade or "None"
+                term = term or "None"
+                year = year or 0 
 
                 # Check if a StudentCourse record already exists
                 if not StudentCourse.objects.filter(
@@ -513,16 +566,23 @@ def add_course(request):
                         taken_term=term
                     )
                     added_courses.append(new_course)
+                    print(f"Created Saved: {new_course}")
                 else:
                     messages.info(request, f"The course {course_code} for {term} {year} is already recorded.")
+                    print(f"The course {course_code} for {term} {year} is already recorded.")
 
             if added_courses:
                 messages.success(request, "Courses added successfully!")
+                print("Courses added successfully! {added_courses}")
             else:
                 messages.info(request, "No new courses were added.")
+                print("No new courses were added.")
 
             # Update session data for added courses for display
-            request.session['added_courses'] = [(course.course_code, course.grade, course.taken_year, course.taken_term) for course in added_courses]
+            request.session['added_courses'] = [
+                (course.course_code, course.grade, course.taken_year, course.taken_term) 
+                for course in added_courses
+            ]
             
             return redirect('student_profile')
 
@@ -547,12 +607,10 @@ def add_course(request):
 
     return render(request, 'ntn_app/add_course.html', context)
 
-# Helper function to log unknown universities to an Excel file
 def log_university_to_excel(university_name):
     print(EXCEL_FILE_PATH)
     # Check if the Excel file exists
     if not os.path.exists(EXCEL_FILE_PATH):
-        # Create a new workbook and add headers if the file does not exist
         workbook = Workbook()
         sheet = workbook.active
         sheet.title = "Unknown Universities"
