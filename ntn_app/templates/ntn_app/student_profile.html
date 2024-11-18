@@ -291,87 +291,142 @@
           </div>
         </div>
 
-        <!-- Recorded Courses Section -->
-        <h3>Recorded Courses</h3>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <a href="{% url 'add_course' %}" class="btn btn-secondary">Add Transcript Course</a>
-        </div>
+      <!-- Recorded Courses Section -->
+      <h3>Recorded Courses</h3>
+      <div class="d-flex justify-content-start align-items-center gap-2 mb-3">
+        <a href="{% url 'add_course' %}" class="btn btn-secondary">Add Transcript Course</a>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#coursesModal">
+          View & Edit Recorded Courses
+        </button>
+      </div>
 
-        {% if student_courses %}
-        <div class="table-responsive">
-          <table class="table table-bordered table-hover">
-            <thead class="table-light">
-              <tr>
-                <th>Course</th>
-                <th>Grade</th>
-                <th>Year</th>
-                <th>Term</th>
-                <th>Recorded On</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for course in student_courses %}
-              <tr>
-                <td>{{ course.course.name }}</td>
-                <td>{{ course.grade }}</td>
-                <td>{{ course.taken_year }}</td>
-                <td>{{ course.taken_term }}</td>
-                <td>{{ course.created_on|date:"Y-m-d" }}</td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+      <!-- Modal for Courses -->
+      <div class="modal fade" id="coursesModal" tabindex="-1" aria-labelledby="coursesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="coursesModalLabel">View & Edit Recorded Courses</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              {% if student_courses %}
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Course</th>
+                      <th>Grade</th>
+                      <th>Year</th>
+                      <th>Term</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for course in student_courses %}
+                    <tr data-course-id="{{ course.id }}">
+                      <td>
+                        <input type="text" name="course_code_{{ course.id }}" class="form-control" value="{{ course.course_code }}">
+                      </td>
+                      <td>
+                        <input type="text" name="grade_{{ course.id }}" class="form-control" value="{{ course.grade }}">
+                      </td>
+                      <td>
+                        <input type="number" name="year_{{ course.id }}" class="form-control" value="{{ course.taken_year }}">
+                      </td>
+                      <td>
+                        <select name="term_{{ course.id }}" class="form-select">
+                          <option value="Spring" {% if course.taken_term == "Spring" %}selected{% endif %}>Spring</option>
+                          <option value="Summer" {% if course.taken_term == "Summer" %}selected{% endif %}>Summer</option>
+                          <option value="Fall" {% if course.taken_term == "Fall" %}selected{% endif %}>Fall</option>
+                          <option value="Winter" {% if course.taken_term == "Winter" %}selected{% endif %}>Winter</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRow(this)">Delete</button>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              {% else %}
+              <p>No courses recorded yet.</p>
+              {% endif %}
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
         </div>
-        {% else %}
-        <p>No courses recorded yet.</p>
-        {% endif %}
+      </div>
 
-        <!-- Student Preferences Section -->
-        <h2>Student Preferences</h2>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="location_preference" class="form-label">Location Preference</label>
-            {{ form.location_preference|add_class:"form-control" }}
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="size_preference" class="form-label">Size Preference</label>
-            {{ form.size_preference|add_class:"form-control" }}
-          </div>
+      <!-- Student Preferences Section -->
+      <h2>Student Preferences</h2>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="location_preference" class="form-label">Location Preference</label>
+          {{ form.location_preference|add_class:"form-control" }}
         </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="degree_preference" class="form-label">Degree Preference</label>
-            {{ form.degree_preference|add_class:"form-control" }}
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="graduate_pathway_preference" class="form-label">Graduate Pathway Preference</label>
-            {{ form.graduate_pathway_preference|add_class:"form-check-input" }}
-          </div>
+        <div class="col-md-6 mb-3">
+          <label for="size_preference" class="form-label">Size Preference</label>
+          {{ form.size_preference|add_class:"form-control" }}
         </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="career_objective" class="form-label">Career Objective</label>
-            {{ form.career_objective|add_class:"form-control" }}
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="is_fafsa_completed" class="form-label">FAFSA Completed</label>
-            {{ form.is_fafsa_completed|add_class:"form-check-input" }}
-          </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="degree_preference" class="form-label">Degree Preference</label>
+          {{ form.degree_preference|add_class:"form-control" }}
         </div>
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <label for="expected_family_contribution" class="form-label">Expected Family Contribution</label>
-            {{ form.expected_family_contribution|add_class:"form-control" }}
-          </div>
-          <div class="col-md-6 mb-3">
-            <label for="estimated_affordable_amount" class="form-label">Estimated Affordable Amount</label>
-            {{ form.estimated_affordable_amount|add_class:"form-control" }}
-          </div>
+        <div class="col-md-6 mb-3">
+          <label for="graduate_pathway_preference" class="form-label">Graduate Pathway Preference</label>
+          {{ form.graduate_pathway_preference|add_class:"form-check-input" }}
         </div>
-        <button type="submit" class="btn btn-primary mb-4">Save</button>
-      </form>
-    </div>
-    <!-- Bootstrap JS -->
-    <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="career_objective" class="form-label">Career Objective</label>
+          {{ form.career_objective|add_class:"form-control" }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="is_fafsa_completed" class="form-label">FAFSA Completed</label>
+          {{ form.is_fafsa_completed|add_class:"form-check-input" }}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="expected_family_contribution" class="form-label">Expected Family Contribution</label>
+          {{ form.expected_family_contribution|add_class:"form-control" }}
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="estimated_affordable_amount" class="form-label">Estimated Affordable Amount</label>
+          {{ form.estimated_affordable_amount|add_class:"form-control" }}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function deleteRow(button) {
+      const row = button.closest('tr');
+      const courseId = row.dataset.courseId;
+
+      // Add a hidden input to mark the course for deletion
+      const form = document.querySelector('form');
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = `delete_${courseId}`;
+      input.value = "true";
+      form.appendChild(input);
+
+      // Disable the inputs in the row
+      row.querySelectorAll('input, select').forEach(input => input.disabled = true);
+
+      row.remove();
+    }
+  </script>
+</body>
 </html>
