@@ -17,6 +17,7 @@ import datetime
 from django.contrib import messages
 import openpyxl
 import os
+from openpyxl import Workbook
 from django.conf import settings
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
@@ -26,7 +27,6 @@ from django.urls import reverse
 from .models import UniversityUser, CollegeUser, UniversityProfile, CollegeProfile
 from .forms import InstitutionRegistrationForm, InstitutionLoginForm, AgreementForm, Uni_BasicInfoForm, Uni_ContactInfoForm, Uni_EnrollmentInfoForm, Uni_StudentSupportServicesForm, Uni_TransferAndDegreePathwaysForm, Uni_UniversityHighlightsForm
 from .models import Agreement, UniversityProfile, CollegeProfile, UniversityCourse, CollegeCourse, AgreementCourse,StudentProfile, StudentCourse
-
 from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoForm, 
                     Col_TransferInfoForm, Col_Special4YearOfferingForm, Col_SupportiveInfoForm)
 # from rest_framework import viewsets
@@ -41,6 +41,12 @@ from .forms import (Col_BasicInfoForm, Col_ContactInfoForm, Col_EnrollmentInfoFo
 # from .serializers import CourseSerializer, UniversitySerializer, ExcelFileSerializer, UploadDataSerializer, ArticulationAgreementSerializer, AgreementCourseSerializer
 # import pandas as pd
 # from rest_framework import generics
+
+EXCEL_FILE_PATH = os.path.join(settings.BASE_DIR, 'files', 'reported_universities.xlsx')
+
+
+def home(request):
+    return render(request, 'ntn_app/home.html')
 
 
 def institution_register(request):
@@ -62,15 +68,14 @@ def institution_register(request):
     return render(request, 'ntn_app/institution_register.html', {'form': form})
 
 
-
-# def student_login_required(view_func):
-#     def _wrapped_view(request, *args, **kwargs):
-#         # Check if the user is authenticated and has a student profile
-#         if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
-#             return view_func(request, *args, **kwargs)
-#         # Redirect to login if no valid profile is found
-#         return redirect('institution_login')
-#     return _wrapped_view
+def student_login_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        # Check if the user is authenticated and has a student profile
+        if request.user.is_authenticated and hasattr(request.user, 'student_profile'):
+            return view_func(request, *args, **kwargs)
+        # Redirect to login if no valid profile is found
+        return redirect('student_login')
+    return _wrapped_view
 
 def institution_login(request):
     if request.method == 'POST':
@@ -145,24 +150,73 @@ def institution_logout(request):
     logout(request)
     return redirect('home')
 
-
-def entry_page_view(request):
-    return render(request, 'ntn_app/entry_page.html')
-
-
 @institution_login_required
-def institution_landing_page_view(request):
-    return render(request, 'ntn_app/institution_landing_page.html')
+def institution_landing_page(request):
 
-@login_required
-def student_landing(request):
+    if UniversityUser.objects.filter(user=request.user).exists():
+        user_type = 'university'
+        profile_id = UniversityUser.objects.get(user=request.user).university.id
+    elif CollegeUser.objects.filter(user=request.user).exists():
+        user_type = 'college'
+        profile_id = CollegeUser.objects.get(user=request.user).college.id
+
+    context = {
+        'user_type': user_type,
+        'profile_id': profile_id,
+    }
+
+    #     # Determine the type of institution user belongs to
+    # if hasattr(request.user, 'university'):
+    #     # User is a university user
+    #     institution_type = 'university'
+    #     profile_id = request.user.university.id
+    # elif hasattr(request.user, 'college'):
+    #     # User is a college user
+    #     institution_type = 'college'
+    #     profile_id = request.user.college.id
+    # else:
+    #     institution_type = None
+    #     profile_id = None
+
+    return render(request, 'ntn_app/institution_landing_page.html', context)
+
+@student_login_required
+def student_landing_page(request):
     return render(request, 'ntn_app/student_landing_page.html')
 
-
-@login_required
+@student_login_required
 def student_profile(request):
     student_profile = request.user.student_profile
+
     if request.method == 'POST':
+        # Process course deletions and updates
+        for key, value in request.POST.items():
+            if key.startswith("delete_"):
+                # Handle course deletion
+                course_id = key.split("_")[1]
+                try:
+                    StudentCourse.objects.get(id=course_id).delete()
+                    print(f"Deleted course with ID: {course_id}")
+                except StudentCourse.DoesNotExist:
+                    print(f"Course with ID {course_id} does not exist.")
+            
+            elif key.startswith("course_code_"):
+                # Handle course updates
+                course_id = key.split("_")[2]
+                if f"delete_{course_id}" in request.POST:
+                    continue  # Skip updates for deleted courses
+                try:
+                    course = StudentCourse.objects.get(id=course_id)
+                    course.course_code = request.POST.get(f"course_code_{course_id}")
+                    course.grade = request.POST.get(f"grade_{course_id}")
+                    course.taken_year = request.POST.get(f"year_{course_id}")
+                    course.taken_term = request.POST.get(f"term_{course_id}")
+                    course.save()
+                    print(f"Updated course with ID: {course_id}")
+                except StudentCourse.DoesNotExist:
+                    print(f"Course with ID {course_id} does not exist.")
+
+        # Handle profile form submission
         form = StudentProfileForm(request.POST, request.FILES, instance=student_profile)
         if form.is_valid():
             user = request.user
@@ -171,19 +225,32 @@ def student_profile(request):
             user.save()
             form.save()
             return redirect('student_profile')
+
     else:
+        # Handle GET request: prepare initial data and load form
         initial_data = {
             'first_name': request.user.first_name,
             'last_name': request.user.last_name,
         }
         form = StudentProfileForm(instance=student_profile)
-    return render(request, 'ntn_app/student_profile.html', {'form': form, 'initial_data': initial_data})
+
+    # Fetch student courses
+    student_courses = StudentCourse.objects.filter(student=student_profile).order_by('taken_year', 'taken_term')
+
+    return render(
+        request,
+        'ntn_app/student_profile.html',
+        {
+            'form': form,
+            'initial_data': initial_data,
+            'student_courses': student_courses,
+        }
+    )
 
 
-
-def logout_view(request):
+def student_logout(request):
     logout(request)
-    return redirect('/')
+    return redirect('home')
 
 # def student_login(request):
 #     if request.method == 'POST':
@@ -213,8 +280,20 @@ def student_login(request):
             messages.error(request, 'Invalid username or password')
     return render(request, 'ntn_app/student_login.html')
 
-def explore_universities(request):
-    return render(request, 'ntn_app/explore_universities.html')# Render the Explore Institutions page
+def explore_institutions(request):
+    user = request.user
+    user_type = None
+    institution_id = None
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            user_type = 'university'
+            institution_id = UniversityUser.objects.get(user=user).university.id
+        elif CollegeUser.objects.filter(user=user).exists():
+            user_type = 'college'
+            institution_id = CollegeUser.objects.get(user=user).college.id
+        elif StudentProfile.objects.filter(user=user).exists():
+            user_type = 'student'
+    return render(request, 'ntn_app/explore_institutions.html', {"user_type": user_type, "institution_id": institution_id})
 
 def university_profile(request, university_profile_id):
     profile = get_object_or_404(UniversityProfile, id=university_profile_id)
@@ -331,6 +410,16 @@ def college_profile(request, college_profile_id):
         'is_edit_mode': is_edit_mode,
     })
 
+
+def get_profile_url(user):
+    if hasattr(user, 'UniversityUser'):
+        # User is a university user, redirect to university profile
+        return reverse('university_profile', args=[user.UniversityUser.university.id])
+    elif hasattr(user, 'CollegeUser'):
+        # User is a college user, redirect to college profile
+        return reverse('college_profile', args=[user.UniversityUser.college.id])
+    return None
+
     
 def student_register(request):
     if request.user.is_authenticated:
@@ -365,36 +454,46 @@ def student_register(request):
     messages.success(request, 'Registration successful. Please log in.')
     return redirect('student_login')
 
-
+@login_required
 def add_course(request):
     form = UploadFileForm(request.POST or None, request.FILES or None)
     years = range(2000, datetime.datetime.now().year + 1)
+    
+    # Fetch all universities for the dropdown
+    university_options = UniversityProfile.objects.values_list('university_name', flat=True)
 
     # Clear session data for a fresh state on the initial GET request (but not after form submission)
-    if request.method == 'GET' and not request.session.get('results'):
+    if request.method == 'GET':
         request.session.pop('results', None)
         request.session.pop('selected_course_codes', None)
         request.session.pop('university', None)
         request.session.pop('pass_column_extractions', None)
         request.session.pop('added_courses', None)
+        request.session.pop('detected_college', None)
 
-    # Retrieve or set default for university information
-    university = request.session.get(
-        'university',
-        'Your school is not in our database. If you believe this is an error, please select it manually.'
-    )
+    # Retrieve or set default for university and detected college information
+    selected_university = request.session.get('university')
+    detected_college = None
 
     if request.method == 'POST':
         # Handle university selection
-        selected_university = request.POST.get('school_name')
-        if selected_university:
-            request.session['university'] = selected_university
-            university = selected_university
+        university_choice = request.POST.get('university_name')
+        other_university = request.POST.get('other_university')  # Capture "Other" university entry
+        
+        if university_choice == 'Other' and other_university:
+            # Save manually entered university to session if "Other" is selected
+            request.session['university'] = other_university
+            selected_university = other_university
+            log_university_to_excel(other_university)
+        elif university_choice:
+            # Save selected university to session
+            request.session['university'] = university_choice
+            selected_university = university_choice
 
         # Handle file upload only if the file is in the POST request and form is valid
         if 'file' in request.FILES and form.is_valid():
             file_handle = request.FILES['file']
-            results, university = process_pdf(file_handle)
+            results, detected_college = process_pdf(file_handle)
             
             pass_column_extractions = []
 
@@ -410,8 +509,9 @@ def add_course(request):
 
             # Update session data only after processing the file successfully
             request.session['results'] = results
-            request.session['university'] = university
+            request.session['university'] = selected_university
             request.session['pass_column_extractions'] = pass_column_extractions
+            request.session['detected_college'] = detected_college 
             request.session.modified = True
             messages.success(request, "File processed successfully.")
         
@@ -433,12 +533,22 @@ def add_course(request):
         grades = request.POST.getlist('grades[]')
         terms = request.POST.getlist('terms[]')
         taken_years = request.POST.getlist('years[]')
-        
+        print(course_codes, grades, terms, taken_years)
+ 
         student = request.user.student_profile
 
-        if course_codes and grades and terms and taken_years:
+        if course_codes or grades or terms or taken_years:
+            print("Adding courses... to the database")
             added_courses = []
             for course_code, grade, term, year in zip(course_codes, grades, terms, taken_years):
+                # Provide default values if any field is None or empty
+                if not course_code or not grade or not term or not year:
+                    messages.warning(request, "Incomplete course record skipped.")
+                    continue
+
+                grade = grade or "None"
+                term = term or "None"
+                year = year or 0 
 
                 # Check if a StudentCourse record already exists
                 if not StudentCourse.objects.filter(
@@ -456,16 +566,23 @@ def add_course(request):
                         taken_term=term
                     )
                     added_courses.append(new_course)
+                    print(f"Created Saved: {new_course}")
                 else:
                     messages.info(request, f"The course {course_code} for {term} {year} is already recorded.")
+                    print(f"The course {course_code} for {term} {year} is already recorded.")
 
             if added_courses:
                 messages.success(request, "Courses added successfully!")
+                print("Courses added successfully! {added_courses}")
             else:
                 messages.info(request, "No new courses were added.")
+                print("No new courses were added.")
 
             # Update session data for added courses for display
-            request.session['added_courses'] = [(course.course_code, course.grade, course.taken_year, course.taken_term) for course in added_courses]
+            request.session['added_courses'] = [
+                (course.course_code, course.grade, course.taken_year, course.taken_term) 
+                for course in added_courses
+            ]
             
             return redirect('student_profile')
 
@@ -481,48 +598,33 @@ def add_course(request):
         'results': results,
         'selected_course_codes': selected_course_codes,
         'course_grade_pairs': course_grade_pairs,
-        'university': university,
+        'detected_college': detected_college,
+        'university': selected_university,
+        'universities': university_options,
         'years': list(years),
         'added_courses': added_courses,
     }
 
     return render(request, 'ntn_app/add_course.html', context)
 
-def report_university(request):
-    EXCEL_FILE_PATH = os.path.join(settings.BASE_DIR, 'ntn_app', 'static', 'ntn_app', 'reported_universities.xlsx')
+def log_university_to_excel(university_name):
     print(EXCEL_FILE_PATH)
+    # Check if the Excel file exists
+    if not os.path.exists(EXCEL_FILE_PATH):
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Unknown Universities"
+        sheet.append(["University Name", "Date Reported"])
+    else:
+        # Load the existing workbook
+        workbook = openpyxl.load_workbook(EXCEL_FILE_PATH)
+        sheet = workbook.active
 
-    if request.method == 'POST':
-        university_name = request.POST.get('university_name')
-        
-        if university_name:
-            # Ensure directory exists
-            os.makedirs(os.path.dirname(EXCEL_FILE_PATH), exist_ok=True)
+    # Append the university name and the current date to the Excel sheet
+    sheet.append([university_name, datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')])
 
-            # Check if the Excel file exists; if not, create it with headers
-            if not os.path.exists(EXCEL_FILE_PATH):
-                workbook = openpyxl.Workbook()
-                sheet = workbook.active
-                sheet.title = "Reported Universities"
-                # Add headers
-                sheet.append(["University Name", "Reported At"])
-                workbook.save(EXCEL_FILE_PATH)
-            
-            # Now load the workbook and select the active sheet
-            workbook = openpyxl.load_workbook(EXCEL_FILE_PATH)
-            sheet = workbook.active
-            
-            # Append the new university and current timestamp
-            sheet.append([university_name, timezone.now().strftime('%Y-%m-%d %H:%M:%S')])
-            workbook.save(EXCEL_FILE_PATH)
-            
-            # Confirmation message
-            messages.success(request, f'Thank you! The university "{university_name}" has been reported.')
-        else:
-            messages.error(request, "Failed to report the university. Please try again.")
-        
-        return redirect('add_course')
-    return redirect('add_course')
+    # Save the workbook
+    workbook.save(EXCEL_FILE_PATH)
 
 logger = logging.getLogger(__name__)
 
@@ -536,7 +638,7 @@ def handle_college_selection(request):
             elif institution_type == 'four_year_university':
                 return redirect('university_profile', university_profile_id=institution_id)
 
-    return render(request, 'ntn_app/explore_universities.html')
+    return render(request, 'ntn_app/explore_institutions.html')
             
             
 #             if institution_type == 'four_year_university':
@@ -547,7 +649,7 @@ def handle_college_selection(request):
 #                 pass
 #     else:
 #         form = ExploreUniversitiesForm()
-#     return render(request, 'ntn_app/explore_universities.html', {'form': form})
+#     return render(request, 'ntn_app/explore_institutions.html', {'form': form})
 
 #             if institution_type == 'four_year_university':
 #                 return redirect('/')
@@ -557,7 +659,7 @@ def handle_college_selection(request):
 #                 pass
 #     else:
 #         form = ExploreUniversitiesForm()
-#     return render(request, 'ntn_app/explore_universities.html', {'form': form})
+#     return render(request, 'ntn_app/explore_institutions.html', {'form': form})
 
 def get_university_id(university_name):
     try:
@@ -578,8 +680,24 @@ def get_institutions(request):
     return JsonResponse(list(institutions), safe=False)
 
 
-# @institution_login_required
+@institution_login_required
 def new_agreement(request):
+    user = request.user
+    institution_type = None
+    institution_name = None
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            institution_type = 'university'
+            institution_name = UniversityUser.objects.get(user=user).university.university_name
+        elif CollegeUser.objects.filter(user=user).exists():
+            institution_type = 'college'
+            institution_name = CollegeUser.objects.get(user=user).college.college_name
+    
+    context = {
+        'institution_type': institution_type,
+        'institution_name': institution_name,
+    }
+        
     if request.method == 'POST':
         # Remove any fields with '_duplicate' in the name
         filtered_data = {key: value for key, value in request.POST.items() if '_duplicate' not in key}
@@ -591,6 +709,10 @@ def new_agreement(request):
         # Get or create university and college instances
         university, created_university = UniversityProfile.objects.get_or_create(university_name=university_name)
         college, created_college = CollegeProfile.objects.get_or_create(college_name=college_name)
+        
+        # Set the is_partnered flag to True for university and college
+        university.is_partner = True
+        college.is_partner = True
 
         # Update filtered_data to include the foreign key IDs for university and college
         filtered_data['university'] = university.id
@@ -642,7 +764,7 @@ def new_agreement(request):
     else:
         form = AgreementForm()
 
-    return render(request, 'ntn_app/new_agreement.html', {'form': form})
+    return render(request, 'ntn_app/new_agreement.html', {'form': form, 'context': context})
 
 
 @institution_login_required
@@ -663,7 +785,7 @@ def manage_agreements(request):
         
     return render(request, 'ntn_app/manage_agreements.html', {'agreements': agreements, 'institution': institution_name})
 
-
+@institution_login_required
 def delete_agreement(request, agreement_id):
     agreement = get_object_or_404(Agreement, id=agreement_id)
     agreement.delete()
@@ -678,8 +800,14 @@ def all_agreements(request, institution_type, profile_id):
     elif institution_type == 'college':
         college = get_object_or_404(CollegeProfile, id=profile_id)
         agreements = Agreement.objects.filter(college=college.id)
+
+    context = {
+        'agreements': agreements,
+        'institution_type': institution_type,
+        profile_id: profile_id
+    }
     
-    return render(request, 'ntn_app/all_agreements.html', {'agreements': agreements})
+    return render(request, 'ntn_app/all_agreements.html', context)
 
 
 

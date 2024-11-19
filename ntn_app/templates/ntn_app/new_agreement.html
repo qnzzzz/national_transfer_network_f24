@@ -10,14 +10,16 @@
     <h3>Articulation Agreement</h3>
     <p>
       <strong>TRANSFER AGREEMENT</strong><br />
-      Between
-      <input
-        type="text"
-        name="university"
-        placeholder="4-Year University Name"
-        class="form-input-small"
-        oninput="autoUpdateFields('university')"
-      />
+      Between 
+      <input type="text" 
+      name="university" 
+      placeholder="4-Year University Name" 
+      class="form-input-small"
+      {% if context.institution_type == 'university' %} 
+      value="{{ context.institution_name }}" 
+      {% endif %} 
+      oninput="autoUpdateFields('university')" 
+      /> 
       and
       <input
         type="text"
@@ -25,6 +27,8 @@
         placeholder="2-Year College Name"
         class="form-input-small"
         oninput="autoUpdateFields('college')"
+        {% if context.institution_type == 'college' %} 
+        value="{{ context.institution_name }}" {% endif %}
       />
     </p>
     <p>
@@ -50,9 +54,23 @@
     <p>
       The purpose of this transfer agreement is to provide a basis for a
       cooperative relationship between
-      <input type="text" name="university_duplicate" class="form-input-small" />
+      <input 
+        type="text" 
+        name="university_duplicate" 
+        class="form-input-small" 
+        {% if context.institution_type == 'university' %} 
+        value="{{ context.institution_name }}" 
+        {% endif %} 
+      />
       and
-      <input type="text" name="college_duplicate" class="form-input-small" />
+      <input 
+        type="text" 
+        name="college_duplicate" 
+        class="form-input-small" 
+        {% if context.institution_type == 'college' %} 
+        value="{{ context.institution_name }}" 
+        {% endif %} 
+      />
       to benefit students who desire to complete a bachelor’s degree. The intent
       is for students completing the
       <input
@@ -62,7 +80,14 @@
         oninput="autoUpdateFields('college_program')"
       />
       at
-      <input type="text" name="college_duplicate" class="form-input-small" />
+      <input 
+        type="text" 
+        name="college_duplicate" 
+        class="form-input-small" 
+        {% if context.institution_type == 'college' %}
+        value="{{ context.institution_name }}" 
+        {% endif %} 
+      />
       to move seamlessly to the
       <input
         type="text"
@@ -70,11 +95,13 @@
         class="form-input-small"
       />
       at
-      <input
-        type="text"
-        name="university_duplicate"
-        class="form-input-small"
-      />.
+      <input type="text" 
+        name="university_duplicate" 
+        class="form-input-small" 
+        {% if context.institution_type == 'university' %}
+        value="{{ context.institution_name }}" 
+        {% endif %} />
+        .
     </p>
 
     <h3>Transfer Agreement:</h3>
@@ -106,10 +133,13 @@
         class="form-input-small"
       />
       at
-      <input
-        type="text"
-        name="university_duplicate"
-        class="form-input-small"
+      <input 
+        type="text" 
+        name="university_duplicate" 
+        class="form-input-small" 
+        {% if context.institution_type == 'university' %}
+        value="{{ context.institution_name }}" 
+        {% endif %} 
       />.
     </p>
 
@@ -136,7 +166,14 @@
         class="form-input-small"
       />
       they must meet the graduation requirements as approved by
-      <input type="text" name="university_duplicate" class="form-input-small" />
+      <input 
+        type="text" 
+        name="university_duplicate" 
+        class="form-input-small" 
+        {% if context.institution_type == 'university' %}
+        value="{{ context.institution_name }}" 
+        {% endif %} 
+      />
       at the time of the student’s admission to the program.
     </p>
 

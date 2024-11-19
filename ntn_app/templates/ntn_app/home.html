@@ -1,0 +1,135 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>National Transfer Network</title>
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"
+    />
+    <!-- Google Fonts Roboto -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap"
+    />
+    <!-- MDB -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'ntn_app/css/bootstrap-login-form.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'ntn_app/css/style.css' %}"
+    />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+            <li class="nav-item">
+              <img
+                src="{% static 'ntn_app/images/logo.png' %}"
+                alt="Logo"
+                width="40"
+                height="40"
+                class="d-inline-block align-text-top"
+              />
+            </li>
+            <li class="nav-item ms-3">
+              <a class="nav-link" style="color: rgb(40, 40, 40)"
+                >National Transfer Network</a
+              >
+            </li>
+            <li class="nav-item ms-3">
+              <a class="nav-link" href="{% url 'explore_institutions' %}"
+                >Explore Institutions</a
+              >
+              <!-- Explore Institutions to the right -->
+            </li>
+          </ul>
+
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="https://www.nationaltransfernetwork.org/about"
+                >About NTN</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="https://www.nationaltransfernetwork.org/contact"
+                >Contact Us</a
+              >
+            </li>
+            <!-- <li class="nav-item">
+                        <a class="nav-link">Login</a>
+                    </li> -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div
+      class="overlay"
+      style="
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        height: calc(120vh - 60px);
+      "
+    >
+      <!-- <div class="overlay"> -->
+      <section class="vh-100">
+        <div class="container py-5 h-100">
+          <div
+            class="row d-flex justify-content-center align-items-center h-100"
+          >
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+              <div class="card shadow-2-strong" style="border-radius: 1rem">
+                <div class="card-body p-5 text-center">
+                  <h3 class="mb-2">
+                    <a href="/" class="logo-name">
+                      <img
+                        src="{% static 'ntn_app/images/logo.png' %}"
+                        width="50px"
+                      />
+                      Welcome to NTN
+                    </a>
+                  </h3>
+                  <p class="mb-4">Tell us who you are to get started</p>
+                  <a
+                    class="btn btn-primary btn-lg btn-block"
+                    href="/student-login"
+                    type="submit"
+                    >Student</a
+                  >
+                  <a
+                    class="btn btn-primary btn-lg btn-block"
+                    href="/institution-login"
+                    type="submit"
+                    >Institution</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>

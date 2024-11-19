@@ -12,7 +12,7 @@ class Command(BaseCommand):
         data = pd.read_csv(file_path, sep='\t')
         
         # Step 2: Create the university profile for WVU
-        wvu, _ = UniversityProfile.objects.get_or_create(university_name="West Virginia University")
+        wvu, _ = UniversityProfile.objects.get_or_create(university_name="West Virginia University", is_partner=True)
         
         # Step 3: Process each row in the data
         for _, row in data.iterrows():
@@ -30,7 +30,8 @@ class Command(BaseCommand):
             college, _ = CollegeProfile.objects.get_or_create(
                 college_name=college_name,
                 city=city,
-                state=state
+                state=state,
+                is_partner=True
             )
             
             # Step 5: Create or get the agreement

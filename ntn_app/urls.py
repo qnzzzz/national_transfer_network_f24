@@ -10,32 +10,28 @@ router = DefaultRouter()
 # router.register(r'courses', CourseViewSet)
 
 urlpatterns = [
-    path('', views.entry_page_view, name="home"),
+    path('', views.home, name="home"),
     
     # institution api
-    path('institution-landing-page/', views.institution_landing_page_view, name='institution_landing_page'),
+    path('institution-landing-page/', views.institution_landing_page, name='institution_landing_page'),
     path('institution-register', views.institution_register, name="institution_register"),
     path('institution-login', views.institution_login, name="institution_login"),
     path("institution-logout", views.institution_logout, name="institution_logout"),
     path('university-profile/<int:university_profile_id>', views.university_profile, name='university_profile'),
-    # path('university-profile/<int:university_profile_id>/edit', views.edit_university_profile, name='university_edit_profile'),
     path('college-profile/<int:college_profile_id>', views.college_profile, name='college_profile'),
-    # path('college-profile/edit/<int:college_profile_id>', views.edit_college_profile, name='college_edit_profile'),
-    # path('university-profile/edit/<int:university_profile_id>', views.edit_university_profile, name='edit_profile'),
     path('new-agreement/', views.new_agreement, name='new_agreement'),
     path('manage-agreements', views.manage_agreements, name='manage_agreements'),
     path('all-agreements/<str:institution_type>/<int:profile_id>/', views.all_agreements, name='all_agreements'),
     path('delete_agreement/<int:agreement_id>', views.delete_agreement, name='delete_agreement'),
+    path('explore-institutions/', views.explore_institutions, name='explore_institutions'),
 
     # student api
-    path('student-landing-page/', views.student_landing, name='student_landing_page'),
+    path('student-landing-page/', views.student_landing_page, name='student_landing_page'),
     path('student-register/', views.student_register, name="student_register"),
     path('student-login/', views.student_login, name="student_login"),
     path('add-course', views.add_course, name="add_course"),
-    path('report-university', views.report_university, name='report_university'),
     path('student-profile/', views.student_profile, name='student_profile'), 
-    path("student-logout", views.logout_view, name="student_logout"),
-    path('explore-universities/', views.explore_universities, name='explore_universities'),
+    path("student-logout", views.student_logout, name="student_logout"),
     path('get-institutions/', views.get_institutions, name='get_institutions'),
     path('handle_college_selection/', views.handle_college_selection, name='handle_college_selection'),
     

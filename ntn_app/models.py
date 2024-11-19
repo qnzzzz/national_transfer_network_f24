@@ -187,6 +187,13 @@ DEGREE_CHOICES = [
     ("unknown", "Unknown"),
 ]
 
+TERM_CHOICES = [
+    ('spring', 'Spring'),
+    ('summer', 'Summer'),
+    ('fall', 'Fall'),
+    ('winter', 'Winter'),
+]
+
 
 # Represents an institution profile
 class UniversityProfile(models.Model):
@@ -218,6 +225,7 @@ class UniversityProfile(models.Model):
     # description = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
+    is_partner = models.BooleanField(default=False)
 
     def __str__(self):
         return self.university_name
@@ -261,6 +269,7 @@ class CollegeProfile(models.Model):
     # description = models.TextField(blank=True, null=True)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
+    is_partner = models.BooleanField(default=False)
 
     def __str__(self):
         return self.college_name
@@ -347,8 +356,6 @@ class AgreementCourse(models.Model):
     
     def __str__(self):
         return f"{self.college_course} ↔ {self.university_course} in {self.agreement}"
- 
-
 
    
 # Represents a student profile
@@ -394,12 +401,6 @@ class StudentProfile(models.Model):
     
 # Represents the courses a student has taken
 class StudentCourse(models.Model):
-    TERM_CHOICES = [
-        ('spring', 'Spring'),
-        ('summer', 'Summer'),
-        ('fall', 'Fall'),
-        ('winter', 'Winter'),
-    ]
 
     student = models.ForeignKey(StudentProfile, on_delete=models.CASCADE)
     course = models.ForeignKey(CollegeCourse, on_delete=models.CASCADE, null=True, blank=True)
@@ -414,4 +415,4 @@ class StudentCourse(models.Model):
         unique_together = ('student', 'course')
     
     def __str__(self):
-        return f"{self.student} - {self.course} ({self.taken_year}, {self.taken_term})"
+        return f"{self.student} - {self.course} ({self.course_code}, {self.grade}, {self.taken_year}, {self.taken_term})"
