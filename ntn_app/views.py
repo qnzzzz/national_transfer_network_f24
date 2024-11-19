@@ -350,6 +350,7 @@ def university_profile(request, university_profile_id):
         'highlights_form': highlights_form,
         'can_edit': can_edit,
         'is_edit_mode': is_edit_mode,
+        'user_type': 'university',
     })
 
 
@@ -408,6 +409,7 @@ def college_profile(request, college_profile_id):
         'supportive_info_form': supportive_info_form,
         'can_edit': can_edit,
         'is_edit_mode': is_edit_mode,
+        'user_type': 'college',
     })
 
 
@@ -685,17 +687,21 @@ def new_agreement(request):
     user = request.user
     institution_type = None
     institution_name = None
+    institution_id = None
     if user.is_authenticated:
         if UniversityUser.objects.filter(user=user).exists():
             institution_type = 'university'
             institution_name = UniversityUser.objects.get(user=user).university.university_name
+            institution_id = UniversityUser.objects.get(user=user).university.id
         elif CollegeUser.objects.filter(user=user).exists():
             institution_type = 'college'
             institution_name = CollegeUser.objects.get(user=user).college.college_name
+            institution_id = CollegeUser.objects.get(user=user).college.id
     
     context = {
         'institution_type': institution_type,
         'institution_name': institution_name,
+        'institution_id': institution_id,
     }
         
     if request.method == 'POST':
@@ -770,41 +776,87 @@ def new_agreement(request):
 @institution_login_required
 def manage_agreements(request):
     user = request.user
-    
+    institution_type = None
+    institution_id = None
+
     agreements = []
     institution_name = None
     if UniversityUser.objects.filter(user=user).exists():
         university_profile = UniversityUser.objects.get(user=user).university
         institution_name = university_profile.university_name
         agreements = Agreement.objects.filter(university=university_profile.id)
+        institution_type = 'university'
+        institution_id = university_profile.id
         
     elif CollegeUser.objects.filter(user=user).exists():
         college_profile = CollegeUser.objects.get(user=user).college
         institution_name = college_profile.college_name
         agreements = Agreement.objects.filter(college=college_profile.id)
+        institution_type = 'college'
+        institution_id = college_profile.id
         
-    return render(request, 'ntn_app/manage_agreements.html', {'agreements': agreements, 'institution': institution_name})
+    print(institution_name)
+    print(institution_type)
+    print(institution_id)
+    return render(request, 'ntn_app/manage_agreements.html', 
+    {'agreements': agreements, 
+    'institution_name': institution_name,
+    'institution_type': institution_type,
+    'institution_id': institution_id,
+    })
 
 @institution_login_required
 def delete_agreement(request, agreement_id):
+    user = request.user
+    institution_type = None
+    profile_id = None
+
+    if UniversityUser.objects.filter(user=user).exists():
+        university_profile = UniversityUser.objects.get(user=user).university
+        institution_type = 'university'
+        profile_id = university_profile.id
+        
+    elif CollegeUser.objects.filter(user=user).exists():
+        college_profile = CollegeUser.objects.get(user=user).college
+        institution_type = 'college'
+        profile_id = college_profile.id
+
     agreement = get_object_or_404(Agreement, id=agreement_id)
     agreement.delete()
-    return redirect('all_my_agreements')
+
+    return redirect('all_agreements', institution_type=institution_type, profile_id=profile_id)
 
 
 def all_agreements(request, institution_type, profile_id):
     agreements=[]
+    user = request.user
+    user_type = None
+    institution_id = None
+    institution_name = None
+
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            user_type = 'university'
+        elif CollegeUser.objects.filter(user=user).exists():
+            user_type = 'college'
+        elif StudentProfile.objects.filter(user=user).exists():
+            user_type = 'student'
+
     if institution_type == 'university':
         university = get_object_or_404(UniversityProfile, id=profile_id)
         agreements = Agreement.objects.filter(university=university.id)
+        institution_name = university.university_name
     elif institution_type == 'college':
         college = get_object_or_404(CollegeProfile, id=profile_id)
         agreements = Agreement.objects.filter(college=college.id)
+        institution_name = college.college_name
 
     context = {
         'agreements': agreements,
+        'user_type': user_type,
         'institution_type': institution_type,
-        profile_id: profile_id
+        "profile_id": profile_id,
+        'institution_name': institution_name,
     }
     
     return render(request, 'ntn_app/all_agreements.html', context)

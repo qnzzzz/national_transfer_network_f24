@@ -7,19 +7,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/login.css' %}" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'ntn_app/css/login.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'ntn_app/css/base_institutions.css' %}"
     />
   </head>
   <body>
@@ -159,7 +151,6 @@
     </nav>
 
     <div class="container mt-5">
-      <h1>Student Profile</h1>
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 

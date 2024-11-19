@@ -1,108 +1,332 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>University Profile</title>
-  </head>
-  <body>
-    <h1>University Profile</h1>
 
-    <div id="profile-view-mode" {% if is_edit_mode %}style="display: none;"{% endif %}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <title>University Profile</title>
+  <style>
+    .card-body label {
+      font-weight: 600;
+    }
+    .card-body textarea {
+      width: 100%; /* Ensures full width inside the card body */
+      height: 80px; /* Set a fixed height */
+      resize: vertical; /* Allow height adjustment only if necessary */
+      box-sizing: border-box; /* Include padding and border in width/height */
+      padding: 10px; /* Add padding for better readability */
+      font-size: 16px; /* Match font size with other form elements */
+    }
+    .form-control {
+      height: 40px; /* Set a fixed height */
+      background-color: none;
+      font-size: 16px; /* Match font size with other form elements */
+    }
+    </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
+          <li class="nav-item">
+            <img src="{% static 'ntn_app/images/logo.png' %}" alt="Logo" width="40" height="40"
+              class="d-inline-block align-text-top" />
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'institution_landing_page' %}" style="color: rgb(40, 40, 40)">
+              National Transfer Network
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'explore_institutions' %}">
+              Explore Institutions
+            </a>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Agreements
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'all_agreements' user_type profile.id %}">
+                All Agreements
+              </a>
+              <a class="dropdown-item" href="{% url 'new_agreement' %}">
+                New Agreements
+              </a>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="" width="35" height="35"
+                class="d-inline-block align-text-top" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'university_profile' profile.id %}">
+                Profile
+              </a>
+              <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container mt-5">
+    <div id="profile-view-mode" {% if is_edit_mode %}style="display: none;" {% endif %}>
+      <!-- Basic University Information -->
       <h2>Basic University Information</h2>
-      <p><strong>University Name:</strong> {{ profile.university_name }}</p>
-      <p><strong>State:</strong> {{ profile.state }}</p>
-      <p><strong>City:</strong> {{ profile.city }}</p>
-      <p>
-        <strong>Website:</strong>
-        <a href="{{ profile.website }}">{{ profile.website }}</a>
-      </p>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">University Name</label>
+          <p class="form-control">{{ profile.university_name }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">State</label>
+          <p class="form-control">{{ profile.state }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">City</label>
+          <p class="form-control">{{ profile.city }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Website</label>
+          <p class="form-control">{{ profile.website }}</p>
+        </div>
+      </div>
 
+      <!-- Contact Information -->
       <h2>Contact Information</h2>
-      <p><strong>Contact Name:</strong> {{ profile.contact_name }}</p>
-      <p><strong>Contact Title:</strong> {{ profile.contact_title }}</p>
-      <p><strong>Email:</strong> {{ profile.email }}</p>
-      <p><strong>Phone:</strong> {{ profile.phone }}</p>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Contact Name</label>
+          <p class="form-control">{{ profile.contact_name }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Contact Title</label>
+          <p class="form-control">{{ profile.contact_title }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Email</label>
+          <p class="form-control">{{ profile.email }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Phone</label>
+          <p class="form-control">{{ profile.phone }}</p>
+        </div>
+      </div>
 
+      <!-- Enrollment Information -->
       <h2>Enrollment Information</h2>
-      <p><strong>Undergraduate Enrollment:</strong> {{ profile.UGs }}</p>
-      <p>
-        <strong>Annual Transfer Enrollment:</strong> {{ profile.number_of_transfers_per_year }}
-      </p>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Undergraduate Enrollment</label>
+          <p class="form-control">{{ profile.UGs }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Annual Transfer Enrollment</label>
+          <p class="form-control">{{ profile.number_of_transfers_per_year }}</p>
+        </div>
+      </div>
 
+      <!-- Student Support Services -->
       <h2>Student Support Services</h2>
-      <p>
-        <strong>Housing Availability:</strong> {{ profile.housing_availability}}
-      </p>
-      <p>
-        <strong>Support for Married Students/Kids:</strong> {{ profile.marriage_or_kids_support }}
-      </p>
-      <p><strong>Support for Veterans:</strong> {{ profile.vets_support }}</p>
-      <p>
-        <strong>Financial Aid for Transfers:</strong> {{ profile.aids_or_scholarships_for_transfers }}
-      </p>
-      <p>
-        <strong>Special Transfer Support:</strong> {{ profile.special_transfer_support }}
-      </p>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Housing Availability</label>
+          <p class="form-control">{{ profile.housing_availability }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Support for Married Students/Kids</label>
+          <p class="form-control">{{ profile.marriage_or_kids_support }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Support for Veterans</label>
+          <p class="form-control">{{ profile.vets_support }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Financial Aid for Transfers</label>
+          <p class="form-control">{{ profile.aids_or_scholarships_for_transfers }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Special Transfer Support</label>
+          <p class="form-control">{{ profile.special_transfer_support }}</p>
+        </div>
+      </div>
 
+      <!-- Transfer & Degree Pathways -->
       <h2>Transfer & Degree Pathways</h2>
-      <p>
-        <strong>Contingent Admission:</strong> {{ profile.contingent_admission }}
-      </p>
-      <p>
-        <strong>Online Degree Availability:</strong> {{ profile.online_allowed }}
-      </p>
-      <p>
-        <strong>Degree Pathways for AAS:</strong> {{ profile.degree_pathways_for_AAS_student }}
-      </p>
-      <p><strong>Graduate Pathway:</strong> {{ profile.grad_pathway }}</p>
-      <p>
-        <strong>Honors-to-Honors Pathway:</strong> {{ profile.honor_to_honor_pathway }}
-      </p>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Contingent Admission</label>
+          <p class="form-control">{{ profile.contingent_admission }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Online Degree Availability</label>
+          <p class="form-control">{{ profile.online_allowed }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Degree Pathways for AAS</label>
+          <p class="form-control">{{ profile.degree_pathways_for_AAS_student }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Graduate Pathway</label>
+          <p class="form-control">{{ profile.grad_pathway }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Honors-to-Honors Pathway</label>
+          <p class="form-control">{{ profile.honor_to_honor_pathway }}</p>
+        </div>
+      </div>
 
+      <!-- University Highlights -->
       <h2>University Highlights and Performance Metrics</h2>
-      <p>
-        <strong>Strengths and Highlights:</strong> {{ profile.institutional_strength_and_highlight }}
-      </p>
-      <p><strong>Graduation Rate:</strong> {{ profile.graduation_rate }}</p>
-      <p><strong>Retention Rate:</strong> {{ profile.retention_rate }}</p>
+      <div class="row">
+        <div class="col-md-12 mb-3">
+          <label class="form-label">Strengths and Highlights</label>
+          <p class="form-control">{{ profile.institutional_strength_and_highlight }}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Graduation Rate</label>
+          <p class="form-control">{{ profile.graduation_rate }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Retention Rate</label>
+          <p class="form-control">{{ profile.retention_rate }}</p>
+        </div>
+      </div>
 
-      <h2>Agreements Information</h2>
-        {% if can_edit %}
-            <a href="{% url 'manage_agreements' %}">Manage Agreements.</a>
-        {% else %}
-            <a href="{% url 'all_agreements' 'university' profile.id %}">View all agreements this school have.</a>
-        {% endif %}
-      </p>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex gap-2">
+            {% if can_edit %}
+            <a href="{% url 'manage_agreements' %}" class="btn btn-primary">Manage Agreements</a>
+            {% else %}
+            <a href="{% url 'all_agreements' 'university' profile.id %}" class="btn btn-primary">
+              View All Agreements
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
 
       {% if can_edit %}
-        <a href="?edit=true" id="edit-button">Edit</a>
+      <div class="row mt-2">
+        <div class="col-12">
+          <div class="d-flex gap-2">
+            <a href="?edit=true" id="edit-button" class="btn btn-primary">Edit Profile</a>
+          </div>
+        </div>
+      </div>
       {% endif %}
     </div>
 
-    <div id="profile-edit-mode" {% if not is_edit_mode %}style="display: none;"{% endif %}>
-      <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data">
+    <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
+      <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data"
+        class="needs-validation" novalidate>
         {% csrf_token %}
-
-        <h2>Basic University Information</h2>
-        {{ basic_info_form.as_p }}
-
-        <h2>Contact Information</h2>
-        {{ contact_info_form.as_p }}
-
-        <h2>Enrollment Information</h2>
-        {{ enrollment_info_form.as_p }}
-
-        <h2>Student Support Services</h2>
-        {{ support_services_form.as_p }}
-
-        <h2>Transfer & Degree Pathways</h2>
-        {{ degree_pathways_form.as_p }}
-
-        <h2>University Highlights and Performance Metrics</h2>
-        {{ highlights_form.as_p }}
-
-        <button type="submit">Submit</button>
+        
+        <!-- Basic University Information -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Basic University Information</h5>
+          </div>
+          <div class="card-body">
+            {{ basic_info_form.as_p }}
+          </div>
+        </div>
+    
+        <!-- Contact Information -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Contact Information</h5>
+          </div>
+          <div class="card-body">
+            {{ contact_info_form.as_p }}
+          </div>
+        </div>
+    
+        <!-- Enrollment Information -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Enrollment Information</h5>
+          </div>
+          <div class="card-body">
+            {{ enrollment_info_form.as_p }}
+          </div>
+        </div>
+    
+        <!-- Student Support Services -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Student Support Services</h5>
+          </div>
+          <div class="card-body">
+            {{ support_services_form.as_p }}
+          </div>
+        </div>
+    
+        <!-- Transfer & Degree Pathways -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Transfer & Degree Pathways</h5>
+          </div>
+          <div class="card-body">
+            {{ degree_pathways_form.as_p }}
+          </div>
+        </div>
+    
+        <!-- University Highlights -->
+        <div class="card shadow-sm mb-4 border-0">
+          <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">University Highlights and Performance Metrics</h5>
+          </div>
+          <div class="card-body">
+            {{ highlights_form.as_p }}
+          </div>
+        </div>
+    
+        <!-- Action Buttons -->
+        <div class="text-center">
+          <a href="{% url 'university_profile' profile.id %}" class="btn btn-outline-secondary btn-lg me-3">Cancel</a>
+          <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+        </div>
       </form>
     </div>
-  </body>
+
+  </div>
+</body>
+
+<!-- Bootstrap JS Bundle (includes Popper.js) -->
+<script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
 </html>
