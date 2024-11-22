@@ -3,163 +3,58 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/login.css' %}" />
     <link
       rel="stylesheet"
       href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'ntn_app/css/login.css' %}"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'ntn_app/css/base_institutions.css' %}"
-    />
   </head>
+
   <body>
-    {% comment %}
-    <nav class="navbar navbar-expand-lg navbar">
-      <div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
           <li class="nav-item">
-            <img
-              src="{% static 'ntn_app/images/logo.png' %}"
-              alt="Logo"
-              width="40"
-              height="40"
-              class="d-inline-block align-text-top"
-            />
+            <img src="{% static 'ntn_app/images/logo.png' %}" alt="Logo" width="40" height="40"
+              class="d-inline-block align-text-top" />
           </li>
           <li class="nav-item">
-            <a
-              class="nav-link"
-              href="{% url 'student_landing_page' %}"
-              style="color: rgb(40, 40, 40)"
-            >
+            <a class="nav-link" href="{% url 'student_landing_page' %}" style="color: rgb(40, 40, 40)">
               National Transfer Network
             </a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'explore_institutions' %}">
+              Explore Institutions
+            </a>
+          </li>
         </ul>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <!-- Left-aligned items -->
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
-            <li class="nav-item ms-3">
-              <a class="nav-link" href="{% url 'explore_institutions' %}"
-                >Explore Institutions</a
-              >
-              <!-- Explore Institutions to the right -->
-            </li>
-            <li class="nav-item ms-3">
-              {% comment %}
-              <a class="nav-link" href="{% url 'student_landing_page' %}"
-                >Student Home</a
-              >
-              <!-- Student Home to the left -->
-            </li>
-          </ul>
 
-          <!-- Right-aligned items -->
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
-            <li class="nav-item">
-              <span class="navbar-text"
-                >Welcome Back {{ user.first_name }} {{ user.last_name }}!</span
-              >
-              <!-- Welcome message in center -->
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'student_logout' %}">Logout</a>
-              <!-- Move Logout to the left -->
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    {% endcomment %}
-
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
-            <li class="nav-item">
-              <img
-                src="{% static 'ntn_app/images/logo.png' %}"
-                alt="Logo"
-                width="40"
-                height="40"
-                class="d-inline-block align-text-top"
-              />
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                href="{% url 'student_landing_page' %}"
-                style="color: rgb(40, 40, 40)"
-              >
-                National Transfer Network
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'explore_institutions' %}">
-                Explore Institutions
-              </a>
-            </li>
-          </ul>
-
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle navbar-brand"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <img
-                  class="profile-picture"
-                  src="{% static 'ntn_app/images/user.png' %}"
-                  alt=""
-                  width="35"
-                  height="35"
-                  class="d-inline-block align-text-top"
-                />
-              </a>
-              <div
-                class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="navbarDropdown"
-              >
-                <a class="dropdown-item" href="{% url 'student_profile' %}">
-                  Profile</a
-                >
-                <a class="dropdown-item" href="{% url 'student_logout' %}">
-                  Logout</a
-                >
-              </div>
-            </li>
-          </ul>
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items d-flex align-items-center">
+          <span class="navbar-text me-3 text-dark">
+            Hi {{ user.first_name }}, welcome back!
+          </span>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="" width="35" height="35"
+                class="d-inline-block align-text-top" />
+            </a>
+            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'student_profile' %}">Profile</a>
+              <a class="dropdown-item" href="{% url 'student_logout' %}">Logout</a>
+            </div>
+          </li>
+        </ul>
         </div>
       </div>
     </nav>
 
     <div class="container mt-5">
-      <h1>Student Profile</h1>
       <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 

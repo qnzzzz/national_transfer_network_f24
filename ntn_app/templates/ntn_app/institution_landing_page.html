@@ -2,131 +2,83 @@
 
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'ntn_app/css/base.css' %}"
-    />
-    <!-- Bootstrap CSS -->
-  </head>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
-            <li class="nav-item">
-              <img
-                src="{% static 'ntn_app/images/logo.png' %}"
-                alt="Logo"
-                width="40"
-                height="40"
-                class="d-inline-block align-text-top"
-              />
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" style="color: rgb(40, 40, 40)">
-                National Transfer Network
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
+          <li class="nav-item">
+            <img src="{% static 'ntn_app/images/logo.png' %}" alt="Logo" width="40" height="40"
+              class="d-inline-block align-text-top" />
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'institution_landing_page' %}" style="color: rgb(40, 40, 40)">
+              National Transfer Network
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'explore_institutions' %}">
+              Explore Institutions
+            </a>
+          </li>
+        </ul>
+  
+        <div class="d-flex align-items-center ms-auto">
+          <ul class="navbar-nav mb-2 mb-lg-0 items">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Agreements
               </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'explore_institutions' %}">
-                Explore Institutions
-              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'all_agreements' user_type profile_id %}">All Agreements</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
+              </ul>
             </li>
           </ul>
 
-          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
+          <ul class="navbar-nav mb-2 mb-lg-0 items ms-3">
             <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle navbar-brand"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Agreements
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="User Profile" width="35"
+                  height="35" />
               </a>
-              <div
-                class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="navbarDropdown"
-              >
-                <a
-                  class="dropdown-item"
-                  href="{% url 'all_agreements' user_type profile_id %}">
-                  All Agreements
-                </a>
-                <a class="dropdown-item" href="{% url 'new_agreement' %}">
-                  New Agreements
-                </a>
-              </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle navbar-brand"
-                href="#"
-                id="navbarDropdown"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                <img
-                  class="profile-picture"
-                  src="{% static 'ntn_app/images/user.png' %}"
-                  alt=""
-                  width="35"
-                  height="35"
-                  class="d-inline-block align-text-top"
-                />
-              </a>
-              <div
-                class="dropdown-menu dropdown-menu-end"
-                aria-labelledby="navbarDropdown"
-              >
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                 {% if user_type == 'university' %}
-                <a
-                  class="dropdown-item"
-                  href="{% url 'university_profile' profile_id %}"
-                >
-                  Profile
-                </a>
+                <li><a class="dropdown-item" href="{% url 'university_profile' profile_id %}">Profile</a></li>
                 {% elif user_type == 'college' %}
-                <a
-                  class="dropdown-item"
-                  href="{% url 'college_profile' profile_id %}">
-                  Profile
-                </a>
+                <li><a class="dropdown-item" href="{% url 'college_profile' profile_id %}">Profile</a></li>
                 {% else %}
-                <p>Institution type not identified.</p>
+                <li>
+                  <p class="dropdown-item">Institution type not identified.</p>
+                </li>
                 {% endif %}
-                <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
-              </div>
+                <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
+              </ul>
             </li>
           </ul>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <img
-      src="{% static 'ntn_app/images/institution_landing_page.png' %}"
-      class="img-fluid"
-    />
+  <img src="{% static 'ntn_app/images/institution_landing_page.png' %}" class="img-fluid" />
 
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+</body>
+
 </html>

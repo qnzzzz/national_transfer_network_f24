@@ -1,4 +1,55 @@
+body {
+    background-color: #D6EDF6 !important;
+}
+
 .items{
     font-weight: bold;
 }
 
+.logo-name {
+    font-weight: bold;
+}
+
+.navbar {
+    background-color: white;
+}
+
+/* Apply consistent styling to all nav links */
+.navbar .nav-link {
+    font-family: Arial, sans-serif;
+    /* Ensure a consistent font family */
+    font-size: 16px;
+    /* Set a standard font size */
+    font-weight: 500;
+    /* Make all text the same weight */
+    color: #282828 !important;
+    /* Uniform color for all nav links */
+    text-decoration: none;
+    /* Remove underlines */
+    padding: 8px 12px;
+    /* Add consistent padding */
+}
+
+/* Ensure dropdown items follow the same styling */
+.navbar .dropdown-item {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #282828 !important;
+    text-decoration: none;
+}
+
+/* Adjust hover styles for links */
+.navbar .nav-link:hover,
+.navbar .dropdown-item:hover {
+    color: #007bff !important;
+    /* Change color on hover */
+    text-decoration: underline;
+    /* Optional: Add underline on hover */
+}
+
+/* Optional: Adjust the logo and profile picture alignment */
+.navbar .nav-item img {
+    vertical-align: middle;
+    margin-right: 8px;
+}

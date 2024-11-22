@@ -1,240 +1,270 @@
-{% extends "ntn_app/base.html" %} {% load static %} {% block body %}
+{% load static %}
 
-<link href="{% static '/ntn_app/css/agreement.css' %}" rel="stylesheet" />
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="container">
-  <h2>Articulation and Transfer Forms</h2>
-  <form method="post" id="agreementForm">
-    {% csrf_token %}
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+  <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
+  <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <style>
+    .container {
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 2rem;
+    padding: 2rem;
+  }
+    input[type="text"],
+    textarea {
+        padding: 6px;
+        margin-top: 2px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+    }
+    .form-input-small {
+        width: calc(33% - 10px); /* Adjusting the width to be about a third of the container minus some padding */
+        display: inline-block; /* Keeping the inputs inline with text */
+    }
+    textarea {
+        width: 100%;
+    }
+    button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th,
+    td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    table input[type="text"] {
+        width: 95%;
+    }
+  </style>
+</head>
 
-    <h3>Articulation Agreement</h3>
-    <p>
-      <strong>TRANSFER AGREEMENT</strong><br />
-      Between 
-      <input type="text" 
-      name="university" 
-      placeholder="4-Year University Name" 
-      class="form-input-small"
-      {% if context.institution_type == 'university' %} 
-      value="{{ context.institution_name }}" 
-      {% endif %} 
-      oninput="autoUpdateFields('university')" 
-      /> 
-      and
-      <input
-        type="text"
-        name="college"
-        placeholder="2-Year College Name"
-        class="form-input-small"
-        oninput="autoUpdateFields('college')"
-        {% if context.institution_type == 'college' %} 
-        value="{{ context.institution_name }}" {% endif %}
-      />
-    </p>
-    <p>
-      For Transfer of
-      <input
-        type="text"
-        name="college_program"
-        placeholder="Program at 2-Year College"
-        class="form-input-small"
-        oninput="autoUpdateFields('college_program')"
-      />
-      to
-      <input
-        type="text"
-        name="university_program"
-        placeholder="Program at 4-Year University"
-        class="form-input-small"
-        oninput="autoUpdateFields('university_program')"
-      />
-    </p>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 items">
+          <li class="nav-item">
+            <img src="{% static 'ntn_app/images/logo.png' %}" alt="Logo" width="40" height="40"
+              class="d-inline-block align-text-top" />
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'institution_landing_page' %}" style="color: rgb(40, 40, 40)">
+              National Transfer Network
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'explore_institutions' %}">
+              Explore Institutions
+            </a>
+          </li>
+        </ul>
+  
+        <div class="d-flex align-items-center ms-auto">
+          <ul class="navbar-nav mb-2 mb-lg-0 items">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Agreements
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'all_agreements' context.institution_type context.institution_id %}">All Agreements</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
+              </ul>
+            </li>
+          </ul>
 
-    <h3>Statement of Purpose:</h3>
-    <p>
-      The purpose of this transfer agreement is to provide a basis for a
-      cooperative relationship between
-      <input 
-        type="text" 
-        name="university_duplicate" 
-        class="form-input-small" 
-        {% if context.institution_type == 'university' %} 
-        value="{{ context.institution_name }}" 
-        {% endif %} 
-      />
-      and
-      <input 
-        type="text" 
-        name="college_duplicate" 
-        class="form-input-small" 
-        {% if context.institution_type == 'college' %} 
-        value="{{ context.institution_name }}" 
-        {% endif %} 
-      />
-      to benefit students who desire to complete a bachelor’s degree. The intent
-      is for students completing the
-      <input
-        type="text"
-        name="college_program_duplicate"
-        class="form-input-small"
-        oninput="autoUpdateFields('college_program')"
-      />
-      at
-      <input 
-        type="text" 
-        name="college_duplicate" 
-        class="form-input-small" 
-        {% if context.institution_type == 'college' %}
-        value="{{ context.institution_name }}" 
-        {% endif %} 
-      />
-      to move seamlessly to the
-      <input
-        type="text"
-        name="university_program_duplicate"
-        class="form-input-small"
-      />
-      at
-      <input type="text" 
-        name="university_duplicate" 
-        class="form-input-small" 
-        {% if context.institution_type == 'university' %}
-        value="{{ context.institution_name }}" 
-        {% endif %} />
+          <ul class="navbar-nav mb-2 mb-lg-0 items ms-3">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="User Profile" width="35"
+                  height="35" />
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                {% if context.institution_type == 'college' %}
+                <li><a class="dropdown-item" href="{% url 'college_profile' context.institution_id %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
+                {% elif context.institution_type == 'university' %}
+                <li><a class="dropdown-item" href="{% url 'university_profile' context.institution_id %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
+                {% endif %}
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <form method="post" id="agreementForm">
+      {% csrf_token %}
+
+      <h1>New Agreement</h1>
+
+      <p>
+        <h3 class="mt-4 mb-3">Transfer Agreement</h3>
+        Between
+        <input type="text" name="university" placeholder="4-Year University Name" class="form-input-small"
+        {% if context.institution_type == 'university' %} value="{{ context.institution_name }}" {% endif %}
+          oninput="autoUpdateFields('university')" />
+        and
+        <input type="text" name="college" placeholder="2-Year College Name" class="form-input-small"
+          oninput="autoUpdateFields('college')" 
+          {% if context.institution_type == 'college' %} value="{{ context.institution_name }}" {% endif %} />
+      </p>
+      <p>
+        For Transfer of
+        <input type="text" name="college_program" placeholder="Program at 2-Year College" class="form-input-small"
+          oninput="autoUpdateFields('college_program')" />
+        to
+        <input type="text" name="university_program" placeholder="Program at 4-Year University" class="form-input-small"
+          oninput="autoUpdateFields('university_program')" />
+      </p>
+
+      <h3 class="mt-4 mb-3">Statement of Purpose</h3>
+      <p>
+        The purpose of this transfer agreement is to provide a basis for a
+        cooperative relationship between
+        <input type="text" name="university_duplicate" class="form-input-small" 
+        {% if context.institution_type == 'university' %} value="{{ context.institution_name }}" {% endif %} />
+        and
+        <input type="text" name="college_duplicate" class="form-input-small" 
+        {% if context.institution_type == 'college' %} value="{{ context.institution_name }}" {% endif %} />
+        to benefit students who desire to complete a bachelor’s degree. The intent
+        is for students completing the
+        <input type="text" name="college_program_duplicate" class="form-input-small"
+          oninput="autoUpdateFields('college_program')" />
+        at
+        <input type="text" name="college_duplicate" class="form-input-small" 
+        {% if context.institution_type == 'college' %} value="{{ context.institution_name }}" {% endif %} />
+        to move seamlessly to the
+        <input type="text" name="university_program_duplicate" class="form-input-small" />
+        at
+        <input type="text" name="university_duplicate" class="form-input-small" 
+        {% if context.institution_type == 'university' %} value="{{ context.institution_name }}" {% endif %} />
         .
-    </p>
+      </p>
 
-    <h3>Transfer Agreement:</h3>
-    <p>
-      Graduates from the appended
-      <input
-        type="text"
-        name="college_program_duplicate"
-        class="form-input-small"
-      />
-      program of study in
-      <input
-        type="text"
-        name="field_of_study"
-        placeholder="Field of Study"
-        class="form-input-small"
-      />
-      from any campus may transfer and apply
-      <input
-        type="text"
-        name="credits"
-        placeholder="Credit Hours"
-        class="form-input-small"
-      />
-      credit hours from that completed degree to the requirements for the
-      <input
-        type="text"
-        name="university_program_duplicate"
-        class="form-input-small"
-      />
-      at
-      <input 
-        type="text" 
-        name="university_duplicate" 
-        class="form-input-small" 
-        {% if context.institution_type == 'university' %}
-        value="{{ context.institution_name }}" 
-        {% endif %} 
-      />.
-    </p>
+      <h3 class="mt-4 mb-3">Transfer Agreement</h3>
+      <p>
+        Graduates from the appended
+        <input type="text" name="college_program_duplicate" class="form-input-small" />
+        program of study in
+        <input type="text" name="field_of_study" placeholder="Field of Study" class="form-input-small" />
+        from any campus may transfer and apply
+        <input type="text" name="credits" placeholder="Credit Hours" class="form-input-small" />
+        credit hours from that completed degree to the requirements for the
+        <input type="text" name="university_program_duplicate" class="form-input-small" />
+        at
+        <input type="text" name="university_duplicate" class="form-input-small" 
+        {% if context.institution_type == 'university' %} value="{{ context.institution_name }}" {% endif %} />
+        .
+      </p>
 
-    <p>
-      Additionally, under the terms of this agreement:<br />
-      1. Students are eligible for admission with junior standing provided:<br />
-      a. They have submitted a complete application for admission.<br />
-      b. A course grade of “C” or better must be earned to be accepted for
-      transfer.<br />
-      c. They have a
-      <input
-        type="text"
-        name="gpa_required"
-        placeholder="GPA Requirement"
-        class="form-input-small"
-      />
-      or higher grade point average on a 4-point scale.
-    </p>
-    <p>
-      2. As graduates complete the credit hour requirements for the award of the
-      <input
-        type="text"
-        name="university_program_duplicate"
-        class="form-input-small"
-      />
-      they must meet the graduation requirements as approved by
-      <input 
-        type="text" 
-        name="university_duplicate" 
-        class="form-input-small" 
-        {% if context.institution_type == 'university' %}
-        value="{{ context.institution_name }}" 
-        {% endif %} 
-      />
-      at the time of the student’s admission to the program.
-    </p>
+      <p>
+        Additionally, under the terms of this agreement:<br />
+        1. Students are eligible for admission with junior standing provided:<br />
+        a. They have submitted a complete application for admission.<br />
+        b. A course grade of “C” or better must be earned to be accepted for
+        transfer.<br />
+        c. They have a
+        <input type="text" name="gpa_required" placeholder="GPA Requirement" class="form-input-small" />
+        or higher grade point average on a 4-point scale.
+      </p>
+      <p>
+        2. As graduates complete the credit hour requirements for the award of the
+        <input type="text" name="university_program_duplicate" class="form-input-small" />
+        they must meet the graduation requirements as approved by
+        <input type="text" name="university_duplicate" class="form-input-small" 
+        {% if context.institution_type == 'university' %} value="{{ context.institution_name }}" {% endif %} />
+        at the time of the student’s admission to the program.
+      </p>
 
-    <h3>Course Transfer Details</h3>
-    <table id="courseTable">
-      <thead>
-        <tr>
-          <th>College Course Subject Code</th>
-          <th>College Course Digit Code</th>
-          <th>Credits</th>
-          <th>University Course Subject Code</th>
-          <th>University Course Digit Code</th>
-          <th>Credits</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <input type="text" name="courses[0][cc_subject]" />
-          </td>
-          <td>
-            <input type="text" name="courses[0][cc_digit]" />
-          </td>
-          <td>
-            <input type="text" name="courses[0][cc_credits]" />
-          </td>
-          <td>
-            <input type="text" name="courses[0][uc_subject]" />
-          </td>
-          <td>
-            <input type="text" name="courses[0][uc_digit]" />
-          </td>
-          <td>
-            <input type="text" name="courses[0][uc_credits]" />
-          </td>
-          <td>
-            <button type="button" onclick="removeRow(this)">Remove</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+      <h3 class="mt-4 mb-4">Course Transfer Details</h3>
+      <table id="courseTable">
+        <thead>
+          <tr>
+            <th>College Course Subject Code</th>
+            <th>College Course Digit Code</th>
+            <th>Credits</th>
+            <th>University Course Subject Code</th>
+            <th>University Course Digit Code</th>
+            <th>Credits</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input type="text" name="courses[0][cc_subject]" />
+            </td>
+            <td>
+              <input type="text" name="courses[0][cc_digit]" />
+            </td>
+            <td>
+              <input type="text" name="courses[0][cc_credits]" />
+            </td>
+            <td>
+              <input type="text" name="courses[0][uc_subject]" />
+            </td>
+            <td>
+              <input type="text" name="courses[0][uc_digit]" />
+            </td>
+            <td>
+              <input type="text" name="courses[0][uc_credits]" />
+            </td>
+            <td>
+              <button type="button" onclick="removeRow(this)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <button type="button" onclick="addRow()">Add Row</button>
+      <button type="button" onclick="addRow()">Add Row</button>
 
-    <button type="submit">Submit Agreement</button>
-  </form>
-</div>
+      <button type="submit">Submit Agreement</button>
+    </form>
+  </div>
+</body>
 
 <script>
   function autoUpdateFields(fieldName) {
-    // Find the main input field by name
     const mainField = document.querySelector(`input[name="${fieldName}"]`);
     const value = mainField ? mainField.value : "";
 
-    // Select all duplicate fields with the same name
     const duplicateFields = document.querySelectorAll(
       `input[name="${fieldName}_duplicate"]`
     );
 
-    // Update each duplicate field's value
     duplicateFields.forEach((duplicateField) => {
       if (duplicateField !== mainField) {
         duplicateField.value = value;
@@ -246,7 +276,7 @@
     const table = document
       .getElementById("courseTable")
       .getElementsByTagName("tbody")[0];
-    const index = table.rows.length; // Get current number of rows to index correctly
+    const index = table.rows.length;
     const newRow = table.insertRow(-1);
     newRow.innerHTML = `
   		<td><input type="text" name="courses[${index}][cc_subject]"></td>
@@ -263,6 +293,7 @@
     var row = btn.parentNode.parentNode;
     row.parentNode.removeChild(row);
   }
+  
 </script>
 
-{% endblock %}
+<script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
