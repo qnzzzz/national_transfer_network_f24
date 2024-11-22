@@ -87,30 +87,40 @@
   </nav>
 
   <div class="container mt-5">
-    <h1>Explore Institutions</h1>
-    <form method="post" action="{% url 'handle_college_selection' %}">
-      {% csrf_token %}
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="institution_type" class="form-label">Choose Institution Type</label>
-          <select id="institution_type" name="institution_type" class="form-control">
-            <option value="">Select Institution Type</option>
-            <option value="four_year_university">Four Year University</option>
-            <option value="two_year_college">Two Year College</option>
-          </select>
-        </div>
+    <div class="row">
+      <!-- Left side - Form -->
+      <div class="col-md-5">
+        <h1>Explore Institutions</h1>
+        <form method="post" action="{% url 'handle_college_selection' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="institution_type" class="form-label">Choose Institution Type</label>
+            <select id="institution_type" name="institution_type" class="form-control">
+              <option value="">Select Institution Type</option>
+              <option value="four_year_university">Four Year University</option>
+              <option value="two_year_college">Two Year College</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="institution" class="form-label">Select Institution you are interested in</label>
+            <select id="institution" name="institution" class="form-control">
+              <option value="">Select Institution</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
       </div>
-      <div class="row mb-3">
-        <div class="col-md-6">
-          <label for="institution" class="form-label">Select Institution you are interested in</label>
-          <select id="institution" name="institution" class="form-control">
-            <option value="">Select Institution</option>
-          </select>
-        </div>
+      
+      <!-- Right side - Image -->
+      <div class="col-md-7 d-flex justify-content-end align-items-center">
+        <img src="{% static 'ntn_app/images/explore_institutions.jpg' %}" 
+             alt="Explore Institutions" 
+             class="img-fluid rounded"
+             style="width: 100%; max-height: 600px; object-fit: cover;">
       </div>
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    </div>
   </div>
+
 
   <script>
     $(document).ready(function () {
