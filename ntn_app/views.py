@@ -300,9 +300,11 @@ def university_profile(request, university_profile_id):
     
     can_edit = False
     is_edit_mode = request.GET.get('edit') == 'true'
+    is_authenticated = False
 
     # Check if the user is authenticated
     if request.user.is_authenticated:
+        is_authenticated = True
         print('user is authenticated')
         # Check if the logged-in user is associated with this university
         university_user = UniversityUser.objects.filter(user=request.user, university=profile).first()
@@ -351,6 +353,7 @@ def university_profile(request, university_profile_id):
         'can_edit': can_edit,
         'is_edit_mode': is_edit_mode,
         'user_type': 'university',
+        'is_authenticated': is_authenticated,
     })
 
 
@@ -766,7 +769,7 @@ def new_agreement(request):
 
                 course_index += 1
 
-            return redirect('institution_landing_page')
+            return redirect('all_agreements', institution_type=institution_type, profile_id=institution_id)
     else:
         form = AgreementForm()
 
@@ -833,8 +836,10 @@ def all_agreements(request, institution_type, profile_id):
     user_type = None
     institution_id = None
     institution_name = None
+    is_authenticated = False
 
     if user.is_authenticated:
+        is_authenticated = True
         if UniversityUser.objects.filter(user=user).exists():
             user_type = 'university'
         elif CollegeUser.objects.filter(user=user).exists():
@@ -846,10 +851,12 @@ def all_agreements(request, institution_type, profile_id):
         university = get_object_or_404(UniversityProfile, id=profile_id)
         agreements = Agreement.objects.filter(university=university.id)
         institution_name = university.university_name
+        institution_id = university.id
     elif institution_type == 'college':
         college = get_object_or_404(CollegeProfile, id=profile_id)
         agreements = Agreement.objects.filter(college=college.id)
         institution_name = college.college_name
+        institution_id = college.id
 
     context = {
         'agreements': agreements,
@@ -857,6 +864,8 @@ def all_agreements(request, institution_type, profile_id):
         'institution_type': institution_type,
         "profile_id": profile_id,
         'institution_name': institution_name,
+        "institution_id": institution_id,
+        'is_authenticated': is_authenticated,
     }
     
     return render(request, 'ntn_app/all_agreements.html', context)

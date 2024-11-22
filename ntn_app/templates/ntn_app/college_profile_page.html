@@ -9,6 +9,34 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
   <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <style>
+    .card-body label {
+      font-weight: 600;
+    }
+  
+    .card-body textarea {
+      width: 100%;
+      /* Ensures full width inside the card body */
+      height: 80px;
+      /* Set a fixed height */
+      resize: vertical;
+      /* Allow height adjustment only if necessary */
+      box-sizing: border-box;
+      /* Include padding and border in width/height */
+      padding: 10px;
+      /* Add padding for better readability */
+      font-size: 16px;
+      /* Match font size with other form elements */
+    }
+  
+    .form-control {
+      height: 40px;
+      /* Set a fixed height */
+      background-color: none;
+      font-size: 16px;
+      /* Match font size with other form elements */
+    }
+  </style>
 </head>
 
 <body>
@@ -31,36 +59,35 @@
             </a>
           </li>
         </ul>
+        
+        <div class="d-flex align-items-center ms-auto">
+          <ul class="navbar-nav mb-2 mb-lg-0 items">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Agreements
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'all_agreements' 'college' profile.id %}">All Agreements</a></li>
+                <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
+              </ul>
+            </li>
+          </ul>
 
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Agreements
-            </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'all_agreements' user_type profile.id %}">
-                All Agreements
+          <ul class="navbar-nav mb-2 mb-lg-0 items ms-3">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="User Profile" width="35"
+                  height="35" />
               </a>
-              <a class="dropdown-item" href="{% url 'new_agreement' %}">
-                New Agreements
-              </a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="" width="35" height="35"
-                class="d-inline-block align-text-top" />
-            </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'university_profile' profile.id %}">
-                Profile
-              </a>
-              <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
-            </div>
-          </li>
-        </ul>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'college_profile' profile.id %}">Profile</a></li>                
+                <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
@@ -173,6 +200,62 @@
         </div>
       </div>
 
+      <!-- Special 4 Year Offering Information -->
+      <h2>Special 4 Year Offering Information</h2>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Statewide Mandated Pathways</label>
+          <p class="form-control">{{ profile.statewide_mandated_pathways }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Own Bachelor Degree</label>
+          <p class="form-control">{{ profile.own_bachelor_degree }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Three Plus One Program</label>
+          <p class="form-control">{{ profile.three_plus_one_program }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Assured Enrollment</label>
+          <p class="form-control">{{ profile.assured_enrollment }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">AAS Pathways</label>
+          <p class="form-control">{{ profile.AAS_pathways }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Dual Enrollment with University</label>
+          <p class="form-control">{{ profile.dual_enrollment_with_university }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Direct Grad Pathways</label>
+          <p class="form-control">{{ profile.direct_grad_pathways }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Honor to Honor Pathways</label>
+          <p class="form-control">{{ profile.honor_to_honor_pathways }}</p>
+        </div>
+      </div>
+      
+      <!-- Supportive Information -->
+      <h2>Supportive Information</h2>
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Housing for International Students</label>
+          <p class="form-control">{{ profile.housing_for_international_students }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Sports Teams</label>
+          <p class="form-control">{{ profile.sports_teams }}</p>
+        </div>
+        <div class="col-md-6 mb-3">
+          <label class="form-label">College Strength</label>
+          <p class="form-control">{{ profile.college_strength }}</p>
+        </div>
+      </div>
+
+
+
       <div class="row">
         <div class="col-md-12">
           {% if can_edit %}
@@ -197,129 +280,76 @@
     </div>
   </div>
 
-
-  <!-- <div id="profile-view-mode" {% if is_edit_mode %}style="display: none;" {% endif %}>
-    <h2>Basic College Information</h2>
-    <p><strong>College Name:</strong> {{ profile.college_name }}</p>
-    <p><strong>State:</strong> {{ profile.state }}</p>
-    <p><strong>City:</strong> {{ profile.city }}</p>
-    <p>
-      <strong>Website:</strong>
-      <a href="{{ profile.website }}">{{ profile.website }}</a>
-    </p>
-
-    <h2>Contact Information</h2>
-    <p><strong>Contact Name:</strong> {{ profile.contact_name }}</p>
-    <p><strong>Contact Title:</strong> {{ profile.contact_title }}</p>
-    <p><strong>Email:</strong> {{ profile.email }}</p>
-    <p><strong>Phone:</strong> {{ profile.phone }}</p>
-
-    <h2>Enrollment Information</h2>
-    <p><strong>Total Enrollment:</strong> {{ profile.total_enrollment }}</p>
-    <p>
-      <strong>Full Time Students:</strong> {{ profile.full_time_students }}
-    </p>
-    <p>
-      <strong>Part Time Students:</strong> {{ profile.part_time_students }}
-    </p>
-    <p>
-      <strong>HS Dual Enrollment:</strong> {{ profile.HS_dual_enrollment }}
-    </p>
-    <p>
-      <strong>On Site HS Availability:</strong> {{ profile.on_site_HS_available }}
-    </p>
-    <p><strong>Honors Program:</strong> {{ profile.honors_program }}</p>
-    <p>
-      <strong>Enrolled Honors Students:</strong> {{ profile.enrolled_honors_students }}
-    </p>
-
-    <h2>Transfer Information</h2>
-    <p>
-      <strong>Number of transfers to universities:</strong> {{ profile.number_of_transfers_to_universities }}
-    </p>
-    <p>
-      <strong>Top 1 transfer partner:</strong> {{ profile.top1_transfer_partner }}
-    </p>
-    <p>
-      <strong>Top 2 transfer partner:</strong> {{ profile.top2_transfer_partner }}
-    </p>
-    <p>
-      <strong>Top 3 transfer partner:</strong> {{ profile.top3_transfer_partner }}
-    </p>
-    <p>
-      <strong>Required Courses for Transfer:</strong> {{ profile.required_courses_for_transfer }}
-    </p>
-    <p>
-      <strong>Head of Transfer Advising:</strong> {{ profile.head_of_transfer_advising }}
-    </p>
-
-    <h2>Special 4 Year Offering Information</h2>
-    <p>
-      <strong>Statewide Mandated Pathways:</strong> {{ profile.statewide_mandated_pathways }}
-    </p>
-    <p>
-      <strong>Own Bachelor Degree:</strong> {{ profile.own_bachelor_degree }}
-    </p>
-    <p>
-      <strong>Three Plus One Program:</strong> {{ profile.three_plus_one_program }}
-    </p>
-    <p>
-      <strong>Assured Enrollment:</strong> {{ profile.assured_enrollment }}
-    </p>
-    <p><strong>AAS Pathways:</strong> {{ profile.AAS_pathways }}</p>
-    <p>
-      <strong>Dual Enrollment with University:</strong> {{ profile.dual_enrollment_with_university }}
-    </p>
-    <p>
-      <strong>Direct Grad Pathways:</strong> {{ profile.direct_grad_pathways }}
-    </p>
-    <p>
-      <strong>Honor to Honor Pathways:</strong> {{ profile.honor_to_honor_pathways }}
-    </p>
-
-    <h2>Supportive Information</h2>
-    <p>
-      <strong>Housing for International Students:</strong> {{ profile.housing_for_international_students }}
-    </p>
-    <p><strong>Sports Teams:</strong> {{ profile.sports_teams }}</p>
-    <p><strong>College Strength:</strong> {{ profile.college_strength }}</p>
-
-    <h2>Agreements Information</h2>
-    {% if can_edit %}
-    <a href="{% url 'manage_agreements' %}">Manage Agreements.</a>
-    {% else %}
-    <a href="{% url 'all_agreements' 'college' profile.id %}">View all agreements this school have.</a>
-    {% endif %}
-    </p>
-
-    {% if can_edit %}
-    <a href="?edit=true" id="edit-button">Edit</a>
-    {% endif %}
-  </div> -->
-
-  <div id="profile-edit-mode" {% if not is_edit_mode %}style="display: none;" {% endif %}>
-    <form method="post" action="{% url 'college_profile' profile.id %}" enctype="multipart/form-data">
+  <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
+    <form method="post" action="{% url 'college_profile' profile.id %}" enctype="multipart/form-data"
+      class="needs-validation" novalidate>
       {% csrf_token %}
-
-      <h2>Basic College Information</h2>
-      {{ basic_info_form.as_p }}
-
-      <h2>Contact Information</h2>
-      {{ contact_info_form.as_p }}
-
-      <h2>Enrollment Information</h2>
-      {{ enrollment_info_form.as_p }}
-
-      <h2>Transfer Information</h2>
-      {{ transfer_info_form.as_p }}
-
-      <h2>Special 4 Year Offering Information</h2>
-      {{ special_4year_info_form.as_p }}
-
-      <h2>Supportive Information</h2>
-      {{ supportive_info_form.as_p }}
-
-      <button type="submit">Submit</button>
+  
+      <!-- Basic College Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Basic College Information</h5>
+        </div>
+        <div class="card-body">
+          {{ basic_info_form.as_p }}
+        </div>
+      </div>
+  
+      <!-- Contact Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Contact Information</h5>
+        </div>
+        <div class="card-body">
+          {{ contact_info_form.as_p }}
+        </div>
+      </div>
+  
+      <!-- Enrollment Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Enrollment Information</h5>
+        </div>
+        <div class="card-body">
+          {{ enrollment_info_form.as_p }}
+        </div>
+      </div>
+  
+      <!-- Transfer Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Transfer Information</h5>
+        </div>
+        <div class="card-body">
+          {{ transfer_info_form.as_p }}
+        </div>
+      </div>
+  
+      <!-- Special 4-Year Offering Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Special 4-Year Offering Information</h5>
+        </div>
+        <div class="card-body">
+          {{ special_4year_info_form.as_p }}
+        </div>
+      </div>
+  
+      <!-- Supportive Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Supportive Information</h5>
+        </div>
+        <div class="card-body">
+          {{ supportive_info_form.as_p }}
+        </div>
+      </div>
+  
+      <!-- Action Buttons -->
+      <div class="text-center">
+        <a href="{% url 'college_profile' profile.id %}" class="btn btn-outline-secondary btn-lg me-3">Cancel</a>
+        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+      </div>
     </form>
   </div>
 </body>

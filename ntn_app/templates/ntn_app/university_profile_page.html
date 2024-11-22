@@ -51,21 +51,22 @@
           </li>
         </ul>
 
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Agreements
-            </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'all_agreements' user_type profile.id %}">
-                All Agreements
+        {% if is_authenticated %}
+        <div class="d-flex align-items-center ms-auto">
+          <ul class="navbar-nav mb-2 mb-lg-0 items">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Agreements
               </a>
-              <a class="dropdown-item" href="{% url 'new_agreement' %}">
-                New Agreements
-              </a>
-            </div>
-          </li>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'all_agreements' 'university' profile.id %}">All Agreements</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
+              </ul>
+            </li>
+          </ul>
+          <ul class="navbar-nav mb-2 mb-lg-0 items ms-3">
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
               data-bs-toggle="dropdown" aria-expanded="false">
@@ -81,6 +82,7 @@
           </li>
         </ul>
       </div>
+      {% endif %}
     </div>
   </nav>
 
@@ -228,11 +230,9 @@
         <div class="col-12">
           <div class="d-flex gap-2">
             {% if can_edit %}
-            <a href="{% url 'manage_agreements' %}" class="btn btn-primary">Manage Agreements</a>
+            <a href="{% url 'all_agreements' 'university' profile.id %}" class="btn btn-primary">Manage Agreements</a>
             {% else %}
-            <a href="{% url 'all_agreements' 'university' profile.id %}" class="btn btn-primary">
-              View All Agreements
-            </a>
+            <a href="{% url 'all_agreements' 'university' profile.id %}" class="btn btn-primary">View All Agreements</a>
             {% endif %}
           </div>
         </div>

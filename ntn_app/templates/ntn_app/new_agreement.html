@@ -8,12 +8,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
-  <link rel="stylesheet" type="text/css" href="{% static '/ntn_app/css/agreement.css' %}" />
   <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/base.css' %}" />
   <link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <style>
+    .container {
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 2rem;
+    padding: 2rem;
+  }
+    input[type="text"],
+    textarea {
+        padding: 6px;
+        margin-top: 2px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+    }
+    .form-input-small {
+        width: calc(33% - 10px); /* Adjusting the width to be about a third of the container minus some padding */
+        display: inline-block; /* Keeping the inputs inline with text */
+    }
+    textarea {
+        width: 100%;
+    }
+    button {
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: block;
+        width: 100%;
+        margin-top: 20px;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th,
+    td {
+        padding: 8px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    table input[type="text"] {
+        width: 95%;
+    }
+  </style>
 </head>
-
-{% block body %}
 
 <body>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -35,25 +85,41 @@
             </a>
           </li>
         </ul>
+  
+        <div class="d-flex align-items-center ms-auto">
+          <ul class="navbar-nav mb-2 mb-lg-0 items">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                Agreements
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="{% url 'all_agreements' context.institution_type context.institution_id %}">All Agreements</a>
+                </li>
+                <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
+              </ul>
+            </li>
+          </ul>
 
-        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 items">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle navbar-brand" href="#" id="navbarDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="" width="35" height="35"
-                class="d-inline-block align-text-top" />
-            </a>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              {% if context.institution_type == 'college' %}
-              <a class="dropdown-item" href="{% url 'college_profile' context.institution_id %}">Profile</a>
-              <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
-              {% elif context.institution_type == 'university' %}
-              <a class="dropdown-item" href="{% url 'university_profile' context.institution_id %}">Profile</a>
-              <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
-              {% endif %}
-            </div>
-          </li>
-        </ul>
+          <ul class="navbar-nav mb-2 mb-lg-0 items ms-3">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                <img class="profile-picture" src="{% static 'ntn_app/images/user.png' %}" alt="User Profile" width="35"
+                  height="35" />
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                {% if context.institution_type == 'college' %}
+                <li><a class="dropdown-item" href="{% url 'college_profile' context.institution_id %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
+                {% elif context.institution_type == 'university' %}
+                <li><a class="dropdown-item" href="{% url 'university_profile' context.institution_id %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
+                {% endif %}
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </nav>
@@ -62,9 +128,10 @@
     <form method="post" id="agreementForm">
       {% csrf_token %}
 
-      <h3>Articulation Agreement</h3>
+      <h1>New Agreement</h1>
+
       <p>
-        <strong>TRANSFER AGREEMENT</strong><br />
+        <h3 class="mt-4 mb-3">Transfer Agreement</h3>
         Between
         <input type="text" name="university" placeholder="4-Year University Name" class="form-input-small"
         {% if context.institution_type == 'university' %} value="{{ context.institution_name }}" {% endif %}
@@ -83,7 +150,7 @@
           oninput="autoUpdateFields('university_program')" />
       </p>
 
-      <h3>Statement of Purpose:</h3>
+      <h3 class="mt-4 mb-3">Statement of Purpose</h3>
       <p>
         The purpose of this transfer agreement is to provide a basis for a
         cooperative relationship between
@@ -107,7 +174,7 @@
         .
       </p>
 
-      <h3>Transfer Agreement:</h3>
+      <h3 class="mt-4 mb-3">Transfer Agreement</h3>
       <p>
         Graduates from the appended
         <input type="text" name="college_program_duplicate" class="form-input-small" />
@@ -142,7 +209,7 @@
         at the time of the student’s admission to the program.
       </p>
 
-      <h3>Course Transfer Details</h3>
+      <h3 class="mt-4 mb-4">Course Transfer Details</h3>
       <table id="courseTable">
         <thead>
           <tr>
@@ -188,8 +255,6 @@
     </form>
   </div>
 </body>
-
-{% endblock %}
 
 <script>
   function autoUpdateFields(fieldName) {
