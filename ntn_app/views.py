@@ -676,9 +676,14 @@ def get_university_id(university_name):
 def get_institutions(request):
     institution_type = request.GET.get('institution_type')
     if institution_type == 'four_year_university':
-        institutions = UniversityProfile.objects.all().values('id', 'university_name')
+        institutions = UniversityProfile.objects.filter(is_partner=True).values('id', 'university_name')
+        logger.debug(f'Universities: {list(institutions)}')  # Debugging statement
+        print(f'Universities: {list(institutions)}')
+        
     elif institution_type == 'two_year_college':
-        institutions = CollegeProfile.objects.all().values('id', 'college_name')
+        institutions = CollegeProfile.objects.filter(is_partner=True).values('id', 'college_name')
+        logger.debug(f'Colleges: {list(institutions)}')  # Debugging statement
+        print(f'Colleges: {list(institutions)}') 
     else:
         institutions = []
     
