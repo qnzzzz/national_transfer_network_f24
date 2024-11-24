@@ -20,6 +20,11 @@ ROLE_CHOICES = [
     ('ADMIN', 'Admin'),
 ]
 
+BOOLEAN_CHOICES = [
+    (True, 'Yes'),
+    (False, 'No'),
+]
+
 
 STATE_CHOICES = [
     ('AL', 'Alabama'),
@@ -306,8 +311,11 @@ class StudentProfileForm(forms.ModelForm):
     location_preference = forms.ChoiceField(choices=LOCATION_PREFERENCE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     size_preference = forms.ChoiceField(choices=SIZE_PREFERENCE_CHOICES, required=False, widget=forms.Select(attrs={'class': 'form-control'}))
     degree_preference = forms.ChoiceField(choices=DEGREE_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
-    institution = forms.ModelChoiceField(queryset=CollegeProfile.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control'})
-    )
+    institution = forms.ModelChoiceField(queryset=CollegeProfile.objects.all(), required=False, widget=forms.Select(attrs={'class': 'form-control'}))
+    other_institution = forms.CharField(required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Other Institution'}))
+    is_enrolled_in_college = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    is_fafsa_completed = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    graduate_pathway_preference = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
 
     class Meta:
         model = StudentProfile
@@ -316,7 +324,7 @@ class StudentProfileForm(forms.ModelForm):
             'military_status', 'marital_status', 'dependent_children_num', 'race', 'city', 'state', 'zipcode', 
             'citizenship_status', 'is_enrolled_in_college', 'major', 'gpa', 'college_credits_num', 'target_transfer_date', 
             'location_preference', 'size_preference', 'degree_preference', 'graduate_pathway_preference', 'career_objective', 
-            'is_fafsa_completed', 'expected_family_contribution', 'estimated_affordable_amount'
+            'is_fafsa_completed', 'expected_family_contribution', 'estimated_affordable_amount', 'other_institution'
         ]
  
 # class ExploreUniversitiesForm(forms.Form):
