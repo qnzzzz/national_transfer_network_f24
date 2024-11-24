@@ -218,7 +218,16 @@ def student_profile(request):
 
         # Handle profile form submission
         form = StudentProfileForm(request.POST, request.FILES, instance=student_profile)
-        if form.is_valid():
+        if form.is_valid():    
+            institution = form.cleaned_data['institution']
+            other_institution = form.cleaned_data['other_institution']
+
+            if not institution and other_institution:
+                college_profile, created = CollegeProfile.objects.get_or_create(college_name=other_institution, defaults={'is_partner': False})
+                student_profile.institution = college_profile
+            else:
+                student_profile.institution = institution
+            
             user = request.user
             user.first_name = request.POST.get('first_name')
             user.last_name = request.POST.get('last_name')
