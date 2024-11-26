@@ -477,14 +477,15 @@ def add_course(request):
 
     if request.method == 'POST':
         # Handle university selection
-        university_choice = request.POST.get('university_name')
-        other_university = request.POST.get('other_university')  # Capture "Other" university entry
+        university_choice = request.POST.getlist('university_name[]')  # Get multiple selected values
+        other_university = request.POST.get('other_university', '').strip()
         
         if university_choice == 'Other' and other_university:
             # Save manually entered university to session if "Other" is selected
             request.session['university'] = other_university
             selected_university = other_university
             log_university_to_excel(other_university)
+            messages.success(request, f"Added other university: {other_university}")
         elif university_choice:
             # Save selected university to session
             request.session['university'] = university_choice
