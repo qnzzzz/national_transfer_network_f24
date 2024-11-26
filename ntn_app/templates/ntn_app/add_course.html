@@ -2,8 +2,25 @@
 
 {% load static %}
 
+<head>
+    <style>
+        /* Styling for the "And / Or Others" button */
+        #add-other-university-btn {
+            height: calc(2.375rem + 2px); /* Matches the height of the dropdown */
+            padding: 0 15px;
+            margin-left: 10px; /* Ensure proper spacing */
+        }
+
+        /* Optional debugging styles */
+        #add-other-university-btn.debug {
+            background-color: red; /* Temporary color for debugging */
+        }
+    </style>
+</head>
+
 {% block body %}
 <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/add_course.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <div class="container mt-4">
     <!-- Header Section -->
@@ -104,20 +121,24 @@
 
             <!-- University Selection Section -->
             <div class="form-group mt-4">
-              <label for="university_name"><strong>2. Preferred Transfer University</strong></label>
-              <select class="form-select" name="university_name" id="university_name" onchange="toggleOtherUniversityField()">
-                  <option value="">Select University</option>
-                  {% for uni in universities %}
-                      <option value="{{ uni }}" {% if university == uni %}selected{% endif %}>{{ uni }}</option>
-                  {% endfor %}
-                  <option value="Other" {% if university == "Other" %}selected{% endif %}>Other</option>
-              </select>
+                <label for="university_name"><strong>2. Preferred Transfer University</strong></label>
+                <div class="d-flex align-items-center">
+                    <!-- Multi-select Dropdown -->
+                    <select class="form-select" name="university_name[]" id="university_name" multiple>
+                        {% for uni in universities %}
+                        <option value="{{ uni }}" {% if uni in university %}selected{% endif %}>{{ uni }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- "And / Or Others" Button -->
+                    <button type="button" id="add-other-university-btn" class="btn btn-secondary ms-2">And / Or Others</button>
+                </div>
             </div>
 
             <!-- "Other" University Field -->
-            <div class="form-group mt-2" id="other_university_field" style="display:none;">
-              <label for="other_university">Enter Other University:</label>
-              <input type="text" name="other_university" id="other_university" class="form-control" placeholder="Enter your university name here">
+            <div class="form-group mt-2" id="other_university_field" style="display: none;">
+                <label for="other_university"><strong>Enter Other University:</strong></label>
+                <input type="text" name="other_university" id="other_university" class="form-control mt-1" placeholder="Enter your university name here">
             </div>
 
             <!-- College Detection Section -->
@@ -138,7 +159,33 @@
     </div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+
+    $(document).ready(function () {
+        // Initialize Select2 for the multi-select dropdown
+        $('#university_name').select2({
+            placeholder: "Select Preferred Universities",
+            allowClear: true,
+            width: '100%',
+            closeOnSelect: false
+        });
+    
+        // Toggle "Other University" input field
+        $('#add-other-university-btn').on('click', function () {
+            console.log("Button clicked!"); // Log button click
+            const otherField = $('#other_university_field');
+            if (otherField.is(':visible')) {
+                console.log("Hiding the 'Other' input field.");
+                otherField.hide();
+            } else {
+                console.log("Showing the 'Other' input field.");
+                otherField.show();
+            }
+        });        
+    });     
+
     // Function to add a new row to the course table
     function addRow() {
       const tableBody = document.getElementById('course-table').getElementsByTagName('tbody')[0];
