@@ -351,6 +351,17 @@ def university_profile(request, university_profile_id):
         degree_pathways_form = Uni_TransferAndDegreePathwaysForm(instance=profile)
         highlights_form = Uni_UniversityHighlightsForm(instance=profile)
 
+    user = request.user
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            user_type = 'university'
+            institution_id = UniversityUser.objects.get(user=user).university.id
+        elif CollegeUser.objects.filter(user=user).exists():
+            user_type = 'college'
+            institution_id = CollegeUser.objects.get(user=user).college.id
+        elif StudentProfile.objects.filter(user=user).exists():
+            user_type = 'student'
+
     return render(request, 'ntn_app/university_profile_page.html', {
         'profile': profile,
         'basic_info_form': basic_info_form,
@@ -361,7 +372,8 @@ def university_profile(request, university_profile_id):
         'highlights_form': highlights_form,
         'can_edit': can_edit,
         'is_edit_mode': is_edit_mode,
-        'user_type': 'university',
+        'user_type': user_type,
+        'institution_id': institution_id,
         'is_authenticated': is_authenticated,
     })
 
@@ -411,6 +423,17 @@ def college_profile(request, college_profile_id):
         special_4year_info_form =Col_Special4YearOfferingForm(instance=profile)
         supportive_info_form = Col_SupportiveInfoForm(instance=profile)
 
+    user = request.user
+    if user.is_authenticated:
+        if UniversityUser.objects.filter(user=user).exists():
+            user_type = 'university'
+            institution_id = UniversityUser.objects.get(user=user).university.id
+        elif CollegeUser.objects.filter(user=user).exists():
+            user_type = 'college'
+            institution_id = CollegeUser.objects.get(user=user).college.id
+        elif StudentProfile.objects.filter(user=user).exists():
+            user_type = 'student'
+
     return render(request, 'ntn_app/college_profile_page.html', {
         'profile': profile,
         'basic_info_form': basic_info_form,
@@ -421,7 +444,8 @@ def college_profile(request, college_profile_id):
         'supportive_info_form': supportive_info_form,
         'can_edit': can_edit,
         'is_edit_mode': is_edit_mode,
-        'user_type': 'college',
+        'user_type': user_type,
+        'institution_id': institution_id,
     })
 
 

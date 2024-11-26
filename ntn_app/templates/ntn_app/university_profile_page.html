@@ -74,9 +74,17 @@
                 class="d-inline-block align-text-top" />
             </a>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'university_profile' profile.id %}">
+                {% if user_type == 'university' %}
+                <a class="dropdown-item" href="{% url 'university_profile' institution_id %}">Profile</a>
+                {% elif user_type == 'college' %}
+                <a class="dropdown-item" href="{% url 'college_profile' institution_id %}">Profile</a>
+                {% else %}
+                  <p class="dropdown-item">Institution type not identified.</p>
+                {% endif %}
+              <!-- <a class="dropdown-item" href="{% url 'university_profile' profile.id %}">
                 Profile
-              </a>
+              </a> -->
+              <!-- <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li> -->
               <a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a>
             </div>
           </li>
