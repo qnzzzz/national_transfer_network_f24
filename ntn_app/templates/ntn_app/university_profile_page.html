@@ -230,7 +230,7 @@
         <div class="col-12">
           <div class="d-flex gap-2">
             {% if can_edit %}
-            <a href="{% url 'all_agreements' 'university' profile.id %}" class="btn btn-primary">Manage Agreements</a>
+            <a href="{% url 'manage_agreements' %}" class="btn btn-primary">Manage Agreements</a>
             {% else %}
             <a href="{% url 'all_agreements' 'university' profile.id %}" class="btn btn-primary">View All Agreements</a>
             {% endif %}

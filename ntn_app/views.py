@@ -736,6 +736,8 @@ def new_agreement(request):
         # Set the is_partnered flag to True for university and college
         university.is_partner = True
         college.is_partner = True
+        university.save()
+        college.save() 
 
         # Update filtered_data to include the foreign key IDs for university and college
         filtered_data['university'] = university.id
