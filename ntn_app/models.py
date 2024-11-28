@@ -21,7 +21,8 @@ GENDER_TYPE = [
 ]
 
 MILITARY_STATUS_CHOICES = [
-    ('VET', 'Veteran'),
+    ('VET', 'NON-Protected Veteran'),
+    ('PROTECTED', 'Protected Veteran'),
     ('ACTIVE', 'Active Military'),
     ('NONE', 'None')
 ]
@@ -29,9 +30,13 @@ MILITARY_STATUS_CHOICES = [
 MARITAL_STATUS_CHOICES = [
     ('Single', 'Single'),
     ('Married', 'Married'),
+    ('Separated', 'Separated'),
+    ('Widowed', 'Widowed'),
 ]
 CITIZENSHIP_CHOICES = [
     ('US', 'US Citizen'),
+    ('PR', 'Lawful Permanent Resident'),
+    ('Other', 'Other US Citizenship Status'),
     ('International', 'International'),
 ]
 
@@ -47,6 +52,7 @@ STATE_CHOICES = [
     ('DE', 'Delaware'),
     ('FL', 'Florida'),
     ('GA', 'Georgia'),
+    ('GU', 'GUAM'),
     ('HI', 'Hawaii'),
     ('ID', 'Idaho'),
     ('IL', 'Illinois'),
@@ -84,6 +90,7 @@ STATE_CHOICES = [
     ('UT', 'Utah'),
     ('VT', 'Vermont'),
     ('VA', 'Virginia'),
+    ('VI', 'US Virgin Islands'),
     ('WA', 'Washington'),
     ('WV', 'West Virginia'),
     ('WI', 'Wisconsin'),
