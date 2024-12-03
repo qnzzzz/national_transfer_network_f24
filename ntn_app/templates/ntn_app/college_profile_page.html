@@ -122,27 +122,27 @@
     </div>
   </nav>
 
-  <div id="profile-view-mode" {% if is_edit_mode %}style="display: none;" {% endif %}>
+  <div id="profile-view-mode" {% if is_edit_mode %}style="display: none;" {% endif %} style="padding-bottom: 50px;">
 
     <div class="container mt-5">
       <!-- Basic College Information -->
       <h2>Basic College Information</h2>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">College Name</label>
-          <p class="form-control">{{ profile.college_name }}</p>
+          <label class="form-label"><b>College Name</b></label>
+          <p>{{ profile.college_name }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">State</label>
-          <p class="form-control">{{ profile.state }}</p>
+          <label class="form-label"><b>State</b></label>
+          <p>{{ profile.state }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">City</label>
-          <p class="form-control">{{ profile.city }}</p>
+          <label class="form-label"><b>City</b></label>
+          <p>{{ profile.city }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Website</label>
-          <p class="form-control">{{ profile.website }}</a>
+          <label class="form-label"><b>Website</b></label>
+          <p>{{ profile.website }}</a>
           </p>
         </div>
       </div>
@@ -151,20 +151,20 @@
       <h2>Contact Information</h2>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">Contact Name</label>
-          <p class="form-control">{{ profile.contact_name }}</p>
+          <label class="form-label"><b>Contact Name</b></label>
+          <p>{{ profile.contact_name }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Contact Title</label>
-          <p class="form-control">{{ profile.contact_title }}</p>
+          <label class="form-label"><b>Contact Title</b></label>
+          <p>{{ profile.contact_title }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Email</label>
-          <p class="form-control">{{ profile.email }}</p>
+          <label class="form-label"><b>Email</b></label>
+          <p>{{ profile.email }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Phone</label>
-          <p class="form-control">{{ profile.phone }}</p>
+          <label class="form-label"><b>Phone</b></label>
+          <p>{{ profile.phone }}</p>
         </div>
       </div>
 
@@ -172,32 +172,32 @@
       <h2>Enrollment Information</h2>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">Total Enrollment</label>
-          <p class="form-control">{{ profile.total_enrollment }}</p>
+          <label class="form-label"><b>Total Enrollment</b></label>
+          <p>{{ profile.total_enrollment }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Full-Time Students</label>
-          <p class="form-control">{{ profile.full_time_students }}</p>
+          <label class="form-label"><b>Full-Time Students</b></label>
+          <p>{{ profile.full_time_students }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Part-Time Students</label>
-          <p class="form-control">{{ profile.part_time_students }}</p>
+          <label class="form-label"><b>Part-Time Students</b></label>
+          <p>{{ profile.part_time_students }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">HS Dual Enrollment</label>
-          <p class="form-control">{{ profile.HS_dual_enrollment }}</p>
+          <label class="form-label"><b>HS Dual Enrollment</b></label>
+          <p>{{ profile.HS_dual_enrollment }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">On-Site HS Availability</label>
-          <p class="form-control">{{ profile.on_site_HS_available }}</p>
+          <label class="form-label"><b>On-Site HS Availability</b></label>
+          <p>{{ profile.on_site_HS_available }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Honors Program</label>
-          <p class="form-control">{{ profile.honors_program }}</p>
+          <label class="form-label"><b>Honors Program</b></label>
+          <p>{{ profile.honors_program }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Enrolled Honors Students</label>
-          <p class="form-control">{{ profile.enrolled_honors_students }}</p>
+          <label class="form-label"><b>Enrolled Honors Students</b></label>
+          <p>{{ profile.enrolled_honors_students }}</p>
         </div>
       </div>
 
@@ -205,84 +205,84 @@
       <h2>Transfer Information</h2>
       <div class="row">
         <div class="col-md-6 mb-3">
-          <label class="form-label">Number of Transfers to Universities</label>
-          <p class="form-control">{{ profile.number_of_transfers_to_universities }}</p>
+          <label class="form-label"><b>Number of Transfers to Universities</b></label>
+          <p>{{ profile.number_of_transfers_to_universities }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Top 1 Transfer Partner</label>
-          <p class="form-control">{{ profile.top1_transfer_partner }}</p>
+          <label class="form-label"><b>Top 1 Transfer Partner</b></label>
+          <p>{{ profile.top1_transfer_partner }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Top 2 Transfer Partner</label>
-          <p class="form-control">{{ profile.top2_transfer_partner }}</p>
+          <label class="form-label"><b>Top 2 Transfer Partner</b></label>
+          <p>{{ profile.top2_transfer_partner }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Top 3 Transfer Partner</label>
-          <p class="form-control">{{ profile.top3_transfer_partner }}</p>
+          <label class="form-label"><b>Top 3 Transfer Partner</b></label>
+          <p>{{ profile.top3_transfer_partner }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Required Courses for Transfer</label>
-          <p class="form-control">{{ profile.required_courses_for_transfer }}</p>
+          <label class="form-label"><b>Required Courses for Transfer</b></label>
+          <p>{{ profile.required_courses_for_transfer }}</p>
         </div>
         <div class="col-md-6 mb-3">
-          <label class="form-label">Head of Transfer Advising</label>
-          <p class="form-control">{{ profile.head_of_transfer_advising }}</p>
+          <label class="form-label"><b>Head of Transfer Advising</b></label>
+          <p>{{ profile.head_of_transfer_advising }}</p>
         </div>
       </div>
 
       <!-- Special 4 Year Offering Information -->
       <h2>Special 4 Year Offering Information</h2>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Statewide Mandated Pathways</label>
-          <p class="form-control">{{ profile.statewide_mandated_pathways }}</p>
+      <!-- <div class="row"> -->
+        <div class="mb-3">
+          <label class="form-label"><b>Statewide Mandated Pathways</b></label>
+          <p>{{ profile.statewide_mandated_pathways }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Own Bachelor Degree</label>
-          <p class="form-control">{{ profile.own_bachelor_degree }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Own Bachelor Degree</b></label>
+          <p>{{ profile.own_bachelor_degree }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Three Plus One Program</label>
-          <p class="form-control">{{ profile.three_plus_one_program }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Three Plus One Program</b></label>
+          <p>{{ profile.three_plus_one_program }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Assured Enrollment</label>
-          <p class="form-control">{{ profile.assured_enrollment }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Assured Enrollment</b></label>
+          <p>{{ profile.assured_enrollment }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">AAS Pathways</label>
-          <p class="form-control">{{ profile.AAS_pathways }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>AAS Pathways</b></label>
+          <p>{{ profile.AAS_pathways }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Dual Enrollment with University</label>
-          <p class="form-control">{{ profile.dual_enrollment_with_university }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Dual Enrollment with University</b></label>
+          <p>{{ profile.dual_enrollment_with_university }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Direct Grad Pathways</label>
-          <p class="form-control">{{ profile.direct_grad_pathways }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Direct Grad Pathways</b></label>
+          <p>{{ profile.direct_grad_pathways }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Honor to Honor Pathways</label>
-          <p class="form-control">{{ profile.honor_to_honor_pathways }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Honor to Honor Pathways</b></label>
+          <p>{{ profile.honor_to_honor_pathways }}</p>
         </div>
-      </div>
+      <!-- </div> -->
       
       <!-- Supportive Information -->
       <h2>Supportive Information</h2>
-      <div class="row">
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Housing for International Students</label>
-          <p class="form-control">{{ profile.housing_for_international_students }}</p>
+      <!-- <div class="row"> -->
+        <div class="mb-3">
+          <label class="form-label"><b>Housing for International Students</b></label>
+          <p>{{ profile.housing_for_international_students }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">Sports Teams</label>
-          <p class="form-control">{{ profile.sports_teams }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>Sports Teams</b></label>
+          <p>{{ profile.sports_teams }}</p>
         </div>
-        <div class="col-md-6 mb-3">
-          <label class="form-label">College Strength</label>
-          <p class="form-control">{{ profile.college_strength }}</p>
+        <div class="mb-3">
+          <label class="form-label"><b>College Strength</b></label>
+          <p>{{ profile.college_strength }}</p>
         </div>
-      </div>
+      <!-- </div> -->
 
 
 
