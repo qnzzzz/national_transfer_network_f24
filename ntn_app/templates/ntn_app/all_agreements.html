@@ -56,20 +56,22 @@
         </ul>
 
         {% if is_authenticated %}
-        <div class="d-flex align-items-center ms-auto">
-          <ul class="navbar-nav mb-2 mb-lg-0 items">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                Agreements
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="{% url 'all_agreements' user_type profile_id %}">All Agreements</a>
-                </li>
-                <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
-              </ul>
-            </li>
-          </ul>
+        {% if user_type != 'student' %}
+          <div class="d-flex align-items-center ms-auto">
+            <ul class="navbar-nav mb-2 mb-lg-0 items">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  Agreements
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                  <li><a class="dropdown-item" href="{% url 'all_agreements' user_type institution_id %}">All Agreements</a>
+                  </li>
+                  <li><a class="dropdown-item" href="{% url 'new_agreement' %}">New Agreements</a></li>
+                </ul>
+              </li>
+            </ul>
+          {% endif %}
 
           <ul class="navbar-nav mb-2 mb-lg-0 items ms-3">
             <li class="nav-item dropdown">
@@ -83,10 +85,10 @@
                 <li><a class="dropdown-item" href="{% url 'student_profile' %}">Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'student_logout' %}">Logout</a></li>
                 {% elif user_type == 'college' %}
-                <li><a class="dropdown-item" href="{% url 'college_profile' profile_id %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'college_profile' institution_id %}">Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
                 {% elif user_type == 'university' %}
-                <li><a class="dropdown-item" href="{% url 'university_profile' profile_id %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'university_profile' institution_id %}">Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'institution_logout' %}">Logout</a></li>
                 {% endif %}
               </ul>

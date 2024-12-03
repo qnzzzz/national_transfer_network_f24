@@ -352,6 +352,8 @@ def university_profile(request, university_profile_id):
         highlights_form = Uni_UniversityHighlightsForm(instance=profile)
 
     user = request.user
+    institution_id = None
+    user_type = None
     if user.is_authenticated:
         if UniversityUser.objects.filter(user=user).exists():
             user_type = 'university'
@@ -424,6 +426,8 @@ def college_profile(request, college_profile_id):
         supportive_info_form = Col_SupportiveInfoForm(instance=profile)
 
     user = request.user
+    institution_id = None
+    user_type = None
     if user.is_authenticated:
         if UniversityUser.objects.filter(user=user).exists():
             user_type = 'university'
@@ -883,8 +887,10 @@ def all_agreements(request, institution_type, profile_id):
         is_authenticated = True
         if UniversityUser.objects.filter(user=user).exists():
             user_type = 'university'
+            institution_id = UniversityUser.objects.get(user=user).university.id
         elif CollegeUser.objects.filter(user=user).exists():
             user_type = 'college'
+            institution_id = CollegeUser.objects.get(user=user).university.id
         elif StudentProfile.objects.filter(user=user).exists():
             user_type = 'student'
 
@@ -892,13 +898,13 @@ def all_agreements(request, institution_type, profile_id):
         university = get_object_or_404(UniversityProfile, id=profile_id)
         agreements = Agreement.objects.filter(university=university.id)
         institution_name = university.university_name
-        institution_id = university.id
     elif institution_type == 'college':
         college = get_object_or_404(CollegeProfile, id=profile_id)
         agreements = Agreement.objects.filter(college=college.id)
         institution_name = college.college_name
-        institution_id = college.id
 
+    print(institution_id)
+    print(profile_id)
     context = {
         'agreements': agreements,
         'user_type': user_type,
