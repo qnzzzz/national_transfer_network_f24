@@ -890,7 +890,7 @@ def all_agreements(request, institution_type, profile_id):
             institution_id = UniversityUser.objects.get(user=user).university.id
         elif CollegeUser.objects.filter(user=user).exists():
             user_type = 'college'
-            institution_id = CollegeUser.objects.get(user=user).university.id
+            institution_id = CollegeUser.objects.get(user=user).college.id
         elif StudentProfile.objects.filter(user=user).exists():
             user_type = 'student'
 
