@@ -293,6 +293,7 @@ class StudentProfileForm(forms.ModelForm):
     is_enrolled_in_college = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     is_fafsa_completed = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     graduate_pathway_preference = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    target_transfer_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
 
     class Meta:
         model = StudentProfile
