@@ -132,10 +132,6 @@
               <label for="college_credits_num" class="form-label">Number of College Credits</label>
               {{ form.college_credits_num|add_class:"form-control" }}
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="target_transfer_date" class="form-label">Target Transfer Date</label>
-              {{ form.target_transfer_date|add_class:"form-control" }}
-            </div>
           </div>
         </div>
 
@@ -293,6 +289,10 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="target_transfer_date" class="form-label">Target Transfer Date</label>
+          {{ form.target_transfer_date|add_class:"form-control" }}
+        </div>
         <div class="col-md-6 mb-3">
           <label for="expected_family_contribution" class="form-label">Expected Family Contribution</label>
           {{ form.expected_family_contribution|add_class:"form-control" }}
