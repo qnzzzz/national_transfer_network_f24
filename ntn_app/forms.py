@@ -2,7 +2,7 @@ from django import forms
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
-
+import re
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -157,41 +157,6 @@ class InstitutionLoginForm(forms.Form):
         widget=forms.Select(attrs={'class': 'form-control'})
     )
 
-# class LoginForm(forms.Form):
-#     username = forms.CharField(
-#         max_length=20,
-#         required=True,
-#         widget=forms.TextInput(
-#                 attrs={'class': "form-control"}
-#         )
-#     )
-#     password = forms.CharField(
-#         max_length=200,
-#         required=True,
-#         widget=forms.PasswordInput(
-#             attrs={
-#             'class': 'form-control'
-#             }
-#         )
-#     )
-
-#     # Customizes form validation for properties that apply to more
-#     # than one field.  Overrides the forms.Form.clean function.
-#     def clean(self):
-#         # Calls our parent (forms.Form) .clean function, gets a dictionary
-#         # of cleaned data as a result
-#         cleaned_data = super().clean()
-
-#         # Confirms that the two password fields match
-#         username = cleaned_data.get('username')
-#         password = cleaned_data.get('password')
-#         user = authenticate(username=username, password=password)
-#         if not user:
-#             raise forms.ValidationError("Invalid username/password")
-
-#         # We must return the cleaned data we got from our parent.
-#         return cleaned_data
-
 class AgreementForm(forms.ModelForm):
     class Meta:
         model = Agreement
@@ -288,13 +253,25 @@ class StudentRegistrationForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': "form-control", 'placeholder': 'Email'}),
             'username': forms.TextInput(attrs={'class': "form-control", 'placeholder': 'Username'}),
         }
+        
+    def clean_password(self):
+        password = self.cleaned_data.get('password')
+        if len(password) < 8:
+            raise ValidationError('Password must be at least 8 characters long.')
+        if not re.search(r'[A-Z]', password):
+            raise ValidationError('Password must contain at least one uppercase letter.')
+        if not re.search(r'[0-9]', password):
+            raise ValidationError('Password must contain at least one number.')
+        if not re.search(r'[\W_]', password):
+            raise ValidationError('Password must contain at least one special character.')
+        return password
 
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
 
-        if password != confirm_password:
+        if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match")
 
         return cleaned_data
@@ -316,6 +293,7 @@ class StudentProfileForm(forms.ModelForm):
     is_enrolled_in_college = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     is_fafsa_completed = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     graduate_pathway_preference = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
+    target_transfer_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
 
     class Meta:
         model = StudentProfile

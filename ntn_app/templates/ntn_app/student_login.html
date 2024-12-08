@@ -23,7 +23,13 @@
                 </div>
               </div>
             </div>
-            
+            {% if messages %}
+            <div class="alert alert-danger">
+              {% for message in messages %}
+                <p>{{ message }}</p>
+              {% endfor %}
+            </div>
+          {% endif %}
             <form method="POST" action="{% url 'student_login' %}">
               {% csrf_token %}
               <div class="row gy-3 gy-md-4 overflow-hidden">
