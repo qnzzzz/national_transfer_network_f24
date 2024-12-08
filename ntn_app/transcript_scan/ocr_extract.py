@@ -39,6 +39,10 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 model.fit(train_data, train_labels, epochs=30, verbose=1)
 
 def process_pdf(file_stream):
+    
+    if not file_stream.name.endswith('.pdf'):
+        raise ValueError("Invalid file type. Please upload a PDF file.")
+    
     # Fetch all college names from CollegeProfile model
     college_names = CollegeProfile.objects.values_list('college_name', flat=True)
 

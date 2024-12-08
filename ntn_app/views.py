@@ -520,6 +520,11 @@ def add_course(request):
         # Handle file upload only if the file is in the POST request and form is valid
         if 'file' in request.FILES and form.is_valid():
             file_handle = request.FILES['file']
+            
+            if not file_handle.name.endswith('.pdf'):
+                messages.error(request, "Unsupported file format. Please upload a PDF file.")
+                return redirect('add_course')
+            
             results, detected_college = process_pdf(file_handle)
             
             pass_column_extractions = []

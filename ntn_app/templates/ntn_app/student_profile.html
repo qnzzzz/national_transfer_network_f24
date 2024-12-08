@@ -193,6 +193,28 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#coursesModal">
           View & Edit Recorded Courses
         </button>
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bestMatchModal">
+          See Your Best Match Courses
+        </button>
+      </div>
+
+      <!-- Modal for Best Match Courses -->
+      <div class="modal fade" id="bestMatchModal" tabindex="-1" aria-labelledby="bestMatchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="bestMatchModalLabel">Best Match Courses</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>All your preferences and transcript courses have been successfully recorded in our database!</p>
+              <p class="text-muted">The recommendation feature is currently under development and will be available in our beta version soon. Please check back later to see your best match courses across universities!</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Modal for Courses -->

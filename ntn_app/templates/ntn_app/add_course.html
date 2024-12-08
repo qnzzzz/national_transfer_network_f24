@@ -39,6 +39,7 @@
             <div class="form-group mb-4">
                 <label for="id_file"><strong>1. Upload Your Transcript</strong></label>
                 <input type="file" name="file" id="id_file" class="form-control mt-1">
+                <small class="text-muted">Currently only PDF files are supported. We will extend other file types soon!</small>
                 <button type="submit" class="btn btn-primary mt-2">Upload and Process</button>
             </div>
         </form>
@@ -225,5 +226,16 @@
     }
 
     document.addEventListener("DOMContentLoaded", toggleOtherUniversityField);
+
+    document.getElementById('id_file').addEventListener('change', function () {
+        const fileInput = this;
+        const fileName = fileInput.value.toLowerCase();
+        
+        if (!fileName.endsWith('.pdf')) {
+            alert("Invalid file format. Please upload a PDF file.");
+            fileInput.value = ""; // Clear the file input
+        }
+    });
+
 </script>
 {% endblock %}
