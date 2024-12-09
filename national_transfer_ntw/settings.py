@@ -76,10 +76,14 @@ WSGI_APPLICATION = 'national_transfer_ntw.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# move database to mysql
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {'charset': 'utf8mb4'},
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': BASE_DIR / 'ntn_db',
+        'USER': 'ntn',
+        'PASSWORD': 'Dlf1234NT',
     }
 }
 
