@@ -24,7 +24,7 @@ class Command(BaseCommand):
             college_digit_code = str(row['College Digit'])
             wvu_subject_code = row['WVU Subject']
             wvu_digit_code = str(row['WVU Digit'])
-            credits = float(row['Credits'])
+            credits = float(row['Credits']) if not pd.isna(row['Credits']) else 0.0
 
             # Step 4: Create or get the college profile
             college, _ = CollegeProfile.objects.get_or_create(
