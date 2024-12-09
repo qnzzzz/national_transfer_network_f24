@@ -84,6 +84,8 @@ DATABASES = {
         'NAME': 'ntn_db',
         'USER': 'ntn',
         'PASSWORD': 'Dlf1234NT',
+        'HOST': 'localhost',  # Set to 'localhost' if MySQL is running on the same EC2 instance
+        'PORT': '3306',
     }
 }
 
