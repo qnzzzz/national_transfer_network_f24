@@ -81,7 +81,7 @@ DATABASES = {
     'default': {
         'OPTIONS': {'charset': 'utf8mb4'},
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': BASE_DIR / 'ntn_db',
+        'NAME': 'ntn_db',
         'USER': 'ntn',
         'PASSWORD': 'Dlf1234NT',
     }
