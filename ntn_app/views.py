@@ -511,7 +511,7 @@ def add_course(request):
             request.session['university'] = other_university
             selected_university = other_university
             log_university_to_excel(other_university)
-            messages.success(request, f"Added other university: {other_university}")
+            # messages.success(request, f"Added other university: {other_university}")
         elif university_choice:
             # Save selected university to session
             request.session['university'] = university_choice
@@ -522,7 +522,7 @@ def add_course(request):
             file_handle = request.FILES['file']
             
             if not file_handle.name.endswith('.pdf'):
-                messages.error(request, "Unsupported file format. Please upload a PDF file.")
+                # messages.error(request, "Unsupported file format. Please upload a PDF file.")
                 return redirect('add_course')
             
             results, detected_college = process_pdf(file_handle)
@@ -545,7 +545,7 @@ def add_course(request):
             request.session['pass_column_extractions'] = pass_column_extractions
             request.session['detected_college'] = detected_college 
             request.session.modified = True
-            messages.success(request, "File processed successfully.")
+            # messages.success(request, "File processed successfully.")
         
         # Handle course code extraction if course_code_column is posted
         elif 'course_code_column' in request.POST:
@@ -556,9 +556,9 @@ def add_course(request):
                     result.split()[column_index] for result in results if len(result.split()) > column_index
                 ]
                 request.session['selected_course_codes'] = selected_course_codes
-                messages.success(request, "Course codes extracted successfully.")
-            else:
-                messages.error(request, "No data to process.")
+                # messages.success(request, "Course codes extracted successfully.")
+            # else:
+                # messages.error(request, "No data to process.")
 
         # Handle dynamically added courses
         course_codes = request.POST.getlist('course_codes[]')
@@ -575,7 +575,7 @@ def add_course(request):
             for course_code, grade, term, year in zip(course_codes, grades, terms, taken_years):
                 # Provide default values if any field is None or empty
                 if not course_code or not grade or not term or not year:
-                    messages.warning(request, "Incomplete course record skipped.")
+                    # messages.warning(request, "Incomplete course record skipped.")
                     continue
 
                 grade = grade or "None"
@@ -600,14 +600,14 @@ def add_course(request):
                     added_courses.append(new_course)
                     print(f"Created Saved: {new_course}")
                 else:
-                    messages.info(request, f"The course {course_code} for {term} {year} is already recorded.")
+                    # messages.info(request, f"The course {course_code} for {term} {year} is already recorded.")
                     print(f"The course {course_code} for {term} {year} is already recorded.")
 
             if added_courses:
-                messages.success(request, "Courses added successfully!")
+                # messages.success(request, "Courses added successfully!")
                 print("Courses added successfully! {added_courses}")
             else:
-                messages.info(request, "No new courses were added.")
+                # messages.info(request, "No new courses were added.")
                 print("No new courses were added.")
 
             # Update session data for added courses for display
