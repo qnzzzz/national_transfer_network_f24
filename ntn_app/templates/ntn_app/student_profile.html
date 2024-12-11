@@ -288,8 +288,11 @@
         <div class="col-md-6 mb-3">
           <label for="size_preference" class="form-label">Size Preference</label>
           {{ form.size_preference|add_class:"form-control" }}
+          <p>html redering checking </p>
         </div>
       </div>
+
+      <p>Transfer University Preferences checking </p>
       <!-- Display Preferred Universities -->
       <div class="row">
         <div class="col-md-6 mb-3">
@@ -429,6 +432,14 @@
 
         localStorage.removeItem('otherUniversityDetected');
     }
+
+    console.log("Debugging: Page loaded successfully!");
+
+    // Example: Log some dynamic data
+    const universityPreferences = "{{ university_preferences|default:"null"|escapejs }}";
+    console.log("University Preferences:", universityPreferences);
+    const university = "{{ universities|default:"null"|escapejs }}";
+    console.log("univeristy: ", university);
 
     function deleteRow(button) {
       const row = button.closest('tr');
