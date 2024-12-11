@@ -19,3 +19,6 @@ venv/
 # Ignore Excel and text files
 *.xlsx
 *.txt
+
+# Ignore config.ini
+config.ini

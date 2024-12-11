@@ -76,15 +76,19 @@ WSGI_APPLICATION = 'national_transfer_ntw.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# Load database credentials from config.ini
+config = configparser.ConfigParser()
+config.read(BASE_DIR / "config.ini")
+
 # move database to mysql
 DATABASES = {
     'default': {
         'OPTIONS': {'charset': 'utf8mb4'},
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'ntn_db',
-        'USER': 'ntn',
-        'PASSWORD': 'Dlf1234NT',
-        'HOST': 'localhost',  # Set to 'localhost' if MySQL is running on the same EC2 instance
+        'USER': config['MYSQL']['user'],
+        'PASSWORD': config['MYSQL']['password'],
+        'HOST': 'localhost',  
         'PORT': '3306',
     }
 }

@@ -21,9 +21,11 @@
    • Linux csh: source venv/bin/activate.csh
 
    (See https://docs.python.org/3/library/venv.html for other shells)
+
 4. Install required dependencies: 
    
    pip install -r requirements.txt
+   
 5. migrate the database and run server:
    
    python3 manage.py makemigrations 
