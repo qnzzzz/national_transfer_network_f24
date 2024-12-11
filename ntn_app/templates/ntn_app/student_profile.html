@@ -394,7 +394,9 @@
   <!-- Bootstrap JS -->
   <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    document.getElementById('save-university-preferences').addEventListener('click', function () {
+    document.getElementById('save-university-preferences').addEventListener('click', function (event) {
+      event.target.disabled = true; // Disable the button to prevent multiple clicks
+  
       const selectedUniversities = Array.from(document.getElementById('university_name_modal').selectedOptions)
           .map(option => option.value);
       const otherUniversity = document.getElementById('other_university_modal').value;
@@ -413,7 +415,8 @@
       document.querySelector('form').appendChild(hiddenInput);
   
       document.querySelector('form').submit();
-    });   
+    });
+    
 
     const otherUniversityDetected = localStorage.getItem('otherUniversityDetected');
     if (otherUniversityDetected) {
