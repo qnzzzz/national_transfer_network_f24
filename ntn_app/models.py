@@ -340,7 +340,7 @@ class Agreement(models.Model):
 class UniversityCourse(models.Model):
     institution = models.ForeignKey(UniversityProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
-    digit_code = models.CharField(max_length=10)
+    digit_code = models.CharField(max_length=20)
     credits = models.FloatField(blank=True, null=True)
 
     def __str__(self):
@@ -349,7 +349,7 @@ class UniversityCourse(models.Model):
 class CollegeCourse(models.Model):
     institution = models.ForeignKey(CollegeProfile, on_delete=models.CASCADE)
     subject_code = models.CharField(max_length=10)
-    digit_code = models.CharField(max_length=10)
+    digit_code = models.CharField(max_length=20)
     credits = models.FloatField(blank=True, null=True)
 
     def __str__(self):
