@@ -22,18 +22,20 @@ The National Transfer Network, or NTN, is an innovative initiative designed to a
 5. Install weasyprint
    ```bash
    python -m pip install weasyprint
-6. Migrate the database and run server
+6. Migrate the database
    ```bash
    python3 manage.py makemigrations 
    python3 manage.py migrate
-   python3 manage.py runserver
 7. Load existing data into database
    ```bash
    python3 process_data.py # under ~/national_transfer_network_f24/ntn_app
    python3 manage.py load_data # under ~/national_transfer_network_f24
-8. For issues with weasyprint:
+8. Run server
+   ```bash
+   python3 manage.py runserver
+9.  For issues with weasyprint:
    https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
-9. For issues with gobject: 
+10. For issues with gobject: 
    https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
    
 
