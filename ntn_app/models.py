@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField # pip install django-multiselectfield
+import json
 
 # Create your models here.
 
@@ -402,7 +403,18 @@ class StudentProfile(models.Model):
     is_fafsa_completed = models.BooleanField(default=False, blank=True)
     expected_family_contribution = models.IntegerField(blank=True, null=True)
     estimated_affordable_amount = models.IntegerField(blank=True, null=True)
-    
+    university_preference = models.TextField(blank=True, null=True)
+
+    def get_university_preference(self):
+        if self.university_preference:
+            return self.university_preference.split(",")
+        return []
+
+    def set_university_preference(self, university_list):
+        """Save a Python list of university preferences as a comma-separated string."""
+        self.university_preference = ",".join(university_list) if university_list else ""
+        self.save()
+        
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name} - {self.institution}"
     

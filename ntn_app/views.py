@@ -1,3 +1,4 @@
+import json
 import logging
 from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
@@ -233,6 +234,26 @@ def student_profile(request):
             user.last_name = request.POST.get('last_name')
             user.save()
             form.save()
+            university_list = []
+            # Save updated university preferences
+            updated_preferences = request.POST.get('university_name[]')
+            if updated_preferences:
+                # Split by comma if it's a single string, else use the list directly
+                if isinstance(updated_preferences, str):
+                    university_list = updated_preferences.split(",")
+                else:
+                    university_list = updated_preferences
+
+            other_university = request.POST.get('other_university', '').strip()
+            print(other_university)
+            if other_university: 
+                log_university_to_excel(other_university)
+                university_list.append(other_university)
+
+            # Save all preferences as a comma-separated string
+            student_profile.set_university_preference(university_list)
+            student_profile.save()
+
             return redirect('student_profile')
 
     else:
@@ -245,7 +266,6 @@ def student_profile(request):
 
     # Fetch student courses
     student_courses = StudentCourse.objects.filter(student=student_profile).order_by('taken_year', 'taken_term')
-
     return render(
         request,
         'ntn_app/student_profile.html',
@@ -253,6 +273,8 @@ def student_profile(request):
             'form': form,
             'initial_data': initial_data,
             'student_courses': student_courses,
+            'university_preferences': student_profile.get_university_preference() or None,
+            'universities': [uni.university_name for uni in UniversityProfile.objects.all()],
         }
     )
 
@@ -484,48 +506,24 @@ def student_register(request):
 def add_course(request):
     form = UploadFileForm(request.POST or None, request.FILES or None)
     years = range(2000, datetime.datetime.now().year + 1)
-    
-    # Fetch all universities for the dropdown
-    university_options = UniversityProfile.objects.values_list('university_name', flat=True)
 
     # Clear session data for a fresh state on the initial GET request (but not after form submission)
     if request.method == 'GET':
         request.session.pop('results', None)
         request.session.pop('selected_course_codes', None)
-        request.session.pop('university', None)
         request.session.pop('pass_column_extractions', None)
         request.session.pop('added_courses', None)
-        request.session.pop('detected_college', None)
-
-    # Retrieve or set default for university and detected college information
-    selected_university = request.session.get('university')
-    detected_college = None
 
     if request.method == 'POST':
-        # Handle university selection
-        university_choice = request.POST.getlist('university_name[]')  # Get multiple selected values
-        other_university = request.POST.get('other_university', '').strip()
-        
-        if university_choice == 'Other' and other_university:
-            # Save manually entered university to session if "Other" is selected
-            request.session['university'] = other_university
-            selected_university = other_university
-            log_university_to_excel(other_university)
-            # messages.success(request, f"Added other university: {other_university}")
-        elif university_choice:
-            # Save selected university to session
-            request.session['university'] = university_choice
-            selected_university = university_choice
 
         # Handle file upload only if the file is in the POST request and form is valid
         if 'file' in request.FILES and form.is_valid():
             file_handle = request.FILES['file']
             
             if not file_handle.name.endswith('.pdf'):
-                # messages.error(request, "Unsupported file format. Please upload a PDF file.")
                 return redirect('add_course')
             
-            results, detected_college = process_pdf(file_handle)
+            results= process_pdf(file_handle)
             
             pass_column_extractions = []
 
@@ -541,11 +539,8 @@ def add_course(request):
 
             # Update session data only after processing the file successfully
             request.session['results'] = results
-            request.session['university'] = selected_university
             request.session['pass_column_extractions'] = pass_column_extractions
-            request.session['detected_college'] = detected_college 
             request.session.modified = True
-            # messages.success(request, "File processed successfully.")
         
         # Handle course code extraction if course_code_column is posted
         elif 'course_code_column' in request.POST:
@@ -556,16 +551,12 @@ def add_course(request):
                     result.split()[column_index] for result in results if len(result.split()) > column_index
                 ]
                 request.session['selected_course_codes'] = selected_course_codes
-                # messages.success(request, "Course codes extracted successfully.")
-            # else:
-                # messages.error(request, "No data to process.")
 
         # Handle dynamically added courses
         course_codes = request.POST.getlist('course_codes[]')
         grades = request.POST.getlist('grades[]')
         terms = request.POST.getlist('terms[]')
         taken_years = request.POST.getlist('years[]')
-        print(course_codes, grades, terms, taken_years)
  
         student = request.user.student_profile
 
@@ -575,7 +566,6 @@ def add_course(request):
             for course_code, grade, term, year in zip(course_codes, grades, terms, taken_years):
                 # Provide default values if any field is None or empty
                 if not course_code or not grade or not term or not year:
-                    # messages.warning(request, "Incomplete course record skipped.")
                     continue
 
                 grade = grade or "None"
@@ -598,17 +588,7 @@ def add_course(request):
                         taken_term=term
                     )
                     added_courses.append(new_course)
-                    print(f"Created Saved: {new_course}")
-                else:
-                    # messages.info(request, f"The course {course_code} for {term} {year} is already recorded.")
-                    print(f"The course {course_code} for {term} {year} is already recorded.")
 
-            if added_courses:
-                # messages.success(request, "Courses added successfully!")
-                print("Courses added successfully! {added_courses}")
-            else:
-                # messages.info(request, "No new courses were added.")
-                print("No new courses were added.")
 
             # Update session data for added courses for display
             request.session['added_courses'] = [
@@ -630,9 +610,6 @@ def add_course(request):
         'results': results,
         'selected_course_codes': selected_course_codes,
         'course_grade_pairs': course_grade_pairs,
-        'detected_college': detected_college,
-        'university': selected_university,
-        'universities': university_options,
         'years': list(years),
         'added_courses': added_courses,
     }
@@ -640,7 +617,6 @@ def add_course(request):
     return render(request, 'ntn_app/add_course.html', context)
 
 def log_university_to_excel(university_name):
-    print(EXCEL_FILE_PATH)
     # Check if the Excel file exists
     if not os.path.exists(EXCEL_FILE_PATH):
         workbook = Workbook()

@@ -294,6 +294,12 @@ class StudentProfileForm(forms.ModelForm):
     is_fafsa_completed = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     graduate_pathway_preference = forms.ChoiceField(choices=BOOLEAN_CHOICES, widget=forms.Select(attrs={'class': 'form-control'}))
     target_transfer_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}))
+    university_preference = forms.MultipleChoiceField(
+        choices=[],
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-control'}),
+        help_text="Select your preferred universities"
+    )
 
     class Meta:
         model = StudentProfile
@@ -302,8 +308,21 @@ class StudentProfileForm(forms.ModelForm):
             'military_status', 'marital_status', 'dependent_children_num', 'race', 'city', 'state', 'zipcode', 
             'citizenship_status', 'is_enrolled_in_college', 'major', 'gpa', 'college_credits_num', 'target_transfer_date', 
             'location_preference', 'size_preference', 'degree_preference', 'graduate_pathway_preference', 'career_objective', 
-            'is_fafsa_completed', 'expected_family_contribution', 'estimated_affordable_amount', 'other_institution'
+            'is_fafsa_completed', 'expected_family_contribution', 'estimated_affordable_amount', 'other_institution',
+            'university_preference',
         ]
+    
+    def __init__(self, *args, **kwargs):
+        # Dynamically populate choices from UniversityProfile
+        super().__init__(*args, **kwargs)
+        self.fields['university_preference'].choices = [
+            (uni.university_name, uni.university_name) for uni in UniversityProfile.objects.all()
+        ]
+
+    def clean_university_preference(self):
+        """Return a cleaned list of university names."""
+        data = self.cleaned_data.get('university_preference', [])
+        return data
  
 # class ExploreUniversitiesForm(forms.Form):
 #     institution_type = forms.ChoiceField(
