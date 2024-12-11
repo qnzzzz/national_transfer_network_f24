@@ -42,25 +42,16 @@ def process_pdf(file_stream):
     
     if not file_stream.name.endswith('.pdf'):
         raise ValueError("Invalid file type. Please upload a PDF file.")
-    
-    # Fetch all college names from CollegeProfile model
-    college_names = CollegeProfile.objects.values_list('college_name', flat=True)
 
     # Read and process the PDF file directly from a file stream
     reader = PyPDF2.PdfReader(file_stream)
     pdf_text = ""
-    detected_college = None
     
     for page in reader.pages:
         page_text = page.extract_text()
         if page_text:
             pdf_text += page_text
             
-    # Identify if any college name appears in the concatenated text
-    for college_name in college_names:
-        if college_name in pdf_text:
-            detected_college = college_name
-            break  # Stop after finding the first match
         
     # Segmenting the PDF text
     pdf_segments = [seg for seg in pdf_text.splitlines() if seg.strip()]
@@ -79,4 +70,4 @@ def process_pdf(file_stream):
             # results.append((pdf_segments[i]) + " " + str(pred[0].item()))
             results.append((pdf_segments[i]))
     # print(results)
-    return results, detected_college
+    return results
