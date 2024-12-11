@@ -113,6 +113,28 @@
                     </tbody>
                 </table>
                 <button type="button" class="btn btn-primary mt-4" onclick="addRow()">Add New Course</button>
+                            <!-- University Selection Section -->
+                <div class="form-group mt-4">
+                    <label for="university_name"><strong>Do you have any preferred universities for transferring these courses?</strong></label>
+                    <div class="d-flex align-items-center">
+                        <!-- Multi-select Dropdown -->
+                        <select class="form-select" name="university_name[]" id="university_name" multiple>
+                            {% for uni in universities %}
+                            <option value="{{ uni }}" {% if uni in university %}selected{% endif %}>{{ uni }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- "And / Or Others" Button -->
+                        <button type="button" id="add-other-university-btn" class="btn btn-secondary ms-2">And / Or Others</button>
+                    </div>
+                </div>
+
+                <!-- "Other" University Field -->
+                <div class="form-group mt-2" id="other_university_field" style="display: none;">
+                    <label for="other_university"><strong>Enter Other University:</strong></label>
+                    <input type="text" name="other_university" id="other_university" class="form-control mt-1" placeholder="Enter your university name here">
+                </div>
+
                 <button type="submit" class="btn btn-primary mt-4">Save Courses</button>
             </div>
         </form>
@@ -158,6 +180,29 @@
                 </tbody>
             </table>
             <button type="button" class="btn btn-primary mt-4" onclick="addRow()">Add New Course</button>
+
+            <!-- University Selection Section -->
+            <div class="form-group mt-4">
+                <label for="university_name"><strong>Do you have any preferred universities for transferring these courses?</strong></label>
+                <div class="d-flex align-items-center">
+                    <!-- Multi-select Dropdown -->
+                    <select class="form-select" name="university_name[]" id="university_name" multiple>
+                        {% for uni in universities %}
+                        <option value="{{ uni }}" {% if uni in university %}selected{% endif %}>{{ uni }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <!-- "And / Or Others" Button -->
+                    <button type="button" id="add-other-university-btn" class="btn btn-secondary ms-2">And / Or Others</button>
+                </div>
+            </div>
+
+            <!-- "Other" University Field -->
+            <div class="form-group mt-2" id="other_university_field" style="display: none;">
+                <label for="other_university"><strong>Enter Other University:</strong></label>
+                <input type="text" name="other_university" id="other_university" class="form-control mt-1" placeholder="Enter your university name here">
+            </div>
+
             <button type="submit" class="btn btn-primary mt-4">Save Courses</button>
         </form>
     </div>
@@ -212,6 +257,26 @@
                 const row = button.closest('tr');
                 row.remove();
             };
+        // Initialize Select2 for both scan and manual sections
+        $('.select2').select2({
+            placeholder: "Select Preferred Universities",
+            allowClear: true,
+            width: '100%',
+            closeOnSelect: false
+        });
+
+        // Toggle "Other University" input field
+        $('#add-other-university-btn').on('click', function () {
+            $('#other_university_field').toggle();
+        });
+
+        // Initialize Select2 for the multi-select dropdown
+        $('#university_name').select2({
+            placeholder: "Select Preferred Universities",
+            allowClear: true,
+            width: '100%',
+            closeOnSelect: false
+        });
     });     
 
     // Function to add a new row to the course table

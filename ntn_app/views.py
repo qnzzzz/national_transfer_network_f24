@@ -506,14 +506,18 @@ def student_register(request):
 def add_course(request):
     form = UploadFileForm(request.POST or None, request.FILES or None)
     years = range(2000, datetime.datetime.now().year + 1)
+    
+    university_options = UniversityProfile.objects.values_list('university_name', flat=True)
 
     # Clear session data for a fresh state on the initial GET request (but not after form submission)
     if request.method == 'GET':
         request.session.pop('results', None)
         request.session.pop('selected_course_codes', None)
+        request.session.pop('university', None)
         request.session.pop('pass_column_extractions', None)
         request.session.pop('added_courses', None)
-
+        
+    selected_university = request.session.get('university', None)
     if request.method == 'POST':
 
         # Handle file upload only if the file is in the POST request and form is valid
@@ -551,6 +555,19 @@ def add_course(request):
                     result.split()[column_index] for result in results if len(result.split()) > column_index
                 ]
                 request.session['selected_course_codes'] = selected_course_codes
+        elif 'university_name[]' in request.POST:
+            university_choices = request.POST.getlist('university_name[]')
+            other_university = request.POST.get('other_university', '').strip()
+
+            if 'Other' in university_choices and other_university:
+                # Add manually entered university to session
+                request.session['university'] = other_university
+                log_university_to_excel(other_university)
+                selected_university = other_university
+            else:
+                # Save selected universities to session
+                request.session['university'] = university_choices
+                selected_university = university_choices
 
         # Handle dynamically added courses
         course_codes = request.POST.getlist('course_codes[]')
@@ -561,7 +578,6 @@ def add_course(request):
         student = request.user.student_profile
 
         if course_codes or grades or terms or taken_years:
-            print("Adding courses... to the database")
             added_courses = []
             for course_code, grade, term, year in zip(course_codes, grades, terms, taken_years):
                 # Provide default values if any field is None or empty
@@ -604,7 +620,7 @@ def add_course(request):
     pass_column_extractions = request.session.get('pass_column_extractions', [])
     added_courses = request.session.get('added_courses', [])
     course_grade_pairs = list(zip(selected_course_codes, pass_column_extractions))
-
+    
     context = {
         'form': form,
         'results': results,
@@ -612,6 +628,8 @@ def add_course(request):
         'course_grade_pairs': course_grade_pairs,
         'years': list(years),
         'added_courses': added_courses,
+        'university': selected_university,
+        'universities': list(university_options),
     }
 
     return render(request, 'ntn_app/add_course.html', context)
