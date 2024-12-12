@@ -188,11 +188,6 @@ def student_landing_page(request):
 @student_login_required
 def student_profile(request):
     student_profile = request.user.student_profile
-    
-    initial_data = {
-            'first_name': request.user.first_name,
-            'last_name': request.user.last_name,
-        }
 
     if request.method == 'POST':
         # Process course deletions and updates
