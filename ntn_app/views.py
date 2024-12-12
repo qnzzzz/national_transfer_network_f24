@@ -188,6 +188,11 @@ def student_landing_page(request):
 @student_login_required
 def student_profile(request):
     student_profile = request.user.student_profile
+    
+    initial_data = {
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name,
+        }
 
     if request.method == 'POST':
         # Process course deletions and updates
@@ -213,7 +218,6 @@ def student_profile(request):
                     course.taken_year = request.POST.get(f"year_{course_id}")
                     course.taken_term = request.POST.get(f"term_{course_id}")
                     course.save()
-                    print(f"Updated course with ID: {course_id}")
                 except StudentCourse.DoesNotExist:
                     print(f"Course with ID {course_id} does not exist.")
 
