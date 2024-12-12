@@ -1,48 +1,49 @@
-# ntn-backend
+# National Transfer Network
 
-###To run the project
+## Introduction
+The National Transfer Network, or NTN, is an innovative initiative designed to address the college affordability crisis by facilitating smoother transitions for community college students to four-year universities. By streamlining the transfer process and enhancing success rates, NTN aims to reduce the total costs of obtaining a bachelor's degree and increase educational equity. The project leverages a digital platform to provide clear pathways for credit transfer, ensuring that students can achieve their academic goals without unnecessary delays or financial burdens. Through strategic partnerships with educational institutions and data-driven support systems, NTN seeks to make higher education more accessible and affordable, particularly for underserved and minority populations.
 
-1. Install Python 3 if you haven’t done so already
-2. Create a virtual environment:
-   
-   • Choose a location in which to create the virtual environment. I call it “venv” and don’t put it
-   in my repo, but if you put it anywhere in your repo, be sure to put the name of the virtual
-   environment directory into your .gitignore. (Our default .gitignore contains venv.)
-
-   cd \<location for your virtual environment folder\>
-
+## Installaiton
+1. Install Python 3
+   ```bash
+   pip install python3
+2. Setup a virtual environment
+   ```bash
    python3 -m venv venv
-3. Activate your virtual environment using the appropriate command for your shell:
-   
-   • MAC zsh: source venv/bin/activate
-
-   • MS cmd.exe: venv\Scripts\activate.bat
-
-   • Linux csh: source venv/bin/activate.csh
-
-   (See https://docs.python.org/3/library/venv.html for other shells)
+   source myenv/bin/activate  # On Windows: myenv\Scripts\activate
+3. Activate the virtual environment:
+   ```bash
+   source venv/bin/activate  # MAC zsh
+   venv\Scripts\activate.bat  # Windows cmd.exe
+   source venv/bin/activate.csh  # Linux csh
 4. Install required dependencies: 
-   
+   ```bash
    pip install -r requirements.txt
-5. migrate the database and run server:
-   
+5. Install weasyprint
+   ```bash
+   python -m pip install weasyprint
+6. Migrate the database
+   ```bash
    python3 manage.py makemigrations 
-   
    python3 manage.py migrate
-
+7. Load existing data into database
+   ```bash
+   python3 process_data.py # under ~/national_transfer_network_f24/ntn_app
+   python3 manage.py load_data # under ~/national_transfer_network_f24
+8. Run server
+   ```bash
    python3 manage.py runserver
+9.  For issues with weasyprint:
+   https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
+10. For issues with gobject: 
+   https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases
+   
 
-Follow these steps for weasyprint: https://doc.courtbouillon.org/weasyprint/stable/first_steps.html
+## Config
+For accessing database, a config.ini file with MySQL username and password is required.
 
-Windows:
+## Developers
+Developers: Shuxin Liu, Yutian Qiu, Ella Liang, Howard Li, Shruti Ujlan 
 
-Install MSYS2 keeping the default options.
+All developers are from the Master of Information Systems Management program at Carnegie Mellon University's Heinz College. This project is developed as the 2024 Fall capstone project.
 
-After installation, in MSYS2’s shell, execute pacman -S mingw-w64-x86_64-pango.
-
-Close MSYS2’s shell.
-
-python -m pip install weasyprint
-
-for issues with gobject:
-https://github.com/tschoonj/GTK-for-Windows-Runtime-Environment-Installer/releases

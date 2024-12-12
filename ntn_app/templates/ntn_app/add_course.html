@@ -2,22 +2,6 @@
 
 {% load static %}
 
-<head>
-    <style>
-        /* Styling for the "And / Or Others" button */
-        #add-other-university-btn {
-            height: calc(2.375rem + 2px); /* Matches the height of the dropdown */
-            padding: 0 15px;
-            margin-left: 10px; /* Ensure proper spacing */
-        }
-
-        /* Optional debugging styles */
-        #add-other-university-btn.debug {
-            background-color: red; /* Temporary color for debugging */
-        }
-    </style>
-</head>
-
 {% block body %}
 <link rel="stylesheet" type="text/css" href="{% static 'ntn_app/css/add_course.css' %}">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -32,13 +16,25 @@
 
     <!-- Main Form Container -->
     <div class="form-container border rounded p-4">
+        <h5><strong>Choose How to Add Your Courses</strong></h5>
+        <div class="form-check" style="margin-left: 10px; margin-right: 10px;">
+            <input class="form-check-input" type="radio" name="add_course_method" id="method_scan" value="scan" checked>
+            <label class="form-check-label" for="method_scan">Scan Transcript</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="add_course_method" id="method_manual" value="manual">
+            <label class="form-check-label" for="method_manual">Manually Input Courses</label>
+        </div>
+    </div>
         
-        <!-- Upload Transcript Section -->
+    <!-- Step 2: Upload Transcript Section -->
+    <div id="scan-section" class="mt-4">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="form-group mb-4">
-                <label for="id_file"><strong>1. Upload Your Transcript</strong></label>
+                <label for="id_file"><strong><h5>Upload Your Transcript</h5></strong></label>
                 <input type="file" name="file" id="id_file" class="form-control mt-1">
+                <small class="text-muted"><div>Currently only PDF files are supported. We will extend other file types soon!</div></small>
                 <button type="submit" class="btn btn-primary mt-2">Upload and Process</button>
             </div>
         </form>
@@ -116,12 +112,78 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-secondary" onclick="addRow()">Add New Course</button>
+                <button type="button" class="btn btn-primary mt-4" onclick="addRow()">Add New Course</button>
+                            <!-- University Selection Section -->
+                <div class="form-group mt-4">
+                    <label for="university_name"><strong>Do you have any preferred universities for transferring these courses?</strong></label>
+                    <div class="d-flex align-items-center">
+                        <!-- Multi-select Dropdown -->
+                        <select class="form-select" name="university_name[]" id="university_name" multiple>
+                            {% for uni in universities %}
+                            <option value="{{ uni }}" {% if uni in university %}selected{% endif %}>{{ uni }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <!-- "And / Or Others" Button -->
+                        <button type="button" id="add-other-university-btn" class="btn btn-secondary ms-2">And / Or Others</button>
+                    </div>
+                </div>
+
+                <!-- "Other" University Field -->
+                <div class="form-group mt-2" id="other_university_field" style="display: none;">
+                    <label for="other_university"><strong>Enter Other University:</strong></label>
+                    <input type="text" name="other_university" id="other_university" class="form-control mt-1" placeholder="Enter your university name here">
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-4">Save Courses</button>
             </div>
+        </form>
+        {% endif %}
+    </div>
+
+    <!-- Step 2: Manual Input Section -->
+    <div id="manual-section" class="mt-4" style="display: none;">
+        <h5><strong>Manually Input Courses</strong></h5>
+        <form method="post">
+            {% csrf_token %}
+            <table class="table table-bordered" id="course-table">
+                <thead>
+                    <tr>
+                        <th>Course Code</th>
+                        <th>Grade</th>
+                        <th>Year</th>
+                        <th>Term</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" name="course_codes[]" class="form-control" placeholder="Course Code"></td>
+                        <td><input type="text" name="grades[]" class="form-control" placeholder="Grade"></td>
+                        <td>
+                            <select name="years[]" class="form-select">
+                                {% for year in years %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select name="terms[]" class="form-select">
+                                <option value="Spring">Spring</option>
+                                <option value="Summer">Summer</option>
+                                <option value="Fall">Fall</option>
+                                <option value="Winter">Winter</option>
+                            </select>
+                        </td>
+                        <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>
+                    </tr>
+                </tbody>
+            </table>
+            <button type="button" class="btn btn-primary mt-4" onclick="addRow()">Add New Course</button>
 
             <!-- University Selection Section -->
             <div class="form-group mt-4">
-                <label for="university_name"><strong>2. Preferred Transfer University</strong></label>
+                <label for="university_name"><strong>Do you have any preferred universities for transferring these courses?</strong></label>
                 <div class="d-flex align-items-center">
                     <!-- Multi-select Dropdown -->
                     <select class="form-select" name="university_name[]" id="university_name" multiple>
@@ -141,21 +203,8 @@
                 <input type="text" name="other_university" id="other_university" class="form-control mt-1" placeholder="Enter your university name here">
             </div>
 
-            <!-- College Detection Section -->
-            <div class="form-group mt-4">
-                <label for="college_name"><strong>3. Confirm Your College</strong></label>
-                {% if detected_college %}
-                    <input type="text" name="college_name" id="college_name" class="form-control mt-1" value="{{ detected_college }}" readonly>
-                    <small class="text-muted">Detected as "{{ detected_college }}".</small>
-                {% else %}
-                    <input type="text" name="college_name" id="college_name" class="form-control mt-1" placeholder="Enter your college name">
-                {% endif %}
-            </div>
-
-            <!-- Save Courses Button -->
             <button type="submit" class="btn btn-primary mt-4">Save Courses</button>
         </form>
-        {% endif %}
     </div>
 </div>
 
@@ -164,6 +213,63 @@
 <script>
 
     $(document).ready(function () {
+        // Handle method selection
+        $('input[name="add_course_method"]').on('change', function () {
+            const scanSection = $('#scan-section');
+            const manualSection = $('#manual-section');
+
+            if ($(this).val() === 'scan') {
+                scanSection.show();
+                manualSection.hide();
+            } else if ($(this).val() === 'manual') {
+                scanSection.hide();
+                manualSection.show();
+            }
+        }); 
+        
+            // Function to add a new row to the course table
+            window.addRow = function () {
+                const tableBody = document.getElementById('course-table').getElementsByTagName('tbody')[0];
+                const newRow = tableBody.insertRow();
+                newRow.innerHTML = `
+                    <td><input type="text" name="course_codes[]" class="form-control" placeholder="Course Code"></td>
+                    <td><input type="text" name="grades[]" class="form-control" placeholder="Grade"></td>
+                    <td>
+                        <select name="years[]" class="form-select">
+                            {% for year in years %}
+                            <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="terms[]" class="form-select">
+                            <option value="Spring">Spring</option>
+                            <option value="Summer">Summer</option>
+                            <option value="Fall">Fall</option>
+                            <option value="Winter">Winter</option>
+                        </select>
+                    </td>
+                    <td><button type="button" class="btn btn-danger" onclick="deleteRow(this)">Delete</button></td>`;
+            };
+    
+            // Function to delete a row from the table
+            window.deleteRow = function (button) {
+                const row = button.closest('tr');
+                row.remove();
+            };
+        // Initialize Select2 for both scan and manual sections
+        $('.select2').select2({
+            placeholder: "Select Preferred Universities",
+            allowClear: true,
+            width: '100%',
+            closeOnSelect: false
+        });
+
+        // Toggle "Other University" input field
+        $('#add-other-university-btn').on('click', function () {
+            $('#other_university_field').toggle();
+        });
+
         // Initialize Select2 for the multi-select dropdown
         $('#university_name').select2({
             placeholder: "Select Preferred Universities",
@@ -171,19 +277,6 @@
             width: '100%',
             closeOnSelect: false
         });
-    
-        // Toggle "Other University" input field
-        $('#add-other-university-btn').on('click', function () {
-            console.log("Button clicked!"); // Log button click
-            const otherField = $('#other_university_field');
-            if (otherField.is(':visible')) {
-                console.log("Hiding the 'Other' input field.");
-                otherField.hide();
-            } else {
-                console.log("Showing the 'Other' input field.");
-                otherField.show();
-            }
-        });        
     });     
 
     // Function to add a new row to the course table
@@ -217,13 +310,15 @@
         row.remove();
     }
 
-    // Toggle visibility for "Other" university field
-    function toggleOtherUniversityField() {
-      const select = document.getElementById("university_name");
-      const otherField = document.getElementById("other_university_field");
-      otherField.style.display = (select.value === "Other") ? "block" : "none";
-    }
+    document.getElementById('id_file').addEventListener('change', function () {
+        const fileInput = this;
+        const fileName = fileInput.value.toLowerCase();
+        
+        if (!fileName.endsWith('.pdf')) {
+            alert("Invalid file format. Please upload a PDF file.");
+            fileInput.value = ""; // Clear the file input
+        }
+    });
 
-    document.addEventListener("DOMContentLoaded", toggleOtherUniversityField);
 </script>
 {% endblock %}

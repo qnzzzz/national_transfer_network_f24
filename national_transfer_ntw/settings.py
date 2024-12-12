@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import configparser
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,7 +27,7 @@ SECRET_KEY = 'django-insecure-f!8^szp5#d4!d#s1+u6_d0$n9n39c)5&y39gs^m^_+y762vtah
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -76,10 +77,20 @@ WSGI_APPLICATION = 'national_transfer_ntw.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# Load database credentials from config.ini
+config = configparser.ConfigParser()
+config.read(BASE_DIR / "config.ini")
+
+# move database to mysql
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {'charset': 'utf8mb4'},
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ntn_db',
+        'USER': config['MYSQL']['user'],
+        'PASSWORD': config['MYSQL']['password'],
+        'HOST': 'localhost',  
+        'PORT': '3306',
     }
 }
 

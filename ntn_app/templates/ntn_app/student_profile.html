@@ -193,6 +193,28 @@
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#coursesModal">
           View & Edit Recorded Courses
         </button>
+        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bestMatchModal">
+          See Your Best Match Courses
+        </button>
+      </div>
+
+      <!-- Modal for Best Match Courses -->
+      <div class="modal fade" id="bestMatchModal" tabindex="-1" aria-labelledby="bestMatchModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="bestMatchModalLabel">Best Match Courses</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>All your preferences and transcript courses have been successfully recorded in our database!</p>
+              <p class="text-muted">The recommendation feature is currently under development and will be available in our beta version soon. Please check back later to see your best match courses across universities!</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Modal for Courses -->
@@ -268,6 +290,63 @@
           {{ form.size_preference|add_class:"form-control" }}
         </div>
       </div>
+
+      {% comment %} <!-- Display Preferred Universities -->
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="preferred_universities" class="form-label">Transfer University Preferences</label>
+          {% if university_preferences and university_preferences != '[]' %}
+            <ul>
+              {% for uni in university_preferences %}
+                <li>{{ uni }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">You currently do not have any preferred universities.</p>
+          {% endif %}
+          <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#universitiesModal">
+            Edit / Add Universities
+          </button>
+        </div>
+      </div>
+
+      <div id="other-university-message" style="display: none;"></div>
+
+      <!-- Modal for Preferred Universities -->
+      <div class="modal fade" id="universitiesModal" tabindex="-1" aria-labelledby="universitiesModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="universitiesModalLabel">Edit Preferred Universities</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+              <!-- Select New Universities -->
+              <div class="form-group">
+                <label for="university_name_modal">Add More Universities</label>
+                <select class="form-select" name="university_name[]" id="university_name_modal" multiple>
+                  <option value="None">None</option>
+                  {% for uni in universities %}
+                  <option value="{{ uni }}" {% if uni in university_preferences %}selected{% endif %}>
+                    {{ uni }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="form-group mt-3">
+                <label for="other_university_modal">Add Other University</label>
+                <input type="text" name="other_university" id="other_university_modal" class="form-control" placeholder="Enter another university">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" id="save-university-preferences">Save Changes</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div> {% endcomment %}
+
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="degree_preference" class="form-label">Degree Preference</label>
@@ -316,6 +395,42 @@
   <!-- Bootstrap JS -->
   <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    document.getElementById('save-university-preferences').addEventListener('click', function (event) {
+      event.target.disabled = true; // Disable the button to prevent multiple clicks
+  
+      const selectedUniversities = Array.from(document.getElementById('university_name_modal').selectedOptions)
+          .map(option => option.value);
+      const otherUniversity = document.getElementById('other_university_modal').value;
+  
+      if (otherUniversity.trim()) {
+          selectedUniversities.push(otherUniversity.trim());
+          localStorage.setItem('otherUniversityDetected', 'true');
+      }
+  
+      const universityPreferences = selectedUniversities.join(",");
+  
+      const hiddenInput = document.createElement('input');
+      hiddenInput.type = 'hidden';
+      hiddenInput.name = 'university_name';
+      hiddenInput.value = universityPreferences;
+      document.querySelector('form').appendChild(hiddenInput);
+  
+      document.querySelector('form').submit();
+    });
+    
+
+    const otherUniversityDetected = localStorage.getItem('otherUniversityDetected');
+    if (otherUniversityDetected) {
+        const messageContainer = document.getElementById('other-university-message');
+        if (messageContainer) {
+            messageContainer.textContent = "We appreciate your feedback and will explore potential opportunities with your suggested other university. Thank you for sharing your preferences!";
+            messageContainer.classList.add('alert', 'alert-success');
+            messageContainer.style.display = 'block';
+        }
+
+        localStorage.removeItem('otherUniversityDetected');
+    }
+
     function deleteRow(button) {
       const row = button.closest('tr');
       const courseId = row.dataset.courseId;
