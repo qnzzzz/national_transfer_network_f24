@@ -27,11 +27,6 @@
       background-color: none;
       font-size: 16px; /* Match font size with other form elements */
     }
-    /* Remove brackets from form labels
-    .card-body p label::before,
-    .card-body p label::after {
-        content: none !important;
-    } */
     </style>
 </head>
 
@@ -282,6 +277,7 @@
         {% endif %}
       </div>
     </div>  
+    
   <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
     <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data"
       class="needs-validation" novalidate>
@@ -451,78 +447,6 @@
       </div>
     </form>
   </div>
-    <!-- <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
-      <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data"
-        class="needs-validation" novalidate>
-        {% csrf_token %}
-        
-        Basic University Information
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Basic University Information</h5>
-          </div>
-          <div class="card-body">
-            {{ basic_info_form.as_p }}
-          </div>
-        </div>
-    
-        Contact Information
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Contact Information</h5>
-          </div>
-          <div class="card-body">
-            {{ contact_info_form.as_p }}
-          </div>
-        </div>
-    
-        Enrollment Information
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Enrollment Information</h5>
-          </div>
-          <div class="card-body">
-            {{ enrollment_info_form.as_p }}
-          </div>
-        </div>
-    
-        Student Support Services
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Student Support Services</h5>
-          </div>
-          <div class="card-body">
-            {{ support_services_form.as_p }}
-          </div>
-        </div>
-    
-        Transfer & Degree Pathways
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">Transfer & Degree Pathways</h5>
-          </div>
-          <div class="card-body">
-            {{ degree_pathways_form.as_p }}
-          </div>
-        </div>
-    
-        University Highlights
-        <div class="card shadow-sm mb-4 border-0">
-          <div class="card-header bg-primary text-white">
-            <h5 class="card-title mb-0">University Highlights and Performance Metrics</h5>
-          </div>
-          <div class="card-body">
-            {{ highlights_form.as_p }}
-          </div>
-        </div>
-    
-        Action Buttons
-        <div class="text-center">
-          <a href="{% url 'university_profile' profile.id %}" class="btn btn-outline-secondary btn-lg me-3">Cancel</a>
-          <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
-        </div>
-      </form>
-    </div> -->
 
   </div>
 </body>
