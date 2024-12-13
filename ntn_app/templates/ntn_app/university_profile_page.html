@@ -277,13 +277,181 @@
         {% endif %}
       </div>
     </div>  
+  <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
+    <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data"
+      class="needs-validation" novalidate>
+      {% csrf_token %}
 
-    <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
+      <!-- Basic University Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Basic University Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="{{ basic_info_form.university_name.id_for_label }}" class="form-label">University Name</label>
+            {{ basic_info_form.university_name }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ basic_info_form.state.id_for_label }}" class="form-label">State</label>
+            {{ basic_info_form.state }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ basic_info_form.city.id_for_label }}" class="form-label">City</label>
+            {{ basic_info_form.city }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ basic_info_form.website.id_for_label }}" class="form-label">Website</label>
+            {{ basic_info_form.website }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Contact Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="{{ contact_info_form.contact_name.id_for_label }}" class="form-label">Contact Name</label>
+            {{ contact_info_form.contact_name }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ contact_info_form.contact_title.id_for_label }}" class="form-label">Contact Title</label>
+            {{ contact_info_form.contact_title }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ contact_info_form.email.id_for_label }}" class="form-label">Email</label>
+            {{ contact_info_form.email }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ contact_info_form.phone.id_for_label }}" class="form-label">Phone</label>
+            {{ contact_info_form.phone }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Enrollment Information -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Enrollment Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="{{ enrollment_info_form.UGs.id_for_label }}" class="form-label">Undergraduate Enrollment</label>
+            {{ enrollment_info_form.UGs }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ enrollment_info_form.number_of_transfers_per_year.id_for_label }}" class="form-label">Annual
+              Transfer Enrollment</label>
+            {{ enrollment_info_form.number_of_transfers_per_year }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Student Support Services -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Student Support Services</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="{{ support_services_form.housing_availability.id_for_label }}" class="form-label">Housing
+              Availability</label>
+            {{ support_services_form.housing_availability }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ support_services_form.marriage_or_kids_support.id_for_label }}" class="form-label">Support for
+              Married Students/Kids</label>
+            {{ support_services_form.marriage_or_kids_support }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ support_services_form.vets_support.id_for_label }}" class="form-label">Support for
+              Veterans</label>
+            {{ support_services_form.vets_support }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ support_services_form.aids_or_scholarships_for_transfers.id_for_label }}"
+              class="form-label">Financial Aid for Transfers</label>
+            {{ support_services_form.aids_or_scholarships_for_transfers }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ support_services_form.special_transfer_support.id_for_label }}" class="form-label">Special
+              Transfer Support</label>
+            {{ support_services_form.special_transfer_support }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Transfer & Degree Pathways -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">Transfer & Degree Pathways</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="{{ degree_pathways_form.contingent_admission.id_for_label }}" class="form-label">Contingent
+              Admission</label>
+            {{ degree_pathways_form.contingent_admission }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ degree_pathways_form.online_allowed.id_for_label }}" class="form-label">Online Degree
+              Availability</label>
+            {{ degree_pathways_form.online_allowed }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ degree_pathways_form.degree_pathways_for_AAS_student.id_for_label }}" class="form-label">Degree
+              Pathways for AAS</label>
+            {{ degree_pathways_form.degree_pathways_for_AAS_student }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ degree_pathways_form.grad_pathway.id_for_label }}" class="form-label">Graduate Pathway</label>
+            {{ degree_pathways_form.grad_pathway }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ degree_pathways_form.honor_to_honor_pathway.id_for_label }}"
+              class="form-label">Honors-to-Honors Pathway</label>
+            {{ degree_pathways_form.honor_to_honor_pathway }}
+          </div>
+        </div>
+      </div>
+
+      <!-- University Highlights -->
+      <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-primary text-white">
+          <h5 class="card-title mb-0">University Highlights and Performance Metrics</h5>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label for="{{ highlights_form.institutional_strength_and_highlight.id_for_label }}"
+              class="form-label">Strengths and Highlights</label>
+            {{ highlights_form.institutional_strength_and_highlight }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ highlights_form.graduation_rate.id_for_label }}" class="form-label">Graduation Rate</label>
+            {{ highlights_form.graduation_rate }}
+          </div>
+          <div class="mb-3">
+            <label for="{{ highlights_form.retention_rate.id_for_label }}" class="form-label">Retention Rate</label>
+            {{ highlights_form.retention_rate }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="text-center">
+        <a href="{% url 'university_profile' profile.id %}" class="btn btn-outline-secondary btn-lg me-3">Cancel</a>
+        <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
+      </div>
+    </form>
+  </div>
+    <!-- <div id="profile-edit-mode" class="container py-5" {% if not is_edit_mode %}style="display: none;" {% endif %}>
       <form method="post" action="{% url 'university_profile' profile.id %}?edit=true" enctype="multipart/form-data"
         class="needs-validation" novalidate>
         {% csrf_token %}
         
-        <!-- Basic University Information -->
+        Basic University Information
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Basic University Information</h5>
@@ -293,7 +461,7 @@
           </div>
         </div>
     
-        <!-- Contact Information -->
+        Contact Information
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Contact Information</h5>
@@ -303,7 +471,7 @@
           </div>
         </div>
     
-        <!-- Enrollment Information -->
+        Enrollment Information
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Enrollment Information</h5>
@@ -313,7 +481,7 @@
           </div>
         </div>
     
-        <!-- Student Support Services -->
+        Student Support Services
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Student Support Services</h5>
@@ -323,7 +491,7 @@
           </div>
         </div>
     
-        <!-- Transfer & Degree Pathways -->
+        Transfer & Degree Pathways
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">Transfer & Degree Pathways</h5>
@@ -333,7 +501,7 @@
           </div>
         </div>
     
-        <!-- University Highlights -->
+        University Highlights
         <div class="card shadow-sm mb-4 border-0">
           <div class="card-header bg-primary text-white">
             <h5 class="card-title mb-0">University Highlights and Performance Metrics</h5>
@@ -343,13 +511,13 @@
           </div>
         </div>
     
-        <!-- Action Buttons -->
+        Action Buttons
         <div class="text-center">
           <a href="{% url 'university_profile' profile.id %}" class="btn btn-outline-secondary btn-lg me-3">Cancel</a>
           <button type="submit" class="btn btn-primary btn-lg">Save Changes</button>
         </div>
       </form>
-    </div>
+    </div> -->
 
   </div>
 </body>
