@@ -163,18 +163,9 @@ class AgreementForm(forms.ModelForm):
         fields = [
             'university', 'college', 'university_program', 'college_program', 'credits', 'gpa_required', 'effective_term'
         ]
-        
-
-
-# University Profile Forms
-class BaseUniversityForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields.values():
-            field.label = field.label.replace('[', '').replace(']', '') if field.label else field.label
 
 # University's basic info form
-class Uni_BasicInfoForm(BaseUniversityForm):
+class Uni_BasicInfoForm(forms.ModelForm):
     class Meta:
         model = UniversityProfile
         fields = ['university_name', 'state', 'city', 'website']
